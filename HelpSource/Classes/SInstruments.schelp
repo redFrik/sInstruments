@@ -1,0 +1,18 @@
+CLASS:: SInstruments
+SUMMARY:: InstrumentS
+CATEGORIES:: SInstruments
+RELATED:: Classes/SGliss
+
+DESCRIPTION::
+see link::Overviews/sInstrumentsOverview::.
+
+or run this command to open the start menu window...
+CODE::
+(Quarks.all.detect{|x| x.name=="sInstruments"}.localPath+/+"startMenu.scd").load
+::
+
+CLASSMETHODS::
+
+INSTANCEMETHODS::
+
+EXAMPLES::

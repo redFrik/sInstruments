@@ -1,0 +1,17 @@
+CLASS:: SFormantAmplitudes
+SUMMARY:: control SFormant amplitudes
+CATEGORIES:: SInstruments
+RELATED:: Overviews/sInstrumentsOverview, Classes/SFormant, Classes/SFormantFrequencies
+
+DESCRIPTION::
+Amplitude control for LINK::Classes/SFormant::.
+
+INSTANCEMETHODS::
+
+METHOD::def
+the definition that send out control data on bus CODE::\sController_bus::.
+
+RETURNS::
+a LINK::Classes/SynthDef::.
+
+EXAMPLES::

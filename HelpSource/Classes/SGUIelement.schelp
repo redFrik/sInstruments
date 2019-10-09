@@ -1,0 +1,92 @@
+CLASS:: SGUIelement
+SUMMARY:: a value with one or more views
+CATEGORIES:: SInstruments
+RELATED:: Overviews/sInstrumentsOverview
+
+DESCRIPTION::
+This is a value with one or more views attached (added).
+
+The views only redraw when .update is called. There is no need to defer get or set value or the update call.
+
+The .action function you set is called directly when the value is changed. The view will redraw and update its value at some later time (when .update and if the value changed).
+
+CLASSMETHODS::
+
+INSTANCEMETHODS::
+
+PRIVATE::initSGUIelement, prUpdate
+
+METHOD::action
+a link::Classes/Function::. can be called without deferring.
+
+METHOD::value
+get or set the current value. nothing special. normalised.
+action is only called if value has changed.
+
+METHOD::valueAction
+set value and always call action - also on repeated values. useful for button toggles.
+
+METHOD::asView
+layout support. only latest (last) view is returned. makes adding views to layouts easier.
+
+METHOD::views
+an array with all added views.
+
+METHOD::addView
+add a view as a dependancy. also with a spec. automatically sets up the view action function.
+
+ARGUMENT::view
+some view. not complex ones like RangeSlider. for those use subclasses.
+
+ARGUMENT::spec
+a link::Classes/ControlSpec::. if not provided a default one will be created.
+
+METHOD::update
+call at regular intervals (typically a slower fps AppClock routine). if the value has changed the view will redraw.
+
+EXAMPLES::
+
+CODE::
+(
+var win;
+var element= SGUIelement();
+var elementSpec= \freq.asSpec;
+var fps= 5;
+
+//fake some fast changing sensor data
+r= Routine.run({
+	inf.do{
+		NetAddr.localAddr.sendMsg(\freq, 200.0.exprand(2000));
+		(1/40).wait;
+	};
+});
+
+//set up window with views
+win= Window("SGUIelement test", 200@100);
+win.view.layout_(VLayout(
+	element.addView(Slider().orientation_(\horizontal)),
+	element.addView(NumberBox(), elementSpec),
+));
+CmdPeriod.doOnce({win.close});
+win.onClose({r.stop});
+win.front;
+
+//element action function (fast updating independant of gui)
+element.action= {|val|
+	val.postln;
+};
+
+//network
+OSCFunc({|msg| element.value= elementSpec.unmap(msg[1])}, \freq);
+
+//gui updater
+Routine({
+	inf.do{
+		element.update;
+		(1/fps).wait;
+	};
+}).play(AppClock);
+)
+
+r.stop;  //and then try manually changing the slider/numberbox
+::

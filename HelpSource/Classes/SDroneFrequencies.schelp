@@ -1,0 +1,17 @@
+CLASS:: SDroneFrequencies
+SUMMARY:: control SDrone frequencies
+CATEGORIES:: SInstruments
+RELATED:: Overviews/sInstrumentsOverview, Classes/SDrone, Classes/SDroneAmplitudes
+
+DESCRIPTION::
+Frequency control for LINK::Classes/SDrone::.
+
+INSTANCEMETHODS::
+
+METHOD::def
+the definition that send out control data on bus CODE::\sController_bus::.
+
+RETURNS::
+a LINK::Classes/SynthDef::.
+
+EXAMPLES::

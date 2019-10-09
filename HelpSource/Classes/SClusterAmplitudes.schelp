@@ -1,0 +1,17 @@
+CLASS:: SClusterAmplitudes
+SUMMARY:: control SCluster amplitudes
+CATEGORIES:: SInstruments
+RELATED:: Overviews/sInstrumentsOverview, Classes/SCluster, Classes/SClusterDistortions, Classes/SClusterFrequencies
+
+DESCRIPTION::
+Amplitude control for LINK::Classes/SCluster::.
+
+INSTANCEMETHODS::
+
+METHOD::def
+the definition that send out control data on bus CODE::\sController_bus::.
+
+RETURNS::
+a LINK::Classes/SynthDef::.
+
+EXAMPLES::

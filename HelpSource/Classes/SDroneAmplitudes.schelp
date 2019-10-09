@@ -1,0 +1,17 @@
+CLASS:: SDroneAmplitudes
+SUMMARY:: control SDrone amplitudes
+CATEGORIES:: SInstruments
+RELATED:: Overviews/sInstrumentsOverview, Classes/SDrone, Classes/SDroneFrequencies
+
+DESCRIPTION::
+Amplitude control for LINK::Classes/SDrone::.
+
+INSTANCEMETHODS::
+
+METHOD::def
+the definition that send out control data on bus CODE::\sController_bus::.
+
+RETURNS::
+a LINK::Classes/SynthDef::.
+
+EXAMPLES::

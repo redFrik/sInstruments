@@ -1,0 +1,155 @@
+CLASS:: SGliss
+SUMMARY:: a glissing sInstrument
+CATEGORIES:: SInstruments
+RELATED:: Overviews/sInstrumentsOverview, Classes/SGlissAmplitudes, Classes/SGlissFrequencies, Classes/SGlissPannings
+
+DESCRIPTION::
+Written together with Tamas Ungvary.
+
+See file CODE::instruments/sGliss.scd:: for a complete example.
+
+CLASSMETHODS::
+
+METHOD::new
+create a new gliss instrument. the localhost server will be booted if it is not already running.
+
+ARGUMENT::maxNumVoices
+the maximum number of voices one can add to this instrument.
+
+ARGUMENT::target
+if CODE::nil:: then the localhost server's default group will be used.
+
+ARGUMENT::outbus
+where to send the stereo output.
+
+ARGUMENT::addAction
+a LINK::Classes/Symbol::.
+
+ARGUMENT::args
+extra arguments as an LINK::Classes/Array:: with key/value pairs.
+
+INSTANCEMETHODS::
+
+PRIVATE::initSGliss
+
+METHOD::voices
+the currently active voices.
+
+RETURNS::
+a LINK::Classes/List:: with LINK::Classes/AbstractSGlissVoice:: instances.
+
+METHOD::release
+fade out the sound and free all internal nodes and busses.
+
+ARGUMENT::releaseTime
+fade out time in seconds.
+
+METHOD::set
+set parameters for all internal nodes and save them in the arguments dictionary.
+
+ARGUMENT::... args
+an LINK::Classes/Array:: with key/value pairs. can also be a single key/value pair.
+
+CODE::
+~gliss= SGliss(50);
+~gliss.set([\atk, 0.1, \rel, 1]);  //set attack and release for all internal nodes
+~gliss.set(\on, 1);  //set \sGliss_out on to 1 (only this node will understand it)
+~gliss.set(\lfoRate, 0.5);  //set for 3 controllers (frequencies, amplitudes, pannings)
+::
+
+METHOD::setPannings
+convenience method for CODE::.set(\pannings, ...)::
+
+ARGUMENT::arr
+an array of floats (-1.0 to 1.0).
+
+METHOD::getPannings
+read the panning positions control rate bus synchronously.
+
+RETURNS::
+an array of floats (-1.0 to 1.0).
+
+METHOD::setAmplitudes
+convenience method for CODE::.set(\amplitudes, ...)::
+
+ARGUMENT::arr
+an array of floats (0.0 to 1.0).
+
+METHOD::getAmplitudes
+read the amplitude control rate bus synchronously.
+
+RETURNS::
+an array of floats (0.0 to 1.0).
+
+METHOD::setFrequencies
+convenience method for CODE::.set(\frequencies, ...)::
+
+ARGUMENT::arr
+an array of floats in Hz.
+
+METHOD::getFrequencies
+read the frequencies control rate bus synchronously.
+
+RETURNS::
+an array of floats in Hz.
+
+METHOD::numVoices
+the current number of voices.
+
+METHOD::addVoices
+create new voices up to a maximum of CODE::maxNumVoices:: (set in LINK::#*new::).
+internally controllers for frequencies, amplitudes and panning are automatically created.
+
+ARGUMENT::num
+the number of voices to be added.
+
+ARGUMENT::type
+a LINK::Classes/Symbol:: defining the type of sounds to add.
+valid types are CODE::\Saw, \Sine, \SineFB, \Pulse, \VOsc, \Formant, \Noise, \Pink, \File, \Folder::.
+
+ARGUMENT::args
+extra arguments as an LINK::Classes/Array:: with key/value pairs.
+
+CODE::
+AbstractSGlissVoice.subclasses.do{|x| x.type.postln}  //list all available types
+::
+
+METHOD::removeVoices
+remove voices.
+
+ARGUMENT::num
+the number of voices to be removed.
+
+ARGUMENT::action
+a LINK::Classes/Function:: that will be evaluated when the voice has faded out.
+
+METHOD::volumeCompensate
+method to adjust the output volume.
+
+EXAMPLES::
+
+CODE::
+a= SGliss(15);  //maximum 15 voices
+a.numVoices;
+a.addVoices(2, \SineFB);
+a.numVoices;  //now two sinefb
+a.getAmplitudes;
+a.getFrequencies;
+a.set(\frequencies, [1500, 300]);
+a.getFrequencies;
+a.set(\vol, -9);
+a.set(\vol, 0);
+a.addVoices(4, \Pink);
+a.numVoices;
+a.voices;
+a.removeVoices(1);
+a.numVoices;
+a.removeVoices(100);
+a.set(\atk, 10);
+a.addVoices(5, \Pulse);
+a.getFrequencies;
+a.setFrequencies({100.0.rrand(1000)}.dup(5));
+a.setAmplitudes([0.1, 0.2, 0.3, 0.4, 0.5]);
+a.getAmplitudes;
+a.release(4);
+::

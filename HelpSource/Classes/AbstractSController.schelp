@@ -1,0 +1,54 @@
+CLASS:: AbstractSController
+SUMMARY:: an abstract class for all sInstrument controllers
+CATEGORIES:: SInstruments
+RELATED:: Overviews/sInstrumentsOverview, Classes/AbstractSInstrument
+
+DESCRIPTION::
+
+NOTE::do not instantiate.::
+
+CLASSMETHODS::
+
+METHOD::new
+
+ARGUMENT::numChannels
+number of internal control rate channels.
+
+ARGUMENT::target
+used to figure out which server to set up the internal bus and node on.
+if CODE::nil:: then the localhost server will be used.
+
+ARGUMENT::args
+extra arguments as an LINK::Classes/Array:: with key/value pairs.
+
+INSTANCEMETHODS::
+
+PRIVATE::initAbstractSController
+
+METHOD::syn
+the LINK::Classes/Synth:: instance.
+
+METHOD::bus
+the LINK::Classes/Bus:: instance (control rate).
+
+METHOD::defName
+the LINK::Classes/SynthDef:: name.
+
+RETURNS::
+a generated LINK::Classes/Symbol:: matching class name and number of channels.
+
+METHOD::free
+free the synth and bus that was created for this controller instance.
+
+METHOD::def
+creates a synthdef.
+
+NOTE::must be implemented by subclasses::
+
+RETURNS::
+a LINK::Classes/SynthDef:: that has the argument CODE::\sController_bus:: for setting the output control rate bus. the name of the synthdef must be CODE::this.defName::.
+
+METHOD::numChannels
+number of internal control rate channels.
+
+EXAMPLES::

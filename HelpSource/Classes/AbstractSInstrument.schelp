@@ -1,0 +1,49 @@
+CLASS:: AbstractSInstrument
+SUMMARY:: an abstract class for all sInstruments
+CATEGORIES:: SInstruments
+RELATED:: Overviews/sInstrumentsOverview, Classes/AbstractSController
+
+DESCRIPTION::
+
+NOTE::do not instantiate. use the subclasses.::
+
+CLASSMETHODS::
+
+METHOD::new
+creates a new instrument. will boot the localhost server if it is not already running.
+
+ARGUMENT::numChannels
+number of output audio channels.
+
+ARGUMENT::target
+if CODE::nil:: then the localhost server's default group will be used.
+
+ARGUMENT::outbus
+stereo output.
+
+ARGUMENT::addAction
+a LINK::Classes/Symbol::.
+
+ARGUMENT::args
+extra arguments as an LINK::Classes/Array:: with key/value pairs.
+
+INSTANCEMETHODS::
+
+PRIVATE::initAbstractSInstrument
+
+METHOD::arguments
+a dictionary keeping track of the latest set arguments.
+
+METHOD::controllers
+a LINK::Classes/List:: of dictionaries holding LINK::Classes/AbstractSController::.
+
+METHOD::free
+free all internal nodes and busses.
+
+METHOD::numChannels
+the number of output audio channels.
+
+METHOD::group
+the internal LINK::Classes/Group::.
+
+EXAMPLES::

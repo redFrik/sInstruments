@@ -1,0 +1,17 @@
+CLASS:: SGlissFrequencies
+SUMMARY:: control SGliss frequencies
+CATEGORIES:: SInstruments
+RELATED:: Overviews/sInstrumentsOverview, Classes/SGliss, Classes/SGlissAmplitudes, Classes/SGlissPannings
+
+DESCRIPTION::
+Frequency control for LINK::Classes/SGliss::.
+
+INSTANCEMETHODS::
+
+METHOD::def
+the definition that send out control data on bus CODE::\sController_bus::.
+
+RETURNS::
+a LINK::Classes/SynthDef::.
+
+EXAMPLES::

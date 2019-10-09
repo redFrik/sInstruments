@@ -1,0 +1,17 @@
+CLASS:: SGlissAmplitudes
+SUMMARY:: control SGliss amplitudes
+CATEGORIES:: SInstruments
+RELATED:: Overviews/sInstrumentsOverview, Classes/SGliss, Classes/SGlissFrequencies, Classes/SGlissPannings
+
+DESCRIPTION::
+Amplitude control for LINK::Classes/SGliss::.
+
+INSTANCEMETHODS::
+
+METHOD::def
+the definition that send out control data on bus CODE::\sController_bus::.
+
+RETURNS::
+a LINK::Classes/SynthDef::.
+
+EXAMPLES::

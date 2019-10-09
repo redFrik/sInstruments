@@ -1,0 +1,112 @@
+CLASS:: SCluster
+SUMMARY:: a cluster sInstrument
+CATEGORIES:: SInstruments
+RELATED:: Overviews/sInstrumentsOverview, Classes/SClusterAmplitudes, Classes/SClusterFrequencies, Classes/SClusterDistortions
+
+DESCRIPTION::
+
+See file CODE::instruments/sCluster.scd:: for a complete example.
+
+CLASSMETHODS::
+
+METHOD::new
+create a new cluster instrument. the server must be running before starting.
+there are only two channels (stereo)
+
+ARGUMENT::numVoices
+the number of voices for this instrument.
+
+ARGUMENT::target
+if CODE::nil:: then the localhost server's default group will be used.
+
+ARGUMENT::outbus
+where to send the stereo output.
+
+ARGUMENT::addAction
+a LINK::Classes/Symbol::.
+
+ARGUMENT::args
+extra arguments as an LINK::Classes/Array:: with key/value pairs.
+
+INSTANCEMETHODS::
+
+PRIVATE::initSCluster, prCreateSynths
+
+METHOD::release
+fade out the sound and free all internal nodes and busses.
+
+ARGUMENT::releaseTime
+fade out time in seconds.
+
+ARGUMENT::onFreeFunc
+a LINK::Classes/Function:: to be evaluated after the reverberating sound disappeared.
+
+METHOD::xset
+cross fade to a new set of voices. will also set parameters for all internal nodes and save them in the arguments dictionary. set the CODE::\atk:: and CODE::\rel:: parameters to define cross fade time (both are 4 by default).
+
+ARGUMENT::... args
+an LINK::Classes/Array:: with key/value pairs. can also be a single key/value pair.
+
+CODE::
+s.boot;
+~cluster= SCluster();
+~cluster.xset(\frequencies, [400, 500]);  //cross fade
+~cluster.xset(\frequencies, [666, 777]);
+~cluster.release;
+::
+
+METHOD::set
+set parameters for all internal nodes and save them in the arguments dictionary.
+
+ARGUMENT::... args
+an LINK::Classes/Array:: with key/value pairs. can also be a single key/value pair.
+
+METHOD::setAmplitudes
+convenience method for CODE::.set(\amplitudes, ...)::
+
+ARGUMENT::arr
+an array of floats (0.0 to 1.0).
+
+METHOD::getAmplitudes
+read the amplitude control rate bus synchronously.
+
+RETURNS::
+an array of floats (0.0 to 1.0).
+
+METHOD::setDistortions
+convenience method for CODE::.set(\distortions, ...)::
+
+ARGUMENT::arr
+an array of floats (0.0 to 1.0).
+
+METHOD::getDistortions
+read the distortion control rate bus synchronously.
+
+RETURNS::
+an array of floats (0.0 to 1.0).
+
+METHOD::setFrequencies
+convenience method for CODE::.set(\frequencies, ...)::
+
+ARGUMENT::arr
+an array of floats in Hz.
+
+METHOD::xsetFrequencies
+convenience method for CODE::.xset(\frequencies, ...)::
+will crossfade.
+
+ARGUMENT::arr
+an array of floats in Hz.
+
+METHOD::getFrequencies
+read the frequencies control rate bus synchronously.
+
+RETURNS::
+an array of floats in Hz.
+
+EXAMPLES::
+
+CODE::
+a= SCluster();
+a.release(4);
+::
