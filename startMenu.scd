@@ -54,6 +54,11 @@ win.layout= VLayout(
 		["•sGreybox", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sGreybox")}).last,
 	buttons.add(Button().states_([
+		[" sGreybox2", SGUI.palette.buttonText, SGUI.palette.button],
+		["•sGreybox2", SGUI.palette.highlight, SGUI.palette.button],
+		["•sGreybox2", SGUI.palette.buttonText, SGUI.palette.highlight]
+	]).action_{SInstruments.toFront("sGreybox2")}).last,
+	buttons.add(Button().states_([
 		[" sKeyboard", SGUI.palette.buttonText, SGUI.palette.button],
 		["•sKeyboard", SGUI.palette.highlight, SGUI.palette.button],
 		["•sKeyboard", SGUI.palette.buttonText, SGUI.palette.highlight]

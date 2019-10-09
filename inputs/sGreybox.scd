@@ -71,21 +71,21 @@ if(port.notNil, {
 
 	matchFunc= {|arr|  //analog inputs
 		//[\ana, arr].postln;  //debug
-		16.do{|i|
+		streamSliderElements.do{|sld, i|
 			if(sliderInvert[i], {
-				streamSliderElements[i].value= 1-(arr[i]/1023);
+				sld.value= 1-(arr[i]/1023);
 			}, {
-				streamSliderElements[i].value= arr[i]/1023;
+				sld.value= arr[i]/1023;
 			});
 		};
 	};
 
 	matchFunc2= {|arr|  //digital inputs
 		//[\dig, arr].postln;  //debug
-		16.do{|i|
+		streamButtonElements.do{|but, i|
 			if(arr[i]!=lastArr2[i], {
 				lastArr2[i]= arr[i];
-				streamButtonElements[i].value= arr[i];
+				but.value= arr[i];
 			});
 		};
 	};
@@ -131,7 +131,7 @@ if(port.notNil, {
 						matchIndex2= matchIndex2+1;
 						if(matchIndex2>=matchArr2.size, {
 							matchFunc2.value(
-								(matchArr2Copy[2]<<8+matchArr2Copy[3]).asBinaryDigits(16);
+								((matchArr2Copy[2]<<8)+matchArr2Copy[3]).asBinaryDigits(16)
 							);
 							matchIndex2= 0;
 						});
