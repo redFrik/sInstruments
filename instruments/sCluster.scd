@@ -962,8 +962,9 @@ s.waitForBoot{
 		var oldBuffer;
 		var type= typeFromPopup.value;
 		var class= ([SCluster]++SCluster.allSubclasses).detect{|c| c.type==type};
+		var firstTime= cluster.isNil;
 
-		if(cluster.isNil, {  //only at startup
+		if(firstTime, {  //only at startup
 			args= [
 				\on, onButton.value,
 				\atk, attackNumber.value,
@@ -1026,6 +1027,41 @@ s.waitForBoot{
 			//"_________".postln; args.pairsDo{|a, b| [a, b].postln};  //debug
 			cluster= class.new(newNumChannels, outbus: sCluster_bus, args: args);
 			~cluster= cluster;
+
+			if(firstTime, {
+				{
+					glissButton.value= 1;
+					freqRangeElement.value= defaultFreqRange;
+					freqLfoDepthElement.value= freqLfoDepthSpec.unmap(freqLfoDepthSpec.default);
+					freqLfoRateElement.value= freqLfoRateSpec.unmap(freqLfoRateSpec.default);
+					ampRangeElement.value= defaultAmpRange;
+					ampLfoDepthElement.value= ampLfoDepthSpec.unmap(ampLfoDepthSpec.default);
+					ampLfoRateElement.value= ampLfoRateSpec.unmap(ampLfoRateSpec.default);
+					glissTime.valueAction= defaultFreqGlissTime;
+					curvature.valueAction= #[-4, 0];
+					mainVolume.valueAction= defaultMainVolume;
+					setupOscResponders.value;
+					usrAnim.animate= true;
+					routineGui= Routine({
+						inf.do{
+							if(usrRedraw, {
+								usr.refresh;
+								usrRedraw= false;
+							});
+							freqRangeElement.update;
+							ampRangeElement.update;
+							freqLfoDepthElement.update;
+							freqLfoRateElement.update;
+							ampLfoDepthElement.update;
+							ampLfoRateElement.update;
+							mainBalanceElement.update;
+							mainReverbElement.update;
+							fps.reciprocal.wait;
+						};
+					}).play(AppClock);
+					win.front;
+				}.defer;
+			});
 		}).play(AppClock);
 	};
 	sCluster_bus= Bus.audio(s, 2);
@@ -1037,38 +1073,5 @@ s.waitForBoot{
 		Out.ar(out, Limiter.ar(snd));
 	}).play(args: [\sCluster_bus, sCluster_bus], addAction: \addToTail);
 	createCluster.value;
-
-	{
-		glissButton.value= 1;
-		freqRangeElement.value= defaultFreqRange;
-		freqLfoDepthElement.value= freqLfoDepthSpec.unmap(freqLfoDepthSpec.default);
-		freqLfoRateElement.value= freqLfoRateSpec.unmap(freqLfoRateSpec.default);
-		ampRangeElement.value= defaultAmpRange;
-		ampLfoDepthElement.value= ampLfoDepthSpec.unmap(ampLfoDepthSpec.default);
-		ampLfoRateElement.value= ampLfoRateSpec.unmap(ampLfoRateSpec.default);
-		glissTime.valueAction= defaultFreqGlissTime;
-		curvature.valueAction= #[-4, 0];
-		mainVolume.valueAction= defaultMainVolume;
-		setupOscResponders.value;
-		usrAnim.animate= true;
-		routineGui= Routine({
-			inf.do{
-				if(usrRedraw, {
-					usr.refresh;
-					usrRedraw= false;
-				});
-				freqRangeElement.update;
-				ampRangeElement.update;
-				freqLfoDepthElement.update;
-				freqLfoRateElement.update;
-				ampLfoDepthElement.update;
-				ampLfoRateElement.update;
-				mainBalanceElement.update;
-				mainReverbElement.update;
-				fps.reciprocal.wait;
-			};
-		}).play(AppClock);
-		win.front;
-	}.defer(0.5);
 };
 )
