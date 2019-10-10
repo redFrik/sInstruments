@@ -824,26 +824,6 @@ s.waitForBoot{
 			fileIndex: fileIndex
 		)}
 	];
-	snapshots.banks.do{|b|  //temporary backward compatability for old snapshots
-		b.keysValuesDo{|k, l|
-			l.do{|a|
-				var temp;
-				switch(a.key,
-					\voices, {
-						a.value.do{|t|
-							if(t.transp.notNil, {t.removeAt(\transp)});
-							if(t.transposition.notNil, {t.removeAt(\transposition)});
-							if(t.pos.notNil, {t.put(\position, t.removeAt(\pos))});
-							if(t.freq.notNil, {t.put(\frequency, t.removeAt(\freq).explin(minFreq, maxFreq, 0, 1))});
-							if(t.frequency>1, {t.frequency= t.frequency.explin(minFreq, maxFreq, 0, 1)});
-							if(t.dist.notNil, {t.put(\distortion, t.removeAt(\dist))});
-							if(t.amp.notNil, {t.put(\amplitude, t.removeAt(\amp))});
-						};
-					}
-				);
-			};
-		};
-	};
 
 	mainBalanceElement.value= 0.5;
 	mainBalanceElement.action= {|val|

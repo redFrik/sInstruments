@@ -1493,58 +1493,6 @@ s.waitForBoot{
 			fileIndex: fileIndex
 		)}
 	];
-	snapshots.banks.do{|b|  //temporary backward compatability for old snapshots
-		b.keysValuesDo{|k, l|
-			l.do{|a|
-				var temp;
-				var scales, tunings, scale, tuning;
-				switch(a.key,
-					\ampPopup, {l.add((\ampSelect -> a.value))},
-					\ampTargets, {
-						temp= l.detect{|x| x.key==\ampTargets}.value;
-						temp.do{|t|
-							if(t.pos.notNil, {t.put(\position, t.removeAt(\pos))});
-							if(t.val.notNil, {t.put(\amplitude, t.removeAt(\val))});
-						};
-					},
-					\freqPopup, {l.add((\freqSelect -> a.value))},
-					\freqTargets, {
-						temp= l.detect{|x| x.key==\freqTargets}.value;
-						temp.do{|t|
-							if(t.pos.notNil, {t.put(\position, t.removeAt(\pos))});
-							if(t.val.notNil, {t.put(\frequency, t.removeAt(\val))});
-						};
-					},
-					\attackBox, {l.add((\attackNumber -> a.value))},
-					\releaseBox, {l.add((\releaseNumber -> a.value))},
-					\feedbackSlider, {l.add((\distortionSlider -> a.value))},
-					\efxHPBox, {l.add((\efxHPNumber -> a.value))},
-					\efxLPBox, {l.add((\efxLPNumber -> a.value))},
-					\efxDelSliders, {l.add((\efxDelSlider -> a.value))},
-					\efxDecBox, {l.add((\efxDecNumber -> a.value))},
-					\numVoicesBox, {},
-					\numVoicesNumber, {},
-					\masterTuningBox, {l.add((\masterTuning -> a.value))},
-					\curvatureBox, {
-						temp= l.detect{|x| x.key==\lineTypePopup}.value;
-						l.add((\curvature -> [a.value, temp.value]));
-					},
-					\scalesList, {
-						temp= l.detect{|x| x.key==\tuningsList}.value;
-						if(a.value>0, {
-							scale= scalesTunings.scales[a.value-1].name.asSymbol;
-						}, {
-							if(temp.value>0, {
-								tuning= scalesTunings.tunings[temp.value-1].name.asSymbol;
-							});
-						});
-						l.add((\scalesTunings -> [scale, tuning]));
-					},
-					\freqGlissTimeBox, {l.add((\glissTime -> a.value))}
-				);
-			};
-		};
-	};
 
 	mainBalanceElement.value= 0.5;
 	mainBalanceElement.action= {|val|

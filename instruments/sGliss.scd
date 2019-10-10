@@ -1417,62 +1417,6 @@ s.waitForBoot{
 		mainVolume: mainVolume,
 		mainReverbElement: mainReverbElement
 	];
-	snapshots.banks.do{|b|  //temporary backward compatability for old snapshots
-		b.keysValuesDo{|k, l|
-			l.do{|a|
-				var temp;
-				var scales, tunings, scale, tuning;
-				switch(a.key,
-					\glissandi, {
-						a.value.do{|x, i|
-							var j= x.detectIndex{|y| y.key==\typePopup};
-							if(x[j].value.isInteger, {
-								x[j].value= glissandoTypes[x[j].value];
-							});
-						};
-					},
-					\ampPopup, {l.add((\ampSelect -> a.value))},
-					\ampNumTargetsBox, {l.add((\ampNumTargetsNumber -> a.value))},
-					\ampTargets, {
-						temp= l.detect{|x| x.key==\ampTargets}.value;
-						temp.do{|t|
-							if(t.pos.notNil, {t.put(\position, t.removeAt(\pos))});
-							if(t.val.notNil, {t.put(\amplitude, t.removeAt(\val))});
-							if(t.position.x>1, {t.position.x= t.position.x/500});
-						};
-					},
-					\freqPopup, {l.add((\freqSelect -> a.value))},
-					\freqNumTargetsBox, {l.add((\freqNumTargetsNumber -> a.value))},
-					\freqTargets, {
-						temp= l.detect{|x| x.key==\freqTargets}.value;
-						temp.do{|t|
-							if(t.pos.notNil, {t.put(\position, t.removeAt(\pos))});
-							if(t.val.notNil, {t.put(\frequency, t.removeAt(\val))});
-							if(t.position.x>1, {t.position.x= t.position.x/500});
-						};
-					},
-					\freqTrigButton, {l.add((\freqGlissButton -> a.value))},
-					\masterTuningBox, {l.add((\masterTuning -> a.value))},
-					\curvatureBox, {
-						temp= l.detect{|x| x.key==\lineTypePopup}.value;
-						l.add((\curvature -> [a.value, temp.value]));
-					},
-					\scalesList, {
-						temp= l.detect{|x| x.key==\tuningsList}.value;
-						if(a.value>0, {
-							scale= scalesTunings.scales[a.value-1].name.asSymbol;
-						}, {
-							if(temp.value>0, {
-								tuning= scalesTunings.tunings[temp.value-1].name.asSymbol;
-							});
-						});
-						l.add((\scalesTunings -> [scale, tuning]));
-					},
-					\freqGlissTimeBox, {l.add((\glissTime -> a.value))}
-				);
-			};
-		};
-	};
 
 	mainBalanceElement.value= 0.5;
 	mainBalanceElement.action= {|val|
