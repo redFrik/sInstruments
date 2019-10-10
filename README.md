@@ -11,7 +11,13 @@ Quarks.install("sInstruments")
 SInstruments.openHelpFile
 ```
 
+## dependancies
+
+None.
+
 ## notes
+
+These instruments are made to be played with custom hardware (3D sensors, sliders and buttons), but can also be used with keyboard+mouse or livecoded.
 
 [optional] put soundfiles and folders of soundfiles in the directory `soundfiles`.
 
