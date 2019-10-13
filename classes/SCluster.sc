@@ -22,7 +22,6 @@ SCluster : AbstractSInstrument {
 						var env= EnvGen.kr(Env.asr(atk, 1, rel), gate, doneAction:2);
 						var snd= SynthDef.wrap(this.func, nil, [freqs, dists, amps]);
 						snd= Splay.ar(snd, 1, vol.dbamp*0.25);  //mix to stereo
-						snd= snd*numVoices.linlin(1, 50, 0, -12).dbamp;
 						env= env*(onEnv+(amp.lagud(atk, rel)*(2-onEnv)));
 						Out.ar(outBus, snd*env);
 					}).add;
@@ -237,9 +236,10 @@ SClusterFolder : SCluster {
 		^{|freqs, dists, amps|
 			var buf= \buf.kr;
 			var playbackRate= freqs.explin(20, 12000, 1/3, 3);
+			var pos= {1.0.rand}!this.numChannels*BufFrames.ir(buf);
 			var rate= LinXFade2.kr(1, playbackRate, \rateBlend.kr(1));
 			(
-				PlayBuf.ar(1, buf, rate*BufRateScale.kr(buf), 1, 0, 1)
+				PlayBuf.ar(1, buf, rate*BufRateScale.kr(buf), 1, pos, 1)
 				*(dists*5+1)
 			).tanh*amps*(1-(dists*0.5));
 		}

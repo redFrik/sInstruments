@@ -13,12 +13,12 @@ SGliss : AbstractSInstrument {
 		target.server.ifRunning({
 			voices= List.new;
 			out= SynthDef(\sGliss_out, {
-				|outBus, atk= 0.1, rel= 1, gate= 1, vol= 0, cmp= 0, on= 1, amp= 0|
+				|outBus, atk= 0.1, rel= 1, gate= 1, vol= 0, on= 1, amp= 0|
 				var onEnv= EnvGen.kr(Env.asr(atk, 1, rel), on);
 				var snd= In.ar(\sGliss_bus.ir, this.numChannels);  //stereo
 				var env= EnvGen.kr(Env.asr(atk, 1, rel), gate, doneAction:2);
 				env= env*(onEnv+(amp.lagud(atk, rel)*(2-onEnv)));
-				Out.ar(outBus, snd*env*(vol.dbamp.lag)*cmp.dbamp.lag(1));
+				Out.ar(outBus, snd*env*(vol.dbamp.lag));
 			}).play(grp, [\sGliss_bus, bus, \outBus, outbus]++arguments.asKeyValuePairs, \addToTail);
 			controllers.add((
 				frequencies: SGlissFrequencies(maxNumVoices, grp, arguments),
@@ -64,29 +64,25 @@ SGliss : AbstractSInstrument {
 		if(controllers.notNil, {
 			voiceClass= AbstractSGlissVoice.allSubclasses.detect{|c| c.type==type};
 			if(voiceClass.notNil, {
-				forkIfNeeded{
-					num.do{|i|
-						var arr;
-						var freCtrl= controllers[0].frequencies;
-						var ampCtrl= controllers[0].amplitudes;
-						var panCtrl= controllers[0].pannings;
-						if(voices.size<freCtrl.numChannels, {
-							arr= [
-								\sControllerFre_busChan, freCtrl.bus.index+voices.size,
-								\sControllerAmp_busChan, ampCtrl.bus.index+voices.size,
-								\sControllerPan_busChan, panCtrl.bus.index+voices.size,
-								\sGliss_bus, bus
-							];
-							arguments.keysValuesDo{|key, val|
-								arr= arr++key++val.asArray.wrapAt(i);
-							};
-							voices.add(voiceClass.new(grp, arr++args));
-						}, {
-							"addVoices overflow - increase numChannels".warn;
-						});
-					};
-					grp.server.sync;
-					this.volumeCompensate;
+				num.do{|i|
+					var arr;
+					var freCtrl= controllers[0].frequencies;
+					var ampCtrl= controllers[0].amplitudes;
+					var panCtrl= controllers[0].pannings;
+					if(voices.size<freCtrl.numChannels, {
+						arr= [
+							\sControllerFre_busChan, freCtrl.bus.index+voices.size,
+							\sControllerAmp_busChan, ampCtrl.bus.index+voices.size,
+							\sControllerPan_busChan, panCtrl.bus.index+voices.size,
+							\sGliss_bus, bus
+						];
+						arguments.keysValuesDo{|key, val|
+							arr= arr++key++val.asArray.wrapAt(i);
+						};
+						voices.add(voiceClass.new(grp, arr++args));
+					}, {
+						"addVoices overflow - increase numChannels".warn;
+					});
 				};
 			}, {
 				"%: type % not found".format(this.class.name, type).warn;
@@ -104,13 +100,6 @@ SGliss : AbstractSInstrument {
 				});
 			});
 		};
-		this.volumeCompensate;
-	}
-	volumeCompensate {  //find most common class and use its comp method
-		var counts= voices.collect{|voice| voices.count{|v| voice.class==v.class}};
-		if(counts.notEmpty, {
-			out.set(\cmp, voices[counts.maxIndex].class.comp(voices.size));
-		});
 	}
 }
 
@@ -129,11 +118,9 @@ AbstractSGlissVoice : AbstractSVoice {
 			Out.ar(\sGliss_bus.ir, Pan2.ar(snd*env, pan, 0.1));
 		});
 	}
-	*comp {^this.subclassResponsibility(thisMethod)}  //amplitude compensation
 }
 SGlissSaw : AbstractSGlissVoice {
 	*type {^\Saw}
-	*comp {|num| ^num.linlin(0, 50, 0, -12)}
 	func {
 		^{|fre, amp|
 			var snd= VarSaw.ar(fre, Rand(0, 1), LFNoise2.kr(0.1, 0.45, 0.5), AmpComp.kr(fre));
@@ -143,7 +130,6 @@ SGlissSaw : AbstractSGlissVoice {
 }
 SGlissSine : AbstractSGlissVoice {
 	*type {^\Sine}
-	*comp {|num| ^num.linlin(0, 50, 0, -12)}
 	func {
 		^{|fre, amp|
 			SinOsc.ar(fre, Rand(0, 2pi), AmpComp.kr(fre)*1.25*amp);
@@ -152,7 +138,6 @@ SGlissSine : AbstractSGlissVoice {
 }
 SGlissSineFB : AbstractSGlissVoice {
 	*type {^\SineFB}
-	*comp {|num| ^num.linlin(0, 50, 0, -12)}
 	func {
 		^{|fre, amp|
 			SinOscFB.ar(fre, LFNoise2.kr(0.1).range(0.25, 0.75), AmpComp.kr(fre)*amp);
@@ -161,7 +146,6 @@ SGlissSineFB : AbstractSGlissVoice {
 }
 SGlissPulse : AbstractSGlissVoice {
 	*type {^\Pulse}
-	*comp {|num| ^num.linlin(0, 50, 0, -12)}
 	func {
 		^{|fre, amp|
 			RLPF.ar(
@@ -178,7 +162,6 @@ SGlissPulse : AbstractSGlissVoice {
 }
 SGlissPulseWarm : AbstractSGlissVoice {
 	*type {^\PulseWarm}
-	*comp {|num| ^num.linlin(0, 50, 0, -12)}
 	func {
 		^{|fre, amp|
 			RLPF.ar(
@@ -192,7 +175,6 @@ SGlissPulseWarm : AbstractSGlissVoice {
 }
 SGlissVOsc : AbstractSGlissVoice {
 	*type {^\VOsc}
-	*comp {|num| ^num.linlin(0, 50, 0, -12)}
 	func {
 		^{|fre, amp|
 			var buffers= {
@@ -212,7 +194,6 @@ SGlissVOsc : AbstractSGlissVoice {
 }
 SGlissFormant : AbstractSGlissVoice {
 	*type {^\Formant}
-	*comp {|num| ^num.linlin(0, 50, 0, -12)}
 	func {
 		^{|fre, amp|
 			Formant.ar(
@@ -226,7 +207,6 @@ SGlissFormant : AbstractSGlissVoice {
 }
 SGlissKarplus : AbstractSGlissVoice {
 	*type {^\Karplus}
-	*comp {|num| ^num.linlin(0, 50, 0, -12)}
 	func {
 		^{|fre, amp|
 			Pluck.ar(
@@ -243,7 +223,6 @@ SGlissKarplus : AbstractSGlissVoice {
 }
 SGlissNoise : AbstractSGlissVoice {
 	*type {^\Noise}
-	*comp {|num| ^num.linlin(0, 50, 0, -12)}
 	func {
 		^{|fre, amp|
 			RHPF.ar(
@@ -262,7 +241,6 @@ SGlissNoise : AbstractSGlissVoice {
 }
 SGlissPink : AbstractSGlissVoice {
 	*type {^\Pink}
-	*comp {|num| ^num.linlin(0, 50, 0, -12)}
 	func {
 		^{|fre, amp|
 			RHPF.ar(
@@ -281,7 +259,6 @@ SGlissPink : AbstractSGlissVoice {
 }
 SGlissFile : AbstractSGlissVoice {
 	*type {^\File}
-	*comp {|num| ^num.linlin(0, 50, 0, -6)}  //little compensation for single soundfiles
 	func {
 		^{|fre, amp|
 			var buf= \buf.ir;
@@ -296,13 +273,13 @@ SGlissFile : AbstractSGlissVoice {
 }
 SGlissFolder : AbstractSGlissVoice {
 	*type {^\Folder}
-	*comp {|num| ^num.linlin(0, 50, 0, 0)}  //no compensation for multiple soundfiles
 	func {
 		^{|fre, amp|
 			var buf= \buf.kr;
 			var playbackRate= fre.explin(20, 12000, 1/3, 3);
 			var rate= LinXFade2.kr(1, playbackRate, \rateBlend.kr(1));
-			PlayBuf.ar(1, buf, rate*BufRateScale.kr(buf), 1, 0, 1)*amp;
+			var pos= 1.0.rand*BufFrames.ir(buf);
+			PlayBuf.ar(1, buf, rate*BufRateScale.kr(buf), 1, pos, 1)*amp;
 		}
 	}
 }

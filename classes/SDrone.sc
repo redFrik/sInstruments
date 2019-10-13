@@ -33,7 +33,6 @@ SDrone : AbstractSInstrument {
 					snd= HPF.ar(snd, hp);
 					snd= AllpassC.ar(snd, 1, Splay.ar(del.lag(lag)), dec.lag(lag), delMix);
 					snd= LPF.ar(snd, lp, vol.dbamp.lag*0.5);
-					snd= snd*numVoices.linlin(1, 50, 0, -12).dbamp;
 					if(numVoices<2, {snd= snd* -1.5.dbamp});  //special case if mono
 					snd= LeakDC.ar(snd);
 					DetectSilence.ar(snd.abs.sum+gate, doneAction:2);
@@ -305,8 +304,9 @@ SDroneFolder : SDrone {
 			var buf= \buf.kr;
 			var playbackRate= freqs.explin(20, 12000, 1/3, 3);
 			var rate= LinXFade2.kr(1, playbackRate, \rateBlend.kr(1));
+			var pos= {1.0.rand}!this.numChannels*BufFrames.ir(buf);
 			(
-				PlayBuf.ar(1, buf, rate*BufRateScale.kr(buf), 1, 0, 1)
+				PlayBuf.ar(1, buf, rate*BufRateScale.kr(buf), 1, pos, 1)
 				*(dists*5+1)
 			).tanh*amps*(1-(dists*0.5));
 		}

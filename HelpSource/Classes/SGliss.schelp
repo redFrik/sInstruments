@@ -123,9 +123,6 @@ the number of voices to be removed.
 ARGUMENT::action
 a LINK::Classes/Function:: that will be evaluated when the voice has faded out.
 
-METHOD::volumeCompensate
-method to adjust the output volume.
-
 EXAMPLES::
 
 CODE::
