@@ -290,13 +290,15 @@ nanoKnobElements[0].action= {|val|
 		[\sCluster, \mainReverb, val],
 		[\sDrone, \distortion, val],
 		[\sFormant, \mainReverb, val],
-		[\sGliss, \mainReverb, val]
+		[\sGliss, \mainReverb, val],
+		[\sStream, \metronome, val]
 	]);
 };
 nanoKnobElements[1].action= {|val|
 	sendOsc.value([
 		[\sDrone, \efxHP, val],
-		[\sGliss, \rate, val.lincurve(0, 1, 0, 1, 4)]
+		[\sGliss, \rate, val.lincurve(0, 1, 0, 1, 4)],
+		[\sStream, \rateScale, val]
 	]);
 };
 nanoKnobElements[2].action= {|val|
@@ -314,17 +316,19 @@ nanoKnobElements[3].action= {|val|
 nanoKnobElements[4].action= {|val|
 	sendOsc.value([
 		[\sDrone, \efxDec, val],
-		[\sFormant, \yScale, val]
+		[\sFormant, \yScale, val],
+		[\sStream, \lvPitchBend, val]
 	]);
 };
 nanoKnobElements[5].action= {|val|
-	//unused
-	sendOsc.value([]);
+	sendOsc.value([
+		[\sStream, \lvSustain, val]
+	]);
 };
 nanoKnobElements[6].action= {|val|
 	sendOsc.value([
 		[\sFormant, \ampHi, val],
-		[\sStream, \avChordDelayElement, val]
+		[\sStream, \avEntryDelayElement, val]
 	]);
 };
 nanoKnobElements[7].action= {|val|
@@ -511,7 +515,8 @@ nanoCtrlButtons.collect{|d| d[\rew]}.do{|button|
 		if(view.value>0, {
 			sendOsc.value([
 				[\sDrone, \freqSelect, -1],
-				[\sGliss, \freqSelect, -1]
+				[\sGliss, \freqSelect, -1],
+				[\sStream, \avOn, 1]
 			]);
 		});
 	};
