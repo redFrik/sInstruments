@@ -1726,7 +1726,7 @@ s.waitForBoot{
 		ampWaveRateElement.value= ampWaveRateSpec.unmap(ampWaveRateSpec.default);
 		ampWaveCurvElement.value= ampWaveCurvSpec.unmap(ampWaveCurvSpec.default);
 
-		ampLinesPopup.value= ampLinesPopup.items.detectIndex{|x| x.asSymbol==\scratch};
+		ampLinesPopup.value= ampLinesPopup.items.detectIndex{|x| x.asSymbol=='loop on'};
 		ampNumTargetsNumber.valueAction= ampNumTargetsSpec.default;
 		ampLfoDepthElement.value= ampLfoDepthSpec.unmap(ampLfoDepthSpec.default);
 		ampLfoRateElement.value= ampLfoRateSpec.unmap(ampLfoRateSpec.default);
@@ -1741,7 +1741,7 @@ s.waitForBoot{
 		freqWaveRateElement.value= freqWaveRateSpec.unmap(freqWaveRateSpec.default);
 		freqWaveCurvElement.value= freqWaveCurvSpec.unmap(freqWaveCurvSpec.default);
 
-		freqLinesPopup.value= freqLinesPopup.items.detectIndex{|x| x.asSymbol==\scratch};
+		freqLinesPopup.value= freqLinesPopup.items.detectIndex{|x| x.asSymbol=='sync amp'};
 		freqNumTargetsNumber.valueAction= freqNumTargetsSpec.default;
 		freqGlissButton.valueAction= 1;
 		freqLfoDepthElement.value= freqLfoDepthSpec.unmap(freqLfoDepthSpec.default);
