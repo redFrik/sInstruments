@@ -1,9 +1,10 @@
 (
 	\name: 				"sInstruments",
 	\summary:			"some instruments written in SuperCollider",
-	\version:			"0.2.04",
+	\version:			"0.2.05",
 	\schelp:			"sInstrumentsOverview",
 	\author: 			"Fredrik Olofsson",
 	\country: 			"Germany & Sweden",
-	\since: 			"2019"
+	\since: 			"2019",
+	\url:				"https://redfrik.github.io/sInstruments/"
 )
