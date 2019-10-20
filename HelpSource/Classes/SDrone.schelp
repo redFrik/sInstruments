@@ -28,9 +28,38 @@ a LINK::Classes/Symbol::.
 ARGUMENT::args
 extra arguments as an LINK::Classes/Array:: with key/value pairs.
 
+METHOD::type
+a LINK::Classes/Symbol:: describing the type of sound produced for example CODE::\SineFB::.
+
 INSTANCEMETHODS::
 
 PRIVATE::initSDrone, prCreateSynths
+
+METHOD::defName
+a LINK::Classes/Symbol:: used for the internal LINK::Classes/SynthDef::.
+
+METHOD::func
+a LINK::Classes/Function:: that will be wrapped inside the internal LINK::Classes/SynthDef::.
+
+METHOD::mix
+a LINK::Classes/Function:: that will be wrapped inside the internal effect LINK::Classes/SynthDef::.
+
+for example
+CODE::
+mix {
+	^{|snd|
+		Mix(snd)*0.5;
+	};
+}
+::
+or
+CODE::
+mix {
+	^{|snd|
+		reduce(snd.asArray, \hypot);
+	};
+}
+::
 
 METHOD::release
 fade out the sound and free all internal nodes and busses.

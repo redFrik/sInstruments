@@ -6,7 +6,7 @@ RELATED:: Overviews/sInstrumentsOverview
 DESCRIPTION::
 This is a value with one or more views attached (added).
 
-The views only redraw when .update is called. There is no need to defer get or set value or the update call.
+The views only redraw when .update is called (polled). There is no need to defer get or set value or the update call.
 
 The .action function you set is called directly when the value is changed. The view will redraw and update its value at some later time (when .update and if the value changed).
 
@@ -25,6 +25,9 @@ action is only called if value has changed.
 
 METHOD::valueAction
 set value and always call action - also on repeated values. useful for button toggles.
+
+METHOD::doAction
+always call action.
 
 METHOD::asView
 layout support. only latest (last) view is returned. makes adding views to layouts easier.
@@ -89,4 +92,41 @@ Routine({
 )
 
 r.stop;  //and then try manually changing the slider/numberbox
+
+
+//softset example
+MIDIIn.connectAll;
+(
+var win;
+var element= SGUIelement();
+var elementSpec= \amp.asSpec;
+var fps= 15;
+
+//set up midi with softset
+MIDIdef.cc(\softset, {|msg|
+	msg.postln;
+	element.softSetValue(msg/127);  //move a controller up to ~75%
+});
+CmdPeriod.doOnce({MIDIdef.cc(\softset).free});
+
+//set up window with views
+win= Window("SGUIelement softset test", 200@100);
+win.view.layout_(VLayout(
+	element.addView(Slider().orientation_(\horizontal)),
+	element.addView(NumberBox(), elementSpec),
+));
+CmdPeriod.doOnce({win.close});
+win.onClose({r.stop});
+win.front;
+
+element.value= 0.75;  //set a value that will be picked up when midi cc is nearby
+
+//gui updater
+Routine({
+	inf.do{
+		element.update;
+		(1/fps).wait;
+	};
+}).play(AppClock);
+)
 ::

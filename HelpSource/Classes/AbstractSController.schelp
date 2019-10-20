@@ -5,7 +5,11 @@ RELATED:: Overviews/sInstrumentsOverview, Classes/AbstractSInstrument
 
 DESCRIPTION::
 
-NOTE::do not instantiate.::
+Multi-channel control rate bus+synth for amplitudes, frequencies, panning positions etc.
+
+NOTE::do not instantiate. See subclasses for examples of how to inherit.::
+
+CLASSTREE:: AbstractSController
 
 CLASSMETHODS::
 
@@ -15,8 +19,8 @@ ARGUMENT::numChannels
 number of internal control rate channels.
 
 ARGUMENT::target
-used to figure out which server to set up the internal bus and node on.
-if CODE::nil:: then the localhost server will be used.
+used to figure out which server to use for the internal bus and synth.
+if CODE::nil:: then the default (localhost) server will be used.
 
 ARGUMENT::args
 extra arguments as an LINK::Classes/Array:: with key/value pairs.
@@ -38,15 +42,32 @@ RETURNS::
 a generated LINK::Classes/Symbol:: matching class name and number of channels.
 
 METHOD::free
-free the synth and bus that was created for this controller instance.
+free the internal synth and bus that was created for this controller instance.
 
 METHOD::def
 creates a synthdef.
 
 NOTE::must be implemented by subclasses::
 
+for example...
+CODE::
+SDroneFrequencies : AbstractSController {
+	def {
+		^SynthDef(this.defName, {|lag= 3,  //NOTE name required
+			fmod= 50, fmul= 0.1, famp= 0, flag= 0, curv= 0, warp= 4|
+			var rates= (1..this.numChannels)*fmul.lag(lag);
+			var freqs= \frequencies.kr(99!this.numChannels+1.0.rand2);
+			var mods= SinOsc.ar(fmod.lag(lag)+rates, Rand(0, 2pi), famp, 1);
+			freqs= freqs.varlag(flag, curv, warp, freqs);
+			freqs= freqs*mods;
+			Out.kr(\sController_bus.ir, freqs);  //NOTE bus required
+		});
+	}
+}
+::
+
 RETURNS::
-a LINK::Classes/SynthDef:: that has the argument CODE::\sController_bus:: for setting the output control rate bus. the name of the synthdef must be CODE::this.defName::.
+a LINK::Classes/SynthDef:: that has the argument CODE::\sController_bus:: for setting the output control rate bus. The name of the SynthDef must be CODE::this.defName::.
 
 METHOD::numChannels
 number of internal control rate channels.

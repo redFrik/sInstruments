@@ -5,12 +5,16 @@ RELATED:: Overviews/sInstrumentsOverview, Classes/AbstractSController
 
 DESCRIPTION::
 
-NOTE::do not instantiate. use the subclasses.::
+Helper class for instruments.
+
+NOTE::do not instantiate. See subclasses for examples of how to inherit.::
+
+CLASSTREE:: AbstractSInstrument
 
 CLASSMETHODS::
 
 METHOD::new
-creates a new instrument. will boot the localhost server if it is not already running.
+Creates a new instrument. Will boot the localhost server if it is not already running.
 
 ARGUMENT::numChannels
 number of output audio channels.

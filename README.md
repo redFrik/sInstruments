@@ -11,11 +11,11 @@ Quarks.install("sInstruments")
 SInstruments.openHelpFile
 ```
 
-## dependancies
+## Dependancies
 
 None.
 
-## notes
+## Notes
 
 These instruments are made to be played with custom hardware (3D sensors, sliders and buttons), but can also be used with keyboard+mouse or livecoded.
 
@@ -23,11 +23,7 @@ These instruments are made to be played with custom hardware (3D sensors, slider
 
 [The Sentograph: Input devices and the communication of bodily expression](http://www.speech.kth.se/prod/publications/files/qpsr/1996/1996_37_1_017-022.pdf) - Vertegaal, R. and Ungvary, T.
 
-## changelog
+## Change log
 
 * 0.20 - first release
 * 0.10 - initial commit
-
-## todo
-
-

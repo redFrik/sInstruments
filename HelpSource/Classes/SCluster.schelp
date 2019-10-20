@@ -28,9 +28,18 @@ a LINK::Classes/Symbol::.
 ARGUMENT::args
 extra arguments as an LINK::Classes/Array:: with key/value pairs.
 
+METHOD::type
+a LINK::Classes/Symbol:: describing the type of sound produced for example CODE::\SineFB::.
+
 INSTANCEMETHODS::
 
 PRIVATE::initSCluster, prCreateSynths
+
+METHOD::defName
+a LINK::Classes/Symbol:: used for the internal LINK::Classes/SynthDef::.
+
+METHOD::func
+a LINK::Classes/Function:: that will be wrapped inside the internal LINK::Classes/SynthDef::.
 
 METHOD::release
 fade out the sound and free all internal nodes and busses.
