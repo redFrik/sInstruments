@@ -4,11 +4,15 @@ CATEGORIES:: SInstruments
 RELATED:: Overviews/sInstrumentsOverview
 
 DESCRIPTION::
-This is a value with one or more views attached (added).
+This is a value with one or more views attached.
 
-The views only redraw when .update is called (polled). There is no need to defer get or set value or the update call.
+Views like sliders and numberboxes are attached using the link::#-addView:: method. Optionally one can provide a link::Classes/ControlSpec::.
 
-The .action function you set is called directly when the value is changed. The view will redraw and update its value at some later time (when .update and if the value changed).
+Attached views only redraw when link::#-update:: is called (e.g. inside a slow running link::Classes/Routine::). There is no need to defer these update calls and the actual redrawing will only happen if the value has changed since last call to update.
+
+The link::#-action:: function you set is independent of the views and will be called directly when the value changes (e.g. incoming data from a sensor at very high rate - the action function will be called each time while any attached views will only redraw when update is called).
+
+Changing the value of a view using mouse or keyboard will call the action function immediately.
 
 CLASSMETHODS::
 
@@ -45,7 +49,7 @@ ARGUMENT::spec
 a link::Classes/ControlSpec::. if not provided a default one will be created.
 
 METHOD::update
-call at regular intervals (typically a slower fps AppClock routine). if the value has changed the view will redraw.
+call at regular intervals (typically a slow fps AppClock routine). if the value has changed the view will redraw.
 
 EXAMPLES::
 
@@ -54,17 +58,17 @@ CODE::
 var win;
 var element= SGUIelement();
 var elementSpec= \freq.asSpec;
-var fps= 5;
+var fps= 5;  //this will be the slow update rate of the gui
 
 //fake some fast changing sensor data
 r= Routine.run({
 	inf.do{
 		NetAddr.localAddr.sendMsg(\freq, 200.0.exprand(2000));
-		(1/40).wait;
+		(1/40).wait;  //here how fast the value will be changing
 	};
 });
 
-//set up window with views
+//set up window and attach two views
 win= Window("SGUIelement test", 200@100);
 win.view.layout_(VLayout(
 	element.addView(Slider().orientation_(\horizontal)),
@@ -74,9 +78,10 @@ CmdPeriod.doOnce({win.close});
 win.onClose({r.stop});
 win.front;
 
-//element action function (fast updating independant of gui)
+//element action function (fast updating - independent of gui)
 element.action= {|val|
 	val.postln;
+	//here would be the place for code that set a synth parameter or bus value
 };
 
 //network
@@ -85,13 +90,14 @@ OSCFunc({|msg| element.value= elementSpec.unmap(msg[1])}, \freq);
 //gui updater
 Routine({
 	inf.do{
-		element.update;
+		element.update;  //make the views redraw (if value changed)
 		(1/fps).wait;
 	};
 }).play(AppClock);
 )
 
 r.stop;  //and then try manually changing the slider/numberbox
+
 
 
 //softset example
