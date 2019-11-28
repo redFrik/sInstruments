@@ -46,7 +46,6 @@ win.layout= VLayout(
 		["•sStream", SGUI.palette.highlight, SGUI.palette.button],
 		["•sStream", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sStream")}).last,*/
-	View(),
 	StaticText().string_("Click to launch inputs..."),
 	buttons.add(Button().states_([
 		[" sGreybox", SGUI.palette.buttonText, SGUI.palette.button],
@@ -78,6 +77,11 @@ win.layout= VLayout(
 		["•sNanoKontrol", SGUI.palette.highlight, SGUI.palette.button],
 		["•sNanoKontrol", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sNanoKontrol")}).last,
+	buttons.add(Button().states_([
+		[" sQWERTYKeyboard", SGUI.palette.buttonText, SGUI.palette.button],
+		["•sQWERTYKeyboard", SGUI.palette.highlight, SGUI.palette.button],
+		["•sQWERTYKeyboard", SGUI.palette.buttonText, SGUI.palette.highlight]
+	]).action_{SInstruments.toFront("sQWERTYKeyboard")}).last,
 	buttons.add(Button().states_([
 		[" sSentograph", SGUI.palette.buttonText, SGUI.palette.button],
 		["•sSentograph", SGUI.palette.highlight, SGUI.palette.button],
@@ -208,18 +212,18 @@ keyFunc= {|view, chr, mod, unicode, keycode, key|
 };
 View.globalKeyDownAction= View.globalKeyDownAction.addFunc(keyFunc);
 
-OSCFunc({|msg|
+OSCFunc({|msg|  //from SGUI report
 	{
 		buttons.detect{|b| b.states[0][0].contains(msg[1].asString)}.value= 2;
 	}.defer;
 }, \toFront);
-OSCFunc({|msg|
+OSCFunc({|msg|  //from SGUI report
 	{
 		var but= buttons.detect{|b| b.states[0][0].contains(msg[1].asString)};
 		if(but.notNil, {but.value= 1});
 	}.defer;
 }, \endFront);
-OSCFunc({|msg|
+OSCFunc({|msg|  //from instruments
 	{
 		buttons.detect{|b| b.states[0][0].contains(msg[1].asString)}.value= 0;
 	}.defer;

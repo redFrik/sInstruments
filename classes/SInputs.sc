@@ -10,7 +10,9 @@ SInputs {
 			sFormant: NetAddr("127.0.0.1", 13063),
 			sCluster: NetAddr("127.0.0.1", 13064),
 			sStream: NetAddr("127.0.0.1", 13065),
-			sGreybox: NetAddr("127.0.0.1", 12001)
+			sSentograph: NetAddr("127.0.0.1", 12000),  //from python optoforce
+			sGreybox: NetAddr("127.0.0.1", 12001),  //to leds
+			sQWERTYKeyboard: NetAddr("127.0.0.1", 12002)  //from python hid
 		);
 	}
 }

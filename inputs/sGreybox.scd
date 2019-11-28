@@ -7,7 +7,6 @@
 (
 //--settings
 var serialPortName= "usbmodem2062641";  //greybox
-var oscPort= 12001;  //for controlling leds
 var winRect= Rect(0, 80, 320, 240);  //x, y, w, h
 var palette= SGUI.palette;
 var fnt= SGUI.font;
@@ -188,7 +187,7 @@ setupOscResponders= {
 			}, {
 				"sGreybox: led index % not found".format(msg[1]).postln;
 			});
-		}, \led, recvPort:oscPort)
+		}, \led, recvPort:SInputs.destinations.sGreybox.port)
 	];
 };
 

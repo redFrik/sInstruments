@@ -4,7 +4,6 @@
 
 (
 //--settings
-var oscPort= 12000;
 var winRect= Rect(0, 80, 320, 400);  //x, y, w, h
 var palette= SGUI.palette;
 var fnt= SGUI.font;
@@ -170,7 +169,7 @@ setupOscResponders= {
 					xyz2Elements[2].value= (msg[4]+calibration[0][10]).min(0).lincurve(calibration[0][8], calibration[0][9], 1, 0, calibration[0][11]);
 				});
 			});
-		}, \optoforce, recvPort:oscPort);
+		}, \optoforce, recvPort:SInputs.destinations.sSentograph.port);
 	];
 };
 setupOscResponders.value;
