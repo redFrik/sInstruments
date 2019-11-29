@@ -3,6 +3,8 @@
 //either nanokontrol v1 or v2
 
 SNanoKontrol {
+	classvar count= 0;
+
 	var <nanoKnobElements;
 	var <nanoSliderElements;
 	var <nanoButtonSElements;
@@ -315,8 +317,9 @@ SNanoKontrol {
 		};
 		devicePopup.items= devices.collect{|d, i| "% [%]".format(d.name, d.id)};
 		if(devicePopup.items.size>0, {
-			devicePopup.valueAction= 0;
+			devicePopup.valueAction= count%devicePopup.items.size;
 		});
+		count= count+1;
 
 		routineGui= Routine({
 			inf.do{
