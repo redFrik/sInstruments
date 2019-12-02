@@ -41,11 +41,11 @@ win.layout= VLayout(
 		["•sCluster", SGUI.palette.highlight, SGUI.palette.button],
 		["•sCluster", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sCluster")}).last,
-	/*buttons.add(Button().states_([
+	buttons.add(Button().states_([
 		[" sStream", SGUI.palette.buttonText, SGUI.palette.button],
 		["•sStream", SGUI.palette.highlight, SGUI.palette.button],
 		["•sStream", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sStream")}).last,*/
+	]).action_{SInstruments.toFront("sStream")}).last,
 	StaticText().string_("Click to launch inputs..."),
 	buttons.add(Button().states_([
 		[" sGreybox", SGUI.palette.buttonText, SGUI.palette.button],

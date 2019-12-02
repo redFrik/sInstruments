@@ -17,6 +17,7 @@ DEFINITIONLIST::
 ## sDrone || a droning sInstrument based on the Ndef used for 'Strange Foreign Bodies'.
 ## sFormant || a formant sInstrument based on optoformant3.
 ## sCluster || a cluster sInstrument.
+## sStream || based on fIGMA-stream maxpatch.
 ::
 
 SECTION:: Classes
