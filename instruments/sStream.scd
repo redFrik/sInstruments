@@ -56,6 +56,7 @@ var defaultSustain= 0.5;  //seconds
 var defaultAVFalloutVoices= 5;  //percent
 var defaultAVFalloutChords= 0;  //percent
 var defaultMainVolume= 0.0;  //dB
+var defaultMidiOut= 0;  //index in MIDIClient.destinations
 
 var patterns, readPatternsFromDisk, writeUserPatternsToDisk;
 var chords, readChordsFromDisk, writeUserChordsToDisk;
@@ -89,6 +90,7 @@ s.waitForBoot{
 
 	var createStream;
 	var clock;
+	var midiOut;
 	var oscPort= SInputs.destinations.sStream.port;
 	var setupOscResponders, oscResponders;
 	var routineGui;
@@ -587,12 +589,21 @@ s.waitForBoot{
 		var lvLo= lvPitchMinMaxRangeElement.value[0].linlin(0, 1, -63.5, 63.5);
 		var lvHi= lvPitchMinMaxRangeElement.value[1].linlin(0, 1, -63.5, 63.5);
 		var lvVal= val.linlin(0, 1, lvLo, lvHi);
+		var lb, ab;
 		Pdefn(\sStream_note, lvVal);
 		if(lvPitchBendOnElement.value>0, {
-			lvVst.set('Pitch Bend', val-0.5*lvPitchBendElement.value*(lvPitchBendSpec.maxval/2400)+0.5);
+			lb= val-0.5*lvPitchBendElement.value*(lvPitchBendSpec.maxval/2400)+0.5;
+			lvVst.set('Pitch Bend', lb);
+			if(midiOut.notNil, {
+				midiOut.bend(0, lb*16383);
+			});
 		});
 		if(avPitchBendOnElement.value>0, {
-			avVst.set('Pitch Bend', val-0.5*avPitchBendElement.value*(avPitchBendSpec.maxval/2400)+0.5);
+			ab= val-0.5*avPitchBendElement.value*(avPitchBendSpec.maxval/2400)+0.5;
+			avVst.set('Pitch Bend', ab);
+			if(midiOut.notNil, {
+				midiOut.bend(1, ab*16383);
+			});
 		});
 	};
 
@@ -1923,6 +1934,20 @@ s.waitForBoot{
 					\pitches_index, Pdefn(\sStream_lvPitches_index),
 					\velocities_index, Pdefn(\sStream_lvVelocities_index),
 					\callback, {|ev|
+						if(ev.amp>0, {
+							if(midiOut.notNil, {
+								ev.midinote.asCollection.do{|m|
+									midiOut.noteOn(ev.chan, m, ev.amp*127);
+									if(lvSustainOnElement.value==0, {
+										clock.sched(ev.sustain, {
+											midiOut.noteOff(ev.chan, m, ev.amp*127);
+											nil;
+										});
+									});
+								};
+							});
+						});
+
 						if(lvPitchesOnButtonElement.value>0, {
 							lvPitchesIndex= ev.pitches_index;
 							lvPitchesUsrAnimRedraw= true;
@@ -1986,6 +2011,26 @@ s.waitForBoot{
 					}),
 					\callback, {|ev|
 						if(ev.amp>0 and:{avOnElement.value==1}, {
+
+							if(midiOut.notNil, {
+								ev.midinote.asCollection.do{|m|
+									if(ev.lag==0, {
+										midiOut.noteOn(ev.chan, m, ev.amp*127);
+									}, {
+										clock.sched(ev.lag, {
+											midiOut.noteOn(ev.chan, m, ev.amp*127);
+											nil;
+										});
+									});
+									if(avSustainOnElement.value==0, {
+										clock.sched(ev.sustain+ev.lag, {
+											midiOut.noteOff(ev.chan, m, ev.amp*127);
+											nil;
+										});
+									});
+								};
+							});
+
 							if(ev.lag==0, {
 								avIndex= i;
 								avPitchesUsrAnimRedraw= true;
@@ -2005,6 +2050,23 @@ s.waitForBoot{
 		));
 	};
 	clock= TempoClock(1, queueSize:8192);
+
+	//--midi
+	MIDIClient.init;
+	Platform.case(
+		\osx, {
+			if(MIDIClient.destinations.size<1 or:{MIDIClient.destinations[0].device.beginsWith("IAC").not}, {
+				"Activate IAC in Audio MIDI Setup application".warn;
+			});
+		}
+	);
+	try{
+		midiOut= MIDIOut(defaultMidiOut, MIDIClient.destinations[defaultMidiOut].uid);
+		midiOut.latency= s.latency;
+	};
+	if(midiOut.isNil, {
+		"could not initialize midiOut device % for recording".format(defaultMidiOut).warn;
+	});
 
 	//--audio
 	SynthDef(\sStream, {|out= 0, atk= 0.1, rel= 1, on= 1, vol= 0|
