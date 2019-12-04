@@ -2,8 +2,6 @@ a [Quark](http://supercollider-quarks.github.io/quarks/) for [SuperCollider](htt
 
 # sInstruments
 
-homepage: https://redfrik.github.io/sInstruments
-
 some instruments written in SuperCollider in collaboration with Tamas Ungvary.
 
 ```supercollider
@@ -26,43 +24,43 @@ These instruments are made to be played with custom hardware (3D sensors, slider
 
 [The Sentograph: Input devices and the communication of bodily expression](http://www.speech.kth.se/prod/publications/files/qpsr/1996/1996_37_1_017-022.pdf) - Vertegaal, R. and Ungvary, T.
 
-
 ## sCluster
 
-<img src="images/sCluster.png" alt="sCluster" width="100%"/>
+<img src="images/sCluster.png" alt="sCluster" width="1145px"/>
 
 ## sDrone
 
-<img src="images/sDrone.png" alt="sDrone" width="100%"/>
+<img src="images/sDrone.png" alt="sDrone" width="1149px"/>
 
 ## sFormant
 
-<img src="images/sFormant.png" alt="sFormant" width="100%"/>
+<img src="images/sFormant.png" alt="sFormant" width="814px"/>
 
 ## sGliss
 
-<img src="images/sGliss.png" alt="sGliss" width="100%"/>
+<img src="images/sGliss.png" alt="sGliss" width="1162px"/>
 
 ## sStream
 
-<img src="images/sStream.png" alt="sStream" width="100%"/>
+<img src="images/sStream.png" alt="sStream" width="1288px"/>
 
 ## sInputs
 
-<img src="images/sGreybox.png" alt="sGreybox" width="50%"/>
+<img src="images/sGreybox.png" alt="sGreybox" width="454px"/>
 
-<img src="images/sGreybox2.png" alt="sGreybox2" width="50%"/>
+<img src="images/sGreybox2.png" alt="sGreybox2" width="454px"/>
 
-<img src="images/sKeyboard.png" alt="sKeyboard" width="50%"/>
+<img src="images/sKeyboard.png" alt="sKeyboard" width="912px"/>
 
-<img src="images/sKeyBpad.png" alt="sKeyBpad" width="50%"/>
+<img src="images/sKeyBpad.png" alt="sKeyBpad" width="512px"/>
 
-<img src="images/sKeyCpad.png" alt="sKeyCpad" width="50%"/>
+<img src="images/sKeyCpad.png" alt="sKeyCpad" width="512px"/>
 
-<img src="images/sNanoKontrol.png" alt="sNanoKontrol" width="50%"/>
+<img src="images/sNanoKontrol.png" alt="sNanoKontrol" width="895px"/>
 
-<img src="images/sQWERTYKeyboard.png" alt="sQWERTYKeyboard" width="50%"/>
+<img src="images/sQWERTYKeyboard.png" alt="sQWERTYKeyboard" width="592px"/>
 
-<img src="images/sSentograph.png" alt="sSentograph" width="50%"/>
+<img src="images/sSentograph.png" alt="sSentograph" width="432px"/>
 
-<img src="images/sText.png" alt="sText" width="50%"/>
+<img src="images/sText.png" alt="sText" width="512px"/>
+
