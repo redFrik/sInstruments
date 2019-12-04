@@ -46,3 +46,23 @@ These instruments are made to be played with custom hardware (3D sensors, slider
 ## sStream
 
 ![sStream](images/sStream.png?raw=true "sStream")
+
+## sInputs
+
+<img src="sGreybox.png" alt="sGreybox" width="200"/>
+
+<img src="sGreybox2.png" alt="sGreybox2" width="200"/>
+
+<img src="sKeyboard.png" alt="sKeyboard" width="200"/>
+
+<img src="sKeyBpad.png" alt="sKeyBpad" width="200"/>
+
+<img src="sKeyCpad.png" alt="sKeyCpad" width="200"/>
+
+<img src="sNanoKontrol.png" alt="sNanoKontrol" width="200"/>
+
+<img src="sQWERTYKeyboard.png" alt="sQWERTYKeyboard" width="200"/>
+
+<img src="sSentograph.png" alt="sSentograph" width="200"/>
+
+<img src="sText.png" alt="sText" width="200"/>
