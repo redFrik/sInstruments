@@ -29,23 +29,23 @@ These instruments are made to be played with custom hardware (3D sensors, slider
 
 ## sCluster
 
-![sCluster](images/sCluster.png?raw=true "sCluster")
+<img src="images/sCluster.png" alt="sCluster" width="50%"/>
 
 ## sDrone
 
-![sDrone](images/sDrone.png?raw=true "sDrone")
+<img src="images/sDrone.png" alt="sDrone" width="50%"/>
 
 ## sFormant
 
-![sFormant](images/sFormant.png?raw=true "sFormant")
+<img src="images/sFormant.png" alt="sFormant" width="50%"/>
 
 ## sGliss
 
-![sGliss](images/sGliss.png?raw=true "sGliss")
+<img src="images/sGliss.png" alt="sGliss" width="50%"/>
 
 ## sStream
 
-![sStream](images/sStream.png?raw=true "sStream")
+<img src="images/sStream.png" alt="sStream" width="50%"/>
 
 ## sInputs
 
