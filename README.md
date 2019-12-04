@@ -29,40 +29,40 @@ These instruments are made to be played with custom hardware (3D sensors, slider
 
 ## sCluster
 
-<img src="images/sCluster.png" alt="sCluster" width="75%"/>
+<img src="images/sCluster.png" alt="sCluster" width="100%"/>
 
 ## sDrone
 
-<img src="images/sDrone.png" alt="sDrone" width="75%"/>
+<img src="images/sDrone.png" alt="sDrone" width="100%"/>
 
 ## sFormant
 
-<img src="images/sFormant.png" alt="sFormant" width="75%"/>
+<img src="images/sFormant.png" alt="sFormant" width="100%"/>
 
 ## sGliss
 
-<img src="images/sGliss.png" alt="sGliss" width="75%"/>
+<img src="images/sGliss.png" alt="sGliss" width="100%"/>
 
 ## sStream
 
-<img src="images/sStream.png" alt="sStream" width="75%"/>
+<img src="images/sStream.png" alt="sStream" width="100%"/>
 
 ## sInputs
 
-<img src="images/sGreybox.png" alt="sGreybox" width="75%"/>
+<img src="images/sGreybox.png" alt="sGreybox" width="50%"/>
 
-<img src="images/sGreybox2.png" alt="sGreybox2" width="75%"/>
+<img src="images/sGreybox2.png" alt="sGreybox2" width="50%"/>
 
-<img src="images/sKeyboard.png" alt="sKeyboard" width="75%"/>
+<img src="images/sKeyboard.png" alt="sKeyboard" width="50%"/>
 
-<img src="images/sKeyBpad.png" alt="sKeyBpad" width="75%"/>
+<img src="images/sKeyBpad.png" alt="sKeyBpad" width="50%"/>
 
-<img src="images/sKeyCpad.png" alt="sKeyCpad" width="75%"/>
+<img src="images/sKeyCpad.png" alt="sKeyCpad" width="50%"/>
 
-<img src="images/sNanoKontrol.png" alt="sNanoKontrol" width="75%"/>
+<img src="images/sNanoKontrol.png" alt="sNanoKontrol" width="50%"/>
 
-<img src="images/sQWERTYKeyboard.png" alt="sQWERTYKeyboard" width="75%"/>
+<img src="images/sQWERTYKeyboard.png" alt="sQWERTYKeyboard" width="50%"/>
 
-<img src="images/sSentograph.png" alt="sSentograph" width="75%"/>
+<img src="images/sSentograph.png" alt="sSentograph" width="50%"/>
 
-<img src="images/sText.png" alt="sText" width="75%"/>
+<img src="images/sText.png" alt="sText" width="50%"/>
