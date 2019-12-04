@@ -49,20 +49,20 @@ These instruments are made to be played with custom hardware (3D sensors, slider
 
 ## sInputs
 
-<img src="sGreybox.png" alt="sGreybox" width="200"/>
+<img src="images/sGreybox.png" alt="sGreybox" width="50%"/>
 
-<img src="sGreybox2.png" alt="sGreybox2" width="200"/>
+<img src="images/sGreybox2.png" alt="sGreybox2" width="50%"/>
 
-<img src="sKeyboard.png" alt="sKeyboard" width="200"/>
+<img src="images/sKeyboard.png" alt="sKeyboard" width="50%"/>
 
-<img src="sKeyBpad.png" alt="sKeyBpad" width="200"/>
+<img src="images/sKeyBpad.png" alt="sKeyBpad" width="50%"/>
 
-<img src="sKeyCpad.png" alt="sKeyCpad" width="200"/>
+<img src="images/sKeyCpad.png" alt="sKeyCpad" width="50%"/>
 
-<img src="sNanoKontrol.png" alt="sNanoKontrol" width="200"/>
+<img src="images/sNanoKontrol.png" alt="sNanoKontrol" width="50%"/>
 
-<img src="sQWERTYKeyboard.png" alt="sQWERTYKeyboard" width="200"/>
+<img src="images/sQWERTYKeyboard.png" alt="sQWERTYKeyboard" width="50%"/>
 
-<img src="sSentograph.png" alt="sSentograph" width="200"/>
+<img src="images/sSentograph.png" alt="sSentograph" width="50%"/>
 
-<img src="sText.png" alt="sText" width="200"/>
+<img src="images/sText.png" alt="sText" width="50%"/>
