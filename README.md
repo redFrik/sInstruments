@@ -25,3 +25,24 @@ These instruments are made to be played with custom hardware (3D sensors, slider
 [optional] put soundfiles and folders of soundfiles in the directory `soundfiles`.
 
 [The Sentograph: Input devices and the communication of bodily expression](http://www.speech.kth.se/prod/publications/files/qpsr/1996/1996_37_1_017-022.pdf) - Vertegaal, R. and Ungvary, T.
+
+
+## sCluster
+
+![sCluster](images/sCluster.png?raw=true "sCluster")
+
+## sDrone
+
+![sDrone](images/sDrone.png?raw=true "sDrone")
+
+## sFormant
+
+![sFormant](images/sFormant.png?raw=true "sFormant")
+
+## sGliss
+
+![sGliss](images/sGliss.png?raw=true "sGliss")
+
+## sStream
+
+![sStream](images/sStream.png?raw=true "sStream")
