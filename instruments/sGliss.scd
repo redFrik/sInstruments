@@ -1334,15 +1334,15 @@ s.waitForBoot{
 		glissandi: {|val|  //recall order below is important
 			val.do{|list, i|
 				var go= glissandi[i];
+				var item= list.detect{|a| a.key==\typePopup}.value;
 				go.fileIndex= list.detect{|a| a.key==\fileIndex}.value;
 				go.addNumber.valueAction= list.detect{|a| a.key==\addNumber}.value;
 				go.delNumber.valueAction= list.detect{|a| a.key==\delNumber}.value;
 				go.atkNumber.valueAction= list.detect{|a| a.key==\atkNumber}.value;
 				go.relNumber.valueAction= list.detect{|a| a.key==\relNumber}.value;
 				go.numNumber.value= list.detect{|a| a.key==\numNumber}.value;
-				go.typePopup.valueAction= go.typePopup.items.indexOf(list.detect{|a|
-					a.key==\typePopup;
-				}.value)??{"typePopup - could not find stored preset item".warn; 0};
+				go.typePopup.valueAction= go.typePopup.items.indexOf(item)
+				??{("sGliss: typePopup"+item+"not found").warn; 0};
 				go.volSlider.valueAction= list.detect{|a| a.key==\volSlider}.value;
 			};
 		}

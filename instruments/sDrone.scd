@@ -1419,7 +1419,7 @@ s.waitForBoot{
 				numVoicesNumber.value= num;
 				fileIndex= index;
 				typePopup.valueAction= typePopup.items.indexOf(item)
-				??{"sDrone: typePopup stored item not found".warn; 0};
+				??{("sDrone: typePopup"+item+"not found").warn; 0};
 			}, {
 				fileIndex= index;
 				if(num!=numVoicesNumber.value, {

@@ -787,7 +787,7 @@ s.waitForBoot{
 				numVoicesNumber.value= num;
 				fileIndex= index;
 				typePopup.valueAction= typePopup.items.indexOf(item)
-				??{"sCluster: typePopup stored item not found".warn; 0};
+				??{("sCluster: typePopup"+item+"not found").warn; 0};
 			}, {
 				fileIndex= index;
 				if(num!=numVoicesNumber.value, {
