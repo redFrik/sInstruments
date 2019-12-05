@@ -1002,7 +1002,7 @@ s.waitForBoot{
 			4, {indices= indices.scramble}
 		);
 		Pdefn(\sStream_lvPitches_index, Pseq(indices, inf));
-		pitches= lvPitchesArray.at(indices);
+		pitches= lvPitchesArray.wrapAt(indices);
 		if(lvScaleButtonElement.value==1, {
 			pitches= pitches.collect{|x| x.nearestInScale(scales[lvScaleList.value])};
 		});
@@ -2090,9 +2090,7 @@ s.waitForBoot{
 			var terms= defaultPlug.split($*);
 			var plug= VSTPlugin.plugins.detect{|p|
 				var str= p.name.asString;
-				p.path.endsWith(".vst3").not and:{
-					terms.every{|t| str.contains(t)}
-				};
+				terms.every{|t| str.contains(t)}
 			};
 			if(plug.isNil, {
 				"sStream: default plugin not found".warn;
