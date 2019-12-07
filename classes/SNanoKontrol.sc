@@ -5,6 +5,7 @@
 SNanoKontrol {
 	classvar count= 0;
 
+	var destinations;
 	var <nanoKnobElements;
 	var <nanoSliderElements;
 	var <nanoButtonSElements;
@@ -19,6 +20,7 @@ SNanoKontrol {
 	initSNanoKontrol {|name, position|
 
 		//--settings
+		var prefName= "nanoKontrolPref.json";
 		var winRect= Rect(position.x, position.y, 400, 200);  //x, y, w, h
 		var palette= SGUI.palette;
 		var fnt= SGUI.font;
@@ -26,6 +28,7 @@ SNanoKontrol {
 		var fps= 15;  //maximum gui updaterate - does not affect sensor input rate
 
 		//--functions and objects
+		var prefDict;
 		var setupCCResponders, ccResponders;
 		var routineGui;
 		var devices= List.new;
@@ -64,9 +67,10 @@ SNanoKontrol {
 		);
 
 		//--gui
-		var devicePopup;
+		var devicePopup, destinationsButton;
 		var nanoChannelText;
-		var win;
+		var pwin, win;
+		var tmp;
 		nanoSliderElements= {SGUIelement()}!9;
 		nanoButtonSElements= {SGUIelement()}!9;
 		nanoButtonMElements= {SGUIelement()}!9;
@@ -78,7 +82,9 @@ SNanoKontrol {
 		win.layout= VLayout(
 			HLayout(
 				SGUI.shrink(StaticText().string_("device:")),
-				devicePopup= PopUpMenu().items_([])
+				devicePopup= PopUpMenu().items_([]),
+				SGUI.shrink(StaticText().string_("destinations:")),
+				(destinationsButton= SGUIsettings()).view
 			),
 			HLayout(
 				VLayout(
@@ -240,6 +246,66 @@ SNanoKontrol {
 			setupCCResponders.value(device.id);
 		};
 
+		destinationsButton.action= {
+			var palette= SGUI.palette;
+			var buttons= List.new;
+			var cancelButton, storeButton;
+			var pos, name= "destinations";
+			pwin= Window.allWindows.detect{|x| x.name==name};
+			if(pwin.isNil, {
+				pos= Window.screenBounds.extent*#[0.4, 0.5];
+				pwin= Window(name, Rect.aboutPoint(pos, 100, 150));
+				pwin.view.layout_(
+					VLayout(*[
+						SInputs.destinations.keys.asArray.sort.collect{|x|
+							buttons.add(Button().states_([
+								["  "++x, palette.buttonText, palette.button],
+								["•"++x, palette.buttonText, palette.highlight]
+							])).last;
+						},
+						View(),
+						HLayout(
+							[View(), stretch:1],
+							cancelButton= Button().states_([
+								["Cancel", palette.buttonText, palette.button]
+							]),
+							storeButton= Button().states_([
+								["Store", palette.buttonText, palette.button]
+							])
+						)
+					].flat)
+				);
+				SGUI.adapt(pwin);
+				pwin.view.keyDownAction= {|view, chr, mod, unicode, keycode, key|
+					if(unicode==27, {pwin.close});  //esc
+				};
+
+				buttons.do{|but, i|
+					but.action= {|view|
+						if(view.value==1, {
+							destinations[i]= SInputs.destinations.keys.asArray.sort[i];
+						}, {
+							destinations[i]= nil;
+						});
+					};
+					but.value= destinations[i].notNil.binaryValue;
+				};
+				cancelButton.action= {
+					pwin.close;
+				};
+				storeButton.action= {
+					if(File.exists(SInstruments.preferencesDir).not, {SInstruments.preferencesDir.mkdir});
+					File.use(SInstruments.preferencesDir+/+prefName, "w", {|file|
+						file.write("{\n");
+						file.write("'%': '%'".format(devicePopup.value, destinations));
+						file.write("\n}");
+					});
+					pwin.close;
+				};
+			});
+			pwin.front;
+		};
+
 		setupCCResponders= {|id|
 
 			ccResponders= [
@@ -302,7 +368,6 @@ SNanoKontrol {
 		};
 
 		MIDIClient.init;
-
 		MIDIClient.sources.do{|src|
 			("found midi source:"+src.device).postln;
 			if(src.device.contains("nanoKONTROL"), {
@@ -318,6 +383,18 @@ SNanoKontrol {
 		devicePopup.items= devices.collect{|d, i| "% [%]".format(d.name, d.id)};
 		if(devicePopup.items.size>0, {
 			devicePopup.valueAction= count%devicePopup.items.size;
+		});
+		destinations= SInputs.destinations.keys.asArray.sort;
+		if(File.exists(SInstruments.preferencesDir+/+prefName), {
+			prefDict= (SInstruments.preferencesDir+/+prefName).parseYAMLFile;
+			tmp= prefDict[devicePopup.value.asString];
+			if(tmp.notNil, {
+				tmp= tmp.drop(2).drop(-2).split(Char.comma);
+				tmp= tmp.collect{|str| str.stripWhiteSpace.asSymbol};
+				destinations= destinations.collect{|dSym|
+					if(tmp.includes(dSym), {dSym}, {nil});
+				};
+			});
 		});
 		count= count+1;
 
@@ -340,9 +417,11 @@ SNanoKontrol {
 
 	sendOsc {|arr|
 		var str= "";
-		arr.do{|a|
-			SInputs.destinations[a[0]].sendMsg(*a[1..]);
-			str= str++a.collect{|x| if(x.isFloat, {SGUI.fixDec(x, 2)}, {x})};
+		arr.do{|a|  //[destination, key, value]
+			if(destinations.includes(a[0]), {
+				SInputs.destinations[a[0]].sendMsg(*a[1..]);
+				str= str++a.collect{|x| if(x.isFloat, {SGUI.fixDec(x, 2)}, {x})};
+			});
 		};
 		infoTextElementString.value= str.replace("[ ", "[").replace(" ]", "] ").replace(",", "");
 	}

@@ -948,7 +948,7 @@ SGUIrecord : SGUI {
 		server= server??{Server.default};
 		view= Button().states_([
 			["  Record", currentPalette.buttonText, currentPalette.button],
-			["√Record", currentPalette.buttonText, currentPalette.highlight]
+			["•Record", currentPalette.buttonText, currentPalette.highlight]
 		]);
 		view.action= {|view|
 			var file;
