@@ -1,7 +1,7 @@
 (
 	\name: 				"sInstruments",
 	\summary:			"some instruments written in SuperCollider",
-	\version:			"0.3.02",
+	\version:			"0.3.03",
 	\schelp:			"sInstrumentsOverview",
 	\author: 			"Fredrik Olofsson",
 	\country: 			"Germany & Sweden",

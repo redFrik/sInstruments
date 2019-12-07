@@ -1100,3 +1100,53 @@ SGUIdialogWindow : SGUI {
 		view= win;
 	}
 }
+
+SGUImidiOutput : SGUI {
+	var <active= false;
+	var <midiOut;
+	*new {
+		^super.new.initSGUImidiOutput;
+	}
+	initSGUImidiOutput{
+		var popup;
+		MIDIClient.init;
+		Platform.case(
+			\osx, {
+				if(MIDIClient.destinations.size<1 or:{MIDIClient.destinations[0].device.beginsWith("IAC").not}, {
+					"Activate IAC bus in Audio MIDI Setup application".warn;
+				});
+			}
+		);
+		view= HLayout(
+			StaticText().string_("MIDIOut:"),
+			popup= PopUpMenu().items_()
+		);
+		popup.items= [\_]++MIDIClient.destinations.collect{|x| x.device+"-"+x.name};
+		popup.action= {|view|
+			var index= view.value;
+			if(index==0, {
+				active= false;
+				midiOut= nil;
+			}, {
+				active= true;
+				midiOut= MIDIOut(index-1, MIDIClient.destinations[index-1].uid);
+				midiOut.latency= Server.default.latency;
+			});
+		};
+	}
+	bend {|chan, val|
+		if(active, {
+			midiOut.bend(chan, val);
+		});
+	}
+	noteOn {|chan, note, vel|
+		if(active, {
+			midiOut.noteOn(chan, note, vel);
+		});
+	}
+	noteOff {|chan, note, vel|
+		if(active, {
+			midiOut.noteOff(chan, note, vel);
+		});
+	}
+}
