@@ -1,8 +1,8 @@
 //f.olofsson 2019
 
 //assumes Swedish keyboard - adapt for other keyboards in keys Array below
-//requires python script HIDtoOSC.py and an external usb keyboard
-//start the script with sudo python HIDtoOSC.py 6700 2 8 '127.0.0.1' 12002
+//requires python script HIDtoOSC.py and an external usb keyboard http://fredrikolofsson.com/f0blog/?q=node/669
+//start the script with sudo python HIDtoOSC.py --vid 6700 --pid 2 --port 12002
 
 (
 //--settings
@@ -17,6 +17,7 @@ var keys= [  //EDIT character and keycode mappings. more can be added
 	[\shiL->2, '<'->100, 'Z'->29, 'X'->27, 'C'->6, 'V'->25, 'B'-> 5, 'N'->17, 'M'->16, ','->54, '.'->55, '-'->56, \shiR->32],
 	[\ctrl->1, \altL->4, \cmdL->8, ' '->44, \cmdR->128, \altR->64]
 ];
+var mods= #[\shiL, \shiR, \ctrl, \altL, \altR, \cmdL, \cmdR];  //EDIT list keys that are modifiers here
 
 //--functions and objects
 var rows= List.new;  //one dictionary per keyboard row
@@ -96,24 +97,20 @@ sendOsc= {|arr|
 };
 
 OSCFunc({|msg|
-	var codes= msg[3][2..].select{|x| x>0};
-	var mods= msg[3][0];  //detect modifiers like shift etc
+	var keycodes= msg[3][2..].select{|x| x>0};
+	var modifiers= msg[3][0];  //detect modifiers like shift etc
 	{
-		codeTextString.string= codes;
+		codeTextString.string= modifiers.asString+keycodes;
 		infoTextString.string= "";
 		rows.do{|dict, i|
 			var matchingKeys;
 			var matchingMods;
-			matchingKeys= keys[i].select{|assoc| codes.includes(assoc.value)};
-			if(mods>0, {
-				matchingMods= keys[i].select{|assoc|
-					//NOTE make sure to add all modifier symbols here...
-					#[\shiL, \shiR, \ctrl, \altL, \altR, \cmdL, \cmdR].includes(assoc.key)
-					and:{assoc.value&mods!=0};
-				};
+			matchingKeys= keys[i].select{|assoc| keycodes.includes(assoc.value) and:{mods.includes(assoc.key).not}};
+			if(modifiers>0, {
+				matchingMods= keys[i].select{|assoc| mods.includes(assoc.key) and:{assoc.value&modifiers!=0}};
 			});
 			dict.keysValuesDo{|key, but|
-				var foundInKeys= matchingKeys.notNil and:{matchingKeys.any{|assoc| assoc.key==key}};
+				var foundInKeys= matchingKeys.size>0 and:{matchingKeys.any{|assoc| assoc.key==key}};
 				var foundInMods= matchingMods.notNil and:{matchingMods.any{|assoc| assoc.key==key}};
 				if(foundInKeys.not&&foundInMods.not and:{but.value==1}, {
 					but.valueAction= 0;
@@ -128,7 +125,61 @@ OSCFunc({|msg|
 }, \hid, recvPort:SInputs.destinations.sQWERTYKeyboard.port);
 
 //--
-//example mapping:
-//lookupButton.value('Q').action= {|view| if(view.value==1, {sendOsc.value([[\sCluster, \attack, 1]])})};
+//mappings:
 
+#[$1, $2, $3, $4, $5, $6, $7, $8, $9].do{|chr|
+	lookupButton.value(chr.toUpper.asSymbol).action= {|view|
+		if(view.value==1, {
+			sendOsc.value([
+				[\sCluster, \keyboard, chr.ascii],
+				[\sDrone, \keyboard, chr.ascii],
+				[\sFormant, \keyboard, chr.ascii],
+				[\sGliss, \keyboard, chr.ascii],
+				[\sStream, \keyboard, chr.ascii]
+			]);
+		});
+	};
+};
+
+#[$q, $w, $e, $r, $t, $y, $u, $i, $o, $p].do{|chr|
+	lookupButton.value(chr.toUpper.asSymbol).action= {|view|
+		if(view.value==1, {
+			sendOsc.value([
+				[\sCluster, \keyboard, chr.ascii],
+				[\sDrone, \keyboard, chr.ascii],
+				[\sFormant, \keyboard, chr.ascii],
+				[\sGliss, \keyboard, chr.ascii],
+				[\sStream, \keyboard, chr.ascii]
+			]);
+		});
+	};
+};
+
+#[$a, $s, $d, $f, $g, $h, $j, $k].do{|chr|
+	lookupButton.value(chr.toUpper.asSymbol).action= {|view|
+		if(view.value==1, {
+			sendOsc.value([
+				[\sCluster, \keyboard, chr.ascii],
+				[\sDrone, \keyboard, chr.ascii],
+				[\sFormant, \keyboard, chr.ascii],
+				[\sGliss, \keyboard, chr.ascii],
+				[\sStream, \keyboard, chr.ascii]
+			]);
+		});
+	};
+};
+
+#[$z, $x, $c, $v, $b, $n, $m, $,].do{|chr|
+	lookupButton.value(chr.toUpper.asSymbol).action= {|view|
+		if(view.value==1, {
+			sendOsc.value([
+				[\sCluster, \keyboard, chr.ascii],
+				[\sDrone, \keyboard, chr.ascii],
+				[\sFormant, \keyboard, chr.ascii],
+				[\sGliss, \keyboard, chr.ascii],
+				[\sStream, \keyboard, chr.ascii]
+			]);
+		});
+	};
+};
 )

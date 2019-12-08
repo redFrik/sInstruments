@@ -146,11 +146,11 @@ buttons[1].action= {|view|
 	buttons[i+2].action= {|view|
 		if(view.value==1, {
 			sendOsc.value([
-				[\sCluster, \keyBpad, chr],
-				[\sDrone, \keyBpad, chr],
-				[\sFormant, \keyBpad, chr],
-				[\sGliss, \keyBpad, chr],
-				[\sStream, \keyBpad, chr]
+				[\sCluster, \keyboard, chr],
+				[\sDrone, \keyboard, chr],
+				[\sFormant, \keyboard, chr],
+				[\sGliss, \keyboard, chr],
+				[\sStream, \keyboard, chr]
 			]);
 		});
 	};
@@ -164,11 +164,11 @@ buttons[10].action= {|view|
 	buttons[i+11].action= {|view|
 		if(view.value==1, {
 			sendOsc.value([
-				[\sCluster, \keyBpad, chr],
-				[\sDrone, \keyBpad, chr],
-				[\sFormant, \keyBpad, chr],
-				[\sGliss, \keyBpad, chr],
-				[\sStream, \keyBpad, chr]
+				[\sCluster, \keyboard, chr],
+				[\sDrone, \keyboard, chr],
+				[\sFormant, \keyboard, chr],
+				[\sGliss, \keyboard, chr],
+				[\sStream, \keyboard, chr]
 			]);
 		});
 	};
@@ -183,11 +183,11 @@ buttons[19].action= {|view|
 	buttons[i+20].action= {|view|
 		if(view.value==1, {
 			sendOsc.value([
-				[\sCluster, \keyBpad, chr],
-				[\sDrone, \keyBpad, chr],
-				[\sFormant, \keyBpad, chr],
-				[\sGliss, \keyBpad, chr],
-				[\sStream, \keyBpad, chr]
+				[\sCluster, \keyboard, chr],
+				[\sDrone, \keyboard, chr],
+				[\sFormant, \keyboard, chr],
+				[\sGliss, \keyboard, chr],
+				[\sStream, \keyboard, chr]
 			]);
 		});
 	};
@@ -201,11 +201,11 @@ buttons[30].action= {|view|
 	buttons[i+31].action= {|view|
 		if(view.value==1, {
 			sendOsc.value([
-				[\sCluster, \keyBpad, chr],
-				[\sDrone, \keyBpad, chr],
-				[\sFormant, \keyBpad, chr],
-				[\sGliss, \keyBpad, chr],
-				[\sStream, \keyBpad, chr]
+				[\sCluster, \keyboard, chr],
+				[\sDrone, \keyboard, chr],
+				[\sFormant, \keyboard, chr],
+				[\sGliss, \keyboard, chr],
+				[\sStream, \keyboard, chr]
 			]);
 		});
 	};

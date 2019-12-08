@@ -1516,10 +1516,10 @@ s.waitForBoot{
 	setupOscResponders= {
 		oscResponders= [
 
-			//--from sKeyBpad
+			//--from sKeyBpad and sQWERTYKeyboard
 			OSCFunc({|msg|
 				{win.view.keyDownAction.value(win.view, msg[1].asAscii, 0)}.defer;
-			}, \keyBpad, recvPort:oscPort),
+			}, \keyboard, recvPort:oscPort),
 
 			//--from sKeyCpad
 			OSCFunc({|msg|
