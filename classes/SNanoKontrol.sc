@@ -28,7 +28,7 @@ SNanoKontrol {
 		var fps= 15;  //maximum gui updaterate - does not affect sensor input rate
 
 		//--functions and objects
-		var prefDict;
+		var prefDict, tmp;
 		var setupCCResponders, ccResponders;
 		var routineGui;
 		var devices= List.new;
@@ -70,7 +70,6 @@ SNanoKontrol {
 		var devicePopup, destinationsButton;
 		var nanoChannelText;
 		var pwin, win;
-		var tmp;
 		nanoSliderElements= {SGUIelement()}!9;
 		nanoButtonSElements= {SGUIelement()}!9;
 		nanoButtonMElements= {SGUIelement()}!9;

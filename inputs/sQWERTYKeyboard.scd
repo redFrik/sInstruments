@@ -6,6 +6,7 @@
 
 (
 //--settings
+var prefName= "qwertyKeyboardPref.json";
 var winRect= Rect(16, 60, 420, 200);  //x, y, w, h
 var palette= SGUI.palette;
 var fntMono= Font.monospace(10);
@@ -20,6 +21,8 @@ var keys= [  //EDIT character and keycode mappings. more can be added
 var mods= #[\shiL, \shiR, \ctrl, \altL, \altR, \cmdL, \cmdR];  //EDIT list keys that are modifiers here
 
 //--functions and objects
+var prefDict, tmp;
+var destinations;
 var rows= List.new;  //one dictionary per keyboard row
 var sendOsc;
 var lookupButton;
@@ -27,12 +30,15 @@ var lookupButton;
 //--gui
 var codeTextString;
 var infoTextString;
-var win= Window("sQWERTYKeyboard", winRect);
+var destinationsButton;
+var pwin, win= Window("sQWERTYKeyboard", winRect);
 win.layout= VLayout(
 	HLayout(
 		SGUI.shrink(StaticText().string_("Incomming keycodes from HIDtoOSC:")),
-		codeTextString= StaticText().fixedHeight_(" ".bounds(fntMono).height)
-		.background_(Color.grey(0.9, 0.5))
+		codeTextString= StaticText().fixedSize_(Size(140, " ".bounds(fntMono).height))
+		.background_(Color.grey(0.9, 0.5)),
+		SGUI.shrink(StaticText().string_("destinations:")),
+		(destinationsButton= SGUIsettings()).view
 	),
 	VLayout(
 		*keys.collect{|row|
@@ -62,6 +68,79 @@ win.onClose= {
 win.front;
 infoTextString.font= fntMono;
 
+destinationsButton.action= {
+	var palette= SGUI.palette;
+	var buttons= List.new;
+	var cancelButton, storeButton;
+	var pos, name= "destinations";
+	pwin= Window.allWindows.detect{|x| x.name==name};
+	if(pwin.isNil, {
+		pos= Window.screenBounds.extent*#[0.5, 0.5];
+		pwin= Window(name, Rect.aboutPoint(pos, 100, 150));
+		pwin.view.layout_(
+			VLayout(*[
+				SInputs.destinations.keys.asArray.sort.collect{|x|
+					buttons.add(Button().states_([
+						["  "++x, palette.buttonText, palette.button],
+						["•"++x, palette.buttonText, palette.highlight]
+					])).last;
+				},
+				View(),
+				HLayout(
+					[View(), stretch:1],
+					cancelButton= Button().states_([
+						["Cancel", palette.buttonText, palette.button]
+					]),
+					storeButton= Button().states_([
+						["Store", palette.buttonText, palette.button]
+					])
+				)
+			].flat)
+		);
+		SGUI.adapt(pwin);
+		pwin.view.keyDownAction= {|view, chr, mod, unicode, keycode, key|
+			if(unicode==27, {pwin.close});  //esc
+		};
+
+		buttons.do{|but, i|
+			but.action= {|view|
+				if(view.value==1, {
+					destinations[i]= SInputs.destinations.keys.asArray.sort[i];
+				}, {
+					destinations[i]= nil;
+				});
+			};
+			but.value= destinations[i].notNil.binaryValue;
+		};
+		cancelButton.action= {
+			pwin.close;
+		};
+		storeButton.action= {
+			if(File.exists(SInstruments.preferencesDir).not, {SInstruments.preferencesDir.mkdir});
+			File.use(SInstruments.preferencesDir+/+prefName, "w", {|file|
+				file.write("{\n");
+				file.write("'0': '%'".format(destinations));
+				file.write("\n}");
+			});
+			pwin.close;
+		};
+	});
+	pwin.front;
+};
+
+destinations= SInputs.destinations.keys.asArray.sort;
+if(File.exists(SInstruments.preferencesDir+/+prefName), {
+	prefDict= (SInstruments.preferencesDir+/+prefName).parseYAMLFile;
+	tmp= prefDict["0"];
+	if(tmp.notNil, {
+		tmp= tmp.drop(2).drop(-2).split(Char.comma);
+		tmp= tmp.collect{|str| str.stripWhiteSpace.asSymbol};
+		destinations= destinations.collect{|dSym|
+			if(tmp.includes(dSym), {dSym}, {nil});
+		};
+	});
+});
+
 lookupButton= {|sym|
 	var button;
 	rows.do{|row|
@@ -89,9 +168,11 @@ lookupButton.value(\cmdR).fixedWidth_(40);
 //--network
 sendOsc= {|arr|
 	var str= "";
-	arr.do{|a|
-		SInputs.destinations[a[0]].sendMsg(*a[1..]);
-		str= str++a;
+	arr.do{|a|  //[destination, key, value]
+		if(destinations.includes(a[0]), {
+			SInputs.destinations[a[0]].sendMsg(*a[1..]);
+			str= str++a;
+		});
 	};
 	infoTextString.string= str.replace("[ ", "[").replace(" ]", "] ").replace(", ", " ");
 };
