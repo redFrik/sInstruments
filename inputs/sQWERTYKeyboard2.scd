@@ -15,7 +15,7 @@ var keys= [  //EDIT character and keycode mappings. more can be added
 	[\ctrl->1, \altL->4, \cmdL->8, ' '->44, \cmdR->128, \altR->64]
 ];
 var mods= #[\shiL, \shiR, \ctrl, \altL, \altR, \cmdL, \cmdR];  //EDIT list keys that are modifiers here
-var kb= SQWERTYKeyboard("sQWERTYKeyboard", Point(16, 60), keys, mods);
+var kb= SQWERTYKeyboard("sQWERTYKeyboard2", Point(116, 60), keys, mods);  //EDIT name
 
 //--mappings
 

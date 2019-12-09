@@ -88,6 +88,11 @@ win.layout= VLayout(
 		["•sQWERTYKeyboard", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sQWERTYKeyboard")}).last,
 	buttons.add(Button().states_([
+		[" sQWERTYKeyboard2", SGUI.palette.buttonText, SGUI.palette.button],
+		["•sQWERTYKeyboard2", SGUI.palette.highlight, SGUI.palette.button],
+		["•sQWERTYKeyboard2", SGUI.palette.buttonText, SGUI.palette.highlight]
+	]).action_{SInstruments.toFront("sQWERTYKeyboard2")}).last,
+	buttons.add(Button().states_([
 		[" sSentograph", SGUI.palette.buttonText, SGUI.palette.button],
 		["•sSentograph", SGUI.palette.highlight, SGUI.palette.button],
 		["•sSentograph", SGUI.palette.buttonText, SGUI.palette.highlight]

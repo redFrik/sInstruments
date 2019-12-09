@@ -20,7 +20,7 @@ SNanoKontrol {
 	initSNanoKontrol {|name, position|
 
 		//--settings
-		var prefName= "nanoKontrolPref.json";
+		var prefName= "%.json".format(name);
 		var winRect= Rect(position.x, position.y, 400, 200);  //x, y, w, h
 		var palette= SGUI.palette;
 		var fnt= SGUI.font;

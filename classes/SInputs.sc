@@ -12,7 +12,8 @@ SInputs {
 			sStream: NetAddr("127.0.0.1", 13065),
 			sSentograph: NetAddr("127.0.0.1", 12000),  //from python optoforce
 			sGreybox: NetAddr("127.0.0.1", 12001),  //to leds
-			sQWERTYKeyboard: NetAddr("127.0.0.1", 12002)  //from python hid
+			sQWERTYKeyboard: NetAddr("127.0.0.1", 12002),  //from python hid
+			sQWERTYKeyboard2: NetAddr("127.0.0.1", 12003)  //from python hid
 		);
 	}
 }
