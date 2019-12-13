@@ -134,5 +134,10 @@ EXAMPLES::
 
 CODE::
 a= SDrone(5);
-a.release(4);
+a.set(\flag, 2)
+a.getFrequencies
+a.setFrequencies({100.0.exprand(500)}!5)  //gliss
+a.setFrequencies({100.0.exprand(500)}!5)
+a.xsetFrequencies({100.0.exprand(500)}!5)  //xfade
+a.release(1)
 ::

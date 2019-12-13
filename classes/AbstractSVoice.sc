@@ -7,11 +7,13 @@ AbstractSVoice {
 	}
 	initAbstractSVoice {|grp, args|
 		var name= this.defName;
-		if(SynthDescLib.at(name).isNil, {
-			this.def.add;
-			grp.server.sync;
-		});
-		syn= Synth(name, args, grp);
+		forkIfNeeded{
+			if(SynthDescLib.at(name).isNil, {
+				this.def.add;
+				grp.server.sync;
+			});
+			syn= Synth(name, args, grp);
+		};
 	}
 	*type {^this.subclassResponsibility(thisMethod)}  //also synthdef name
 	*defName {^this.subclassResponsibility(thisMethod)}  //a symbol

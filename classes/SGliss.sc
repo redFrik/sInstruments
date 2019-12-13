@@ -64,25 +64,27 @@ SGliss : AbstractSInstrument {
 		if(controllers.notNil, {
 			voiceClass= AbstractSGlissVoice.allSubclasses.detect{|c| c.type==type};
 			if(voiceClass.notNil, {
-				num.do{|i|
-					var arr;
-					var freCtrl= controllers[0].frequencies;
-					var ampCtrl= controllers[0].amplitudes;
-					var panCtrl= controllers[0].pannings;
-					if(voices.size<freCtrl.numChannels, {
-						arr= [
-							\sControllerFre_busChan, freCtrl.bus.index+voices.size,
-							\sControllerAmp_busChan, ampCtrl.bus.index+voices.size,
-							\sControllerPan_busChan, panCtrl.bus.index+voices.size,
-							\sGliss_bus, bus
-						];
-						arguments.keysValuesDo{|key, val|
-							arr= arr++key++val.asArray.wrapAt(i);
-						};
-						voices.add(voiceClass.new(grp, arr++args));
-					}, {
-						"addVoices overflow - increase numChannels".warn;
-					});
+				forkIfNeeded{
+					num.do{|i|
+						var arr;
+						var freCtrl= controllers[0].frequencies;
+						var ampCtrl= controllers[0].amplitudes;
+						var panCtrl= controllers[0].pannings;
+						if(voices.size<freCtrl.numChannels, {
+							arr= [
+								\sControllerFre_busChan, freCtrl.bus.index+voices.size,
+								\sControllerAmp_busChan, ampCtrl.bus.index+voices.size,
+								\sControllerPan_busChan, panCtrl.bus.index+voices.size,
+								\sGliss_bus, bus
+							];
+							arguments.keysValuesDo{|key, val|
+								arr= arr++key++val.asArray.wrapAt(i);
+							};
+							voices.add(voiceClass.new(grp, arr++args));
+						}, {
+							"addVoices overflow - increase numChannels".warn;
+						});
+					};
 				};
 			}, {
 				"%: type % not found".format(this.class.name, type).warn;

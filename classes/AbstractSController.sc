@@ -13,11 +13,13 @@ AbstractSController {
 		CmdPeriod.doOnce({bus.free});
 		args= (args?()).asKeyValuePairs++[\sController_bus, bus];
 		name= this.defName;
-		if(SynthDescLib.at(name).isNil, {
-			this.def.add;
-			target.server.sync;
-		});
-		syn= Synth(name, args, target);
+		forkIfNeeded{
+			if(SynthDescLib.at(name).isNil, {
+				this.def.add;
+				target.server.sync;
+			});
+			syn= Synth(name, args, target);
+		};
 	}
 	defName {
 		^(this.class.name++bus.numChannels).asSymbol;

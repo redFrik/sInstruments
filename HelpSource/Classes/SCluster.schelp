@@ -116,6 +116,13 @@ an array of floats in Hz.
 EXAMPLES::
 
 CODE::
-a= SCluster();
-a.release(4);
+a= SCluster(5);
+a.numChannels
+a.getAmplitudes
+a.setAmplitudes(0.5!5)
+a.getFrequencies
+a.setFrequencies({500.0.exprand(1000)}!5)  //gliss
+a.setFrequencies({500.0.exprand(1000)}!5)
+a.xsetFrequencies({500.0.exprand(1000)}!5)  //xfade
+a.release(1)
 ::

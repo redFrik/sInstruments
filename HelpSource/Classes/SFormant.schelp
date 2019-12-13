@@ -94,5 +94,11 @@ EXAMPLES::
 
 CODE::
 a= SFormant();
-a.release(4);
+a.getFrequencies
+a.set(\lagUp, 1)
+a.set(\lagDown, 2)
+a.setFrequencies({100.0.exprand(500)}!2)  //gliss
+a.setFrequencies({100.0.exprand(500)}!2)
+a.xsetFrequencies({100.0.exprand(500)}!2)  //xfade
+a.release(1);
 ::
