@@ -73,6 +73,11 @@ win.layout= VLayout(
 		["•sKeyCpad", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sKeyCpad")}).last,
 	buttons.add(Button().states_([
+		[" sKeyDpad", SGUI.palette.buttonText, SGUI.palette.button],
+		["•sKeyDpad", SGUI.palette.highlight, SGUI.palette.button],
+		["•sKeyDpad", SGUI.palette.buttonText, SGUI.palette.highlight]
+	]).action_{SInstruments.toFront("sKeyDpad")}).last,
+	buttons.add(Button().states_([
 		[" sNanoKontrol", SGUI.palette.buttonText, SGUI.palette.button],
 		["•sNanoKontrol", SGUI.palette.highlight, SGUI.palette.button],
 		["•sNanoKontrol", SGUI.palette.buttonText, SGUI.palette.highlight]
