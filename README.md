@@ -56,6 +56,8 @@ These instruments are made to be played with custom hardware (3D sensors, slider
 
 <img src="images/sKeyCpad.png" alt="sKeyCpad" width="512px"/>
 
+<img src="images/sKeyDpad.png" alt="sKeyDpad" width="262px"/>
+
 <img src="images/sNanoKontrol.png" alt="sNanoKontrol" width="895px"/>
 
 <img src="images/sQWERTYKeyboard.png" alt="sQWERTYKeyboard" width="592px"/>
