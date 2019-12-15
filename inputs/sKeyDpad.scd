@@ -19,6 +19,7 @@ var plate= #[
 	[8, 9, 10, 11],  //row3-red
 	[nil, 12, 13, nil]  //row3-red
 ];
+var lookup= #[6, 7, 4, 10, 11, 13, 3, 2, 12, 9, 8, 0, 1, 5];
 
 //--gui
 var plateButtons= List.new;
@@ -120,14 +121,14 @@ Routine({
 						{
 							8.do{|i|
 								var val= (lo&(1<<i)>0).not.binaryValue;
-								if(plateButtons[i].value!=val, {
-									plateButtons[i].valueAction= val;
+								if(plateButtons[lookup[i]].value!=val, {
+									plateButtons[lookup[i]].valueAction= val;
 								});
 							};
 							6.do{|i|
 								var val= (hi&(1<<i)>0).not.binaryValue;
-								if(plateButtons[i+8].value!=val, {
-									plateButtons[i+8].valueAction= val;
+								if(plateButtons[lookup[i+8]].value!=val, {
+									plateButtons[lookup[i+8]].valueAction= val;
 								});
 							};
 						}.defer;
