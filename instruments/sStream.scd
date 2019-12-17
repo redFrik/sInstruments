@@ -9,7 +9,7 @@ var maxNumVoices= 16;  //additional voices
 var maxChordPitch= 24;  //range in semitones +/-
 var maxEntryDelay= 1;  //seconds
 var winRect= Rect(242, 242, 1150, 750);  //x, y, w, h
-var palette= SGUI.palette((highlight: Color.green(2/3, 0.5)));
+var palette= SGUI.palette((highlight: Color.green(2/3, 0.25)));
 var fnt= SGUI.font;
 var fnt2= SGUI.font.copy.size_(10);
 var fps= 25;
@@ -57,9 +57,6 @@ var defaultAVFalloutVoices= 5;  //percent
 var defaultAVFalloutChords= 0;  //percent
 var defaultMainVolume= 0.0;  //dB
 
-var patterns, readPatternsFromDisk, writeUserPatternsToDisk;
-var chords, readChordsFromDisk, writeUserChordsToDisk;
-
 s.options.numWireBufs= s.options.numWireBufs.max(128);
 s.options.memSize= s.options.memSize.max(2**16);
 s.latency= 0.08;
@@ -69,6 +66,9 @@ s.waitForBoot{
 	var usrPadding= Size(20, 6);  //left, top+bottom
 	var strWidth= "127".bounds(fnt2).width;
 	var strHeight= "127".bounds(fnt2).height;
+
+	var patterns, readPatternsFromDisk, writeUserPatternsToDisk;
+	var chords, readChordsFromDisk, writeUserChordsToDisk;
 
 	var lvPitchesArray, lvPitchesIndex, lvPitchesSelection;
 	var lvPitchesUpdate, lvPitchesClosestIndex;
@@ -271,37 +271,33 @@ s.waitForBoot{
 					}.flat)
 				),
 				HLayout(
+					lvScaleList= ListView().maxSize_(Size(125, 115)).background_(Color.clear),
 					VLayout(
 						HLayout(
-							lvScaleList= ListView().maxSize_(Size(125, 115)).background_(Color.clear),
-							VLayout(
-								HLayout(
-									lvPitchBendElement.addView(Slider().orientation_(\horizontal)),  //Pitchbend range (c_17)
-									lvPitchBendElement.addView(NumberBox().decimals_(0).fixedWidth_(55), lvPitchBendSpec),
-									lvPitchBendOnElement.addView(Button().states_([  //LV PB on/off (b_32)
-										["  LV Bend", palette.buttonText, palette.button],
-										["•LV Bend", palette.buttonText, palette.highlight]
-									]))
-								),
-								HLayout(
-									lvSustainElement.addView(Slider().orientation_(\horizontal)),  //Duration (c_10)
-									lvSustainElement.addView(NumberBox().fixedWidth_(55), lvSustainSpec),  //Duration (c_10)
-									lvSustainOnElement.addView(Button().states_([  //sustain on/off (b_175)
-										["  LV Sustain", palette.buttonText, palette.button],
-										["•LV Sustain", palette.buttonText, palette.highlight]
-									]))
-								),
-								HLayout(
-									lvScaleButtonElement.addView(Button().states_([
-										["  LV Scale Pattern", palette.buttonText, palette.button],
-										["•LV Scale Pattern", palette.buttonText, palette.highlight]
-									])),
-									SGUI.shrink(StaticText().string_("LV Transposition")),
-									lvChromTranspElement.addView(NumberBox().decimals_(0).fixedWidth_(55), lvChromTranspSpec),  //LV-Transposition (bgr_3)
-									SGUI.shrink(StaticText().string_("LV Octave")),
-									lvOctaveElement.addView(NumberBox().decimals_(0).fixedWidth_(55), lvOctaveSpec)
-								)
-							)
+							lvPitchBendElement.addView(Slider().orientation_(\horizontal)),  //Pitchbend range (c_17)
+							lvPitchBendElement.addView(NumberBox().decimals_(0).fixedWidth_(55), lvPitchBendSpec),
+							lvPitchBendOnElement.addView(Button().states_([  //LV PB on/off (b_32)
+								["  LV Bend", palette.buttonText, palette.button],
+								["•LV Bend", palette.buttonText, palette.highlight]
+							]))
+						),
+						HLayout(
+							lvSustainElement.addView(Slider().orientation_(\horizontal)),  //Duration (c_10)
+							lvSustainElement.addView(NumberBox().fixedWidth_(55), lvSustainSpec),  //Duration (c_10)
+							lvSustainOnElement.addView(Button().states_([  //sustain on/off (b_175)
+								["  LV Sustain", palette.buttonText, palette.button],
+								["•LV Sustain", palette.buttonText, palette.highlight]
+							]))
+						),
+						HLayout(
+							lvScaleButtonElement.addView(Button().states_([
+								["  LV Scale Pattern", palette.buttonText, palette.button],
+								["•LV Scale Pattern", palette.buttonText, palette.highlight]
+							])),
+							SGUI.shrink(StaticText().string_("LV Transposition")),
+							lvChromTranspElement.addView(NumberBox().decimals_(0).fixedWidth_(55), lvChromTranspSpec),  //LV-Transposition (bgr_3)
+							SGUI.shrink(StaticText().string_("LV Octave")),
+							lvOctaveElement.addView(NumberBox().decimals_(0).fixedWidth_(55), lvOctaveSpec)
 						)
 					)
 				),
@@ -393,39 +389,35 @@ s.waitForBoot{
 					}.flat)
 				),
 				HLayout(
+					avScaleList= ListView().maxSize_(Size(125, 115)).background_(Color.clear),
 					VLayout(
 						HLayout(
-							avScaleList= ListView().maxSize_(Size(125, 115)).background_(Color.clear),
-							VLayout(
-								HLayout(
-									avPitchBendElement.addView(Slider().orientation_(\horizontal)),  //Pitchbend range (c_17)
-									avPitchBendElement.addView(NumberBox().decimals_(0).fixedWidth_(55), avPitchBendSpec),
-									avPitchBendOnElement.addView(Button().states_([  //LV PB on/off (b_176)
-										["  AV Bend", palette.buttonText, palette.button],
-										["•AV Bend", palette.buttonText, palette.highlight]
-									]))
-								),
-								HLayout(
-									avSustainElement.addView(Slider().orientation_(\horizontal)),  //Duration (c_10)
-									avSustainElement.addView(NumberBox().fixedWidth_(55), avSustainSpec),  //Duration (c_10)
-									avSustainOnElement.addView(Button().states_([  //sustain on/off (b_175)
-										["  AV Sustain", palette.buttonText, palette.button],
-										["•AV Sustain", palette.buttonText, palette.highlight]
-									]))
-								),
-								HLayout(
-									avPitchesOnButtonElement.addView(Button().states_([
-										["AV Pitch Pattern Off", palette.buttonText, palette.button],
-										["AV Pitch Pattern On ", palette.buttonText, palette.highlight],
-										["AV Pitch Pattern Mix", palette.buttonText, Color.green(1, 1/3)],
-										["AV Pitch Pattern Add", palette.buttonText, Color.green(1, 1/3)]
-									]), avPitchesOnButtonSpec),
-									SGUI.shrink(StaticText().string_("AV Transposition")),
-									avChromTranspElement.addView(NumberBox().decimals_(0).fixedWidth_(55), avChromTranspSpec),  //AV-Transposition (bgr_29)
-									SGUI.shrink(StaticText().string_("AV Octave").fixedWidth_(55)),
-									avOctaveElement.addView(NumberBox().decimals_(0).fixedWidth_(55), avOctaveSpec)
-								)
-							)
+							avPitchBendElement.addView(Slider().orientation_(\horizontal)),  //Pitchbend range (c_17)
+							avPitchBendElement.addView(NumberBox().decimals_(0).fixedWidth_(55), avPitchBendSpec),
+							avPitchBendOnElement.addView(Button().states_([  //LV PB on/off (b_176)
+								["  AV Bend", palette.buttonText, palette.button],
+								["•AV Bend", palette.buttonText, palette.highlight]
+							]))
+						),
+						HLayout(
+							avSustainElement.addView(Slider().orientation_(\horizontal)),  //Duration (c_10)
+							avSustainElement.addView(NumberBox().fixedWidth_(55), avSustainSpec),  //Duration (c_10)
+							avSustainOnElement.addView(Button().states_([  //sustain on/off (b_175)
+								["  AV Sustain", palette.buttonText, palette.button],
+								["•AV Sustain", palette.buttonText, palette.highlight]
+							]))
+						),
+						HLayout(
+							avPitchesOnButtonElement.addView(Button().states_([
+								["AV Pitch Pattern Off", palette.buttonText, palette.button],
+								["AV Pitch Pattern On ", palette.buttonText, palette.highlight],
+								["AV Pitch Pattern Mix", palette.buttonText, Color.green(1, 1/3)],
+								["AV Pitch Pattern Add", palette.buttonText, Color.green(1, 1/3)]
+							]), avPitchesOnButtonSpec),
+							SGUI.shrink(StaticText().string_("AV Transposition")),
+							avChromTranspElement.addView(NumberBox().decimals_(0).fixedWidth_(55), avChromTranspSpec),  //AV-Transposition (bgr_29)
+							SGUI.shrink(StaticText().string_("AV Octave").fixedWidth_(55)),
+							avOctaveElement.addView(NumberBox().decimals_(0).fixedWidth_(55), avOctaveSpec)
 						)
 					)
 				),
