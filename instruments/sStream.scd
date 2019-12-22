@@ -187,6 +187,7 @@ s.waitForBoot{
 	var avFalloutChordsSpec= ControlSpec(0, 100, 'lin', 1, defaultAVFalloutChords, "%");
 
 	var snapshots;
+	var exportCodeButton;
 	var midiOutput;
 	var masterTuning;
 	var mainVolume;
@@ -489,6 +490,9 @@ s.waitForBoot{
 				//--output section
 				HLayout(
 					StaticText().string_("Output"),
+					exportCodeButton= Button().states_([
+						["ExportCode", palette.buttonText, palette.button]
+					]),
 					(midiOutput= SGUImidiOutput()).view,
 					(masterTuning= SGUImasterTuning(220, 880)).view
 				),
@@ -1365,7 +1369,6 @@ s.waitForBoot{
 	avPitchesUsrAnim.drawFunc= {|usr|
 		var uw= usr.bounds.width-usrPadding.width;
 		var uh= usr.bounds.height-(usrPadding.height*2)-strHeight;
-		var stepWidth= uw/avPitchesArray.size;
 		var dur= avSustainSpec.map(avSustainElement.value).linlin(0, maxEntryDelay, 0, uw-(strWidth*2), nil);
 		var scale= scales[avScaleList.value];
 		Pen.translate(usrPadding.width, uh+usrPadding.height);
@@ -1654,6 +1657,28 @@ s.waitForBoot{
 		masterTuning: masterTuning,
 		mainVolume: mainVolume,
 	];
+
+	exportCodeButton.action= {|view|  //TODO far from finished
+		var str= "\n(\n";
+		var patternpairs;
+		str= str++"MIDIClient.init;\n";
+		str= str++"m= MIDIOut(0);  //EDIT\n";
+		patternpairs= Pdef(\sStream).source.list[0].patternpairs.clump(2).collect{|x|
+			x.postln;
+			case
+			{x[1].isKindOf(VSTPluginMIDIProxy)} {
+				[x[0], {m}];
+			}
+			{x[1].isKindOf(Pdefn)} {
+				[x[0], x[1].source];
+			}
+			{x};
+		}.flatten;
+		str= str++"Pdef(\\sStreamLV,\n\t";
+		str= str++Pbind(*patternpairs).asCompileString;
+		str= str++"\n).play;\n)";
+		str.newTextWindow("sStream_code_export");
+	};
 
 	masterTuning.action= {|value|
 		lvVst.set('Diapason', value.linlin(220, 880, 0, 1));
