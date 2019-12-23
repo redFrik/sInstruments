@@ -83,10 +83,10 @@ win.layout= VLayout(
 		["•sNanoKontrol", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sNanoKontrol")}).last,
 	buttons.add(Button().states_([
-		[" sNanoKontrol2", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sNanoKontrol2", SGUI.palette.highlight, SGUI.palette.button],
-		["•sNanoKontrol2", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sNanoKontrol2")}).last,
+		[" sNanoKontrolStream", SGUI.palette.buttonText, SGUI.palette.button],
+		["•sNanoKontrolStream", SGUI.palette.highlight, SGUI.palette.button],
+		["•sNanoKontrolStream", SGUI.palette.buttonText, SGUI.palette.highlight]
+	]).action_{SInstruments.toFront("sNanoKontrolStream")}).last,
 	buttons.add(Button().states_([
 		[" sQWERTYKeyboard", SGUI.palette.buttonText, SGUI.palette.button],
 		["•sQWERTYKeyboard", SGUI.palette.highlight, SGUI.palette.button],
