@@ -53,9 +53,9 @@ win.layout= VLayout(
 		["•sGreybox", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sGreybox")}).last,
 	buttons.add(Button().states_([
-		[" sGreybox2", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sGreybox2", SGUI.palette.highlight, SGUI.palette.button],
-		["•sGreybox2", SGUI.palette.buttonText, SGUI.palette.highlight]
+		[" sGreybox 2", SGUI.palette.buttonText, SGUI.palette.button],
+		["•sGreybox 2", SGUI.palette.highlight, SGUI.palette.button],
+		["•sGreybox 2", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sGreybox2")}).last,
 	buttons.add(Button().states_([
 		[" sKeyboard", SGUI.palette.buttonText, SGUI.palette.button],
@@ -63,19 +63,19 @@ win.layout= VLayout(
 		["•sKeyboard", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sKeyboard")}).last,
 	buttons.add(Button().states_([
-		[" sKeyBpad", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sKeyBpad", SGUI.palette.highlight, SGUI.palette.button],
-		["•sKeyBpad", SGUI.palette.buttonText, SGUI.palette.highlight]
+		[" sKey B pad", SGUI.palette.buttonText, SGUI.palette.button],
+		["•sKey B pad", SGUI.palette.highlight, SGUI.palette.button],
+		["•sKey B pad", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sKeyBpad")}).last,
 	buttons.add(Button().states_([
-		[" sKeyCpad", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sKeyCpad", SGUI.palette.highlight, SGUI.palette.button],
-		["•sKeyCpad", SGUI.palette.buttonText, SGUI.palette.highlight]
+		[" sKey C pad", SGUI.palette.buttonText, SGUI.palette.button],
+		["•sKey C pad", SGUI.palette.highlight, SGUI.palette.button],
+		["•sKey C pad", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sKeyCpad")}).last,
 	buttons.add(Button().states_([
-		[" sKeyDpad", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sKeyDpad", SGUI.palette.highlight, SGUI.palette.button],
-		["•sKeyDpad", SGUI.palette.buttonText, SGUI.palette.highlight]
+		[" sKey D pad", SGUI.palette.buttonText, SGUI.palette.button],
+		["•sKey D pad", SGUI.palette.highlight, SGUI.palette.button],
+		["•sKey D pad", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sKeyDpad")}).last,
 	buttons.add(Button().states_([
 		[" sNanoKontrol", SGUI.palette.buttonText, SGUI.palette.button],
@@ -83,9 +83,9 @@ win.layout= VLayout(
 		["•sNanoKontrol", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sNanoKontrol")}).last,
 	buttons.add(Button().states_([
-		[" sNanoKontrolStream", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sNanoKontrolStream", SGUI.palette.highlight, SGUI.palette.button],
-		["•sNanoKontrolStream", SGUI.palette.buttonText, SGUI.palette.highlight]
+		[" sNanoKontrol Stream", SGUI.palette.buttonText, SGUI.palette.button],
+		["•sNanoKontrol Stream", SGUI.palette.highlight, SGUI.palette.button],
+		["•sNanoKontrol Stream", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sNanoKontrolStream")}).last,
 	buttons.add(Button().states_([
 		[" sQWERTYKeyboard", SGUI.palette.buttonText, SGUI.palette.button],
@@ -93,9 +93,9 @@ win.layout= VLayout(
 		["•sQWERTYKeyboard", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sQWERTYKeyboard")}).last,
 	buttons.add(Button().states_([
-		[" sQWERTYKeyboard2", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sQWERTYKeyboard2", SGUI.palette.highlight, SGUI.palette.button],
-		["•sQWERTYKeyboard2", SGUI.palette.buttonText, SGUI.palette.highlight]
+		[" sQWERTYKeyboard 2", SGUI.palette.buttonText, SGUI.palette.button],
+		["•sQWERTYKeyboard 2", SGUI.palette.highlight, SGUI.palette.button],
+		["•sQWERTYKeyboard 2", SGUI.palette.buttonText, SGUI.palette.highlight]
 	]).action_{SInstruments.toFront("sQWERTYKeyboard2")}).last,
 	buttons.add(Button().states_([
 		[" sSentograph", SGUI.palette.buttonText, SGUI.palette.button],
@@ -229,18 +229,24 @@ View.globalKeyDownAction= View.globalKeyDownAction.addFunc(keyFunc);
 
 OSCFunc({|msg|  //from SGUI report
 	{
-		buttons.detect{|b| b.states[0][0].contains(msg[1].asString)}.value= 2;
+		buttons.detect{|b|
+			b.states[0][0].replace(" ", "").contains(msg[1].asString);
+		}.value= 2;
 	}.defer;
 }, \toFront);
 OSCFunc({|msg|  //from SGUI report
 	{
-		var but= buttons.detect{|b| b.states[0][0].contains(msg[1].asString)};
+		var but= buttons.detect{|b|
+			b.states[0][0].replace(" ", "").contains(msg[1].asString);
+		};
 		if(but.notNil, {but.value= 1});
 	}.defer;
 }, \endFront);
 OSCFunc({|msg|  //from instruments
 	{
-		buttons.detect{|b| b.states[0][0].contains(msg[1].asString)}.value= 0;
+		buttons.detect{|b|
+			b.states[0][0].replace(" ", "").contains(msg[1].asString);
+		}.value= 0;
 	}.defer;
 }, \closed);
 
