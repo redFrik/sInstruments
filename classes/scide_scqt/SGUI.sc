@@ -1109,7 +1109,9 @@ SGUImidiOutput : SGUI {
 	}
 	initSGUImidiOutput{
 		var popup;
-		MIDIClient.init;
+		if(MIDIClient.initialized.not, {
+			MIDIClient.init;
+		});
 		Platform.case(
 			\osx, {
 				if(MIDIClient.destinations.size<1 or:{MIDIClient.destinations[0].device.beginsWith("IAC").not}, {

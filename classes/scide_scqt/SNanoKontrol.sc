@@ -366,7 +366,9 @@ SNanoKontrol {
 			ccResponders= ccResponders.flat;
 		};
 
-		MIDIClient.init;
+		if(MIDIClient.initialized.not, {
+			MIDIClient.init;
+		});
 		MIDIClient.sources.do{|src|
 			("found midi source:"+src.device).postln;
 			if(src.device.contains("nanoKONTROL"), {
