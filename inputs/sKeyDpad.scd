@@ -5,40 +5,61 @@
 (
 //--settings
 var serialPortName= "/dev/cu.wchusbserial14[0-9]*0";  //regexp
-var winRect= Rect(170, 70, 150, 150);  //x, y, w, h
+var winRect= Rect(170, 70, 160, 150);  //x, y, w, h
 var palette= SGUI.palette;
 var fnt= SGUI.font;
 var fntMono= Font.monospace(10);
+var recTimeout= 3;  //number of seconds to keep snapshot record gate open
 
 //--functions and objects
 var sendOsc;
 var routine;
-var plate= #[
-	[0, 1, 2, 3],  //row1-black
-	[4, 5, 6, 7],  //row2-black
-	[8, 9, 10, 11],  //row3-red
-	[nil, 12, 13, nil]  //row3-red
-];
 var lookup= #[6, 7, 4, 10, 11, 13, 3, 2, 12, 9, 8, 0, 1, 5];
+var snapshotKeys= #[
+	[$A, $S, $D, $F, $G, $H, $J, $K],
+	[$Z, $X, $C, $V, $B, $N, $M, $,]
+];
+var bankKeys= #[  //more can be added
+	$1, $2, $3, $4, $5, $6, $7, $8, $9
+];
 
 //--gui
-var plateButtons= List.new;
+var snapshotButtons= List.new;
+var bankButtons= List.new;
+var recButton;
+var shiftButton;
 var infoTextString;
 var win= Window("sKeyDpad", winRect);
 win.layout= VLayout(
 	GridLayout.rows(
-		*plate.collect{|arr|
-			arr.collect{|number|
-				if(number.notNil, {
-					plateButtons.add(Button().states_([
-						[number, palette.buttonText, palette.button],
-						[number, palette.buttonText, palette.highlight]
-					]).fixedWidth_(25)).last;
-				}, {
-					View()
-				});
+		*snapshotKeys[0].clump(4).collect{|arr|
+			arr.collect{|chr|
+				snapshotButtons.add(Button().states_([
+					[chr, palette.window, Color.black],
+					[chr, palette.window, palette.highlight]
+				]).fixedWidth_(25)).last;
 			};
 		}
+	),
+	HLayout(
+		*bankKeys.clump(4)[0].postln.collect{|chr|
+			bankButtons.add(Button().states_([
+				[chr, palette.window, Color.red],
+				[chr, palette.window, palette.highlight]
+			]).fixedWidth_(25)).last;
+		};
+	),
+	HLayout(
+		View(),
+		recButton= Button().states_([
+			["rec", palette.buttonText, Color.red],
+			["rec", palette.button, Color.red]
+		]).fixedWidth_(30),
+		shiftButton= Button().states_([
+			["shift", palette.buttonText, Color.red],
+			["shift", palette.button, Color.red]
+		]).fixedWidth_(30),
+		View()
 	),
 	infoTextString= StaticText().fixedHeight_(" ".bounds(fntMono).height*2)
 	.align_(\topLeft).background_(Color.grey(0.9, 0.5))
@@ -51,7 +72,7 @@ infoTextString.font= fntMono;
 sendOsc= {|arr|
 	var str= "";
 	arr.do{|a|
-		SInputs.destinations[a[0]].sendMsg(a[1], a[2]);
+		SInputs.destinations[a[0]].sendMsg(a[1], *a[2..]);
 		str= str++a;
 	};
 	infoTextString.string= str.replace("[ ", "[").replace(" ]", "] ").replace(", ", " ");
@@ -119,18 +140,27 @@ Routine({
 					{state==4 and:{byte==255}} {
 						//[lo, hi].postln;  //debug
 						{
+							var val;
 							8.do{|i|
-								var val= (lo&(1<<i)>0).not.binaryValue;
-								if(plateButtons[lookup[i]].value!=val, {
-									plateButtons[lookup[i]].valueAction= val;
+								val= (lo&(1<<i)>0).not.binaryValue;
+								if(snapshotButtons[lookup[i]].value!=val, {
+									snapshotButtons[lookup[i]].valueAction= val;
 								});
 							};
-							6.do{|i|
-								var val= (hi&(1<<i)>0).not.binaryValue;
-								if(plateButtons[lookup[i+8]].value!=val, {
-									plateButtons[lookup[i+8]].valueAction= val;
+							4.do{|i|
+								val= (hi&(1<<i)>0).not.binaryValue;
+								if(bankButtons[lookup[i+8]].value!=val, {
+									bankButtons[lookup[i+8]].valueAction= val;
 								});
 							};
+							val= (hi&(1<<4)>0).not.binaryValue;
+							if(recButton[lookup[4+8]].value!=val, {
+								recButton[lookup[4+8]].valueAction= val;
+							});
+							val= (hi&(1<<5)>0).not.binaryValue;
+							if(shiftButton[lookup[5+8]].value!=val, {
+								shiftButton[lookup[5+8]].valueAction= val;
+							});
 						}.defer;
 						state= 0;
 					} {
@@ -153,83 +183,38 @@ Routine({
 }).play(AppClock);
 
 //--button functions
-
-//--row1-back
-plateButtons[0].action= {|view|
-	if(view.value==1, {
-		sendOsc.value([[\sStream, \on, 1]]);  //example
-	});
-};
-plateButtons[1].action= {|view|
-	if(view.value==1, {
-		sendOsc.value([]);
-	});
-};
-plateButtons[2].action= {|view|
-	if(view.value==1, {
-		sendOsc.value([]);
-	});
-};
-plateButtons[3].action= {|view|
-	if(view.value==1, {
-		sendOsc.value([]);
-	});
+snapshotButtons.do{|but, i|
+	but.action= {|view|
+		if(view.value==1, {
+			sendOsc.value([
+				[\sStream, \snapshots, snapshotKeys[shiftButton.value][i].asString, recButton.value]
+			]);
+			{view.value= 0}.defer(0.15);
+		});
+	};
 };
 
-//--row2-back
-plateButtons[4].action= {|view|
-	if(view.value==1, {
-		sendOsc.value([]);
-	});
-};
-plateButtons[5].action= {|view|
-	if(view.value==1, {
-		sendOsc.value([]);
-	});
-};
-plateButtons[6].action= {|view|
-	if(view.value==1, {
-		sendOsc.value([]);
-	});
-};
-plateButtons[7].action= {|view|
-	if(view.value==1, {
-		sendOsc.value([]);
-	});
+bankButtons.do{|but, i|
+	but.action= {|view|
+		if(view.value==1, {
+			sendOsc.value([
+				[\sStream, \snapshots, bankKeys[i].asString]
+			]);
+			{view.value= 0}.defer(0.15);
+		});
+	};
 };
 
-//--row3-red
-plateButtons[8].action= {|view|
-	if(view.value==1, {
-		sendOsc.value([]);
-	});
-};
-plateButtons[9].action= {|view|
-	if(view.value==1, {
-		sendOsc.value([]);
-	});
-};
-plateButtons[10].action= {|view|
-	if(view.value==1, {
-		sendOsc.value([]);
-	});
-};
-plateButtons[11].action= {|view|
-	if(view.value==1, {
-		sendOsc.value([]);
-	});
+recButton.action= {|view|
+	{view.value= 0}.defer(recTimeout);
 };
 
-//--row4-red
-plateButtons[12].action= {|view|
-	if(view.value==1, {
-		sendOsc.value([]);
-	});
+shiftButton.action= {|view|
+	snapshotButtons.do{|but, i|
+		but.states= [
+			[snapshotKeys[shiftButton.value][i], palette.window, Color.black],
+			[snapshotKeys[shiftButton.value][i], palette.window, palette.highlight]
+		];
+	};
 };
-plateButtons[13].action= {|view|
-	if(view.value==1, {
-		sendOsc.value([]);
-	});
-};
-
 )
