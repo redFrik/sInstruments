@@ -14,6 +14,7 @@ var recTimeout= 3;  //number of seconds to keep snapshot record gate open
 //--functions and objects
 var sendOsc;
 var routine;
+var buttonLookup;
 var lookup= #[6, 7, 4, 10, 11, 13, 3, 2, 12, 9, 8, 0, 1, 5];
 var snapshotKeys= #[
 	[$A, $S, $D, $F, $G, $H, $J, $K],
@@ -42,7 +43,7 @@ win.layout= VLayout(
 		}
 	),
 	HLayout(
-		*bankKeys.clump(4)[0].postln.collect{|chr|
+		*bankKeys.clump(4)[0].collect{|chr|
 			bankButtons.add(Button().states_([
 				[chr, palette.window, Color.red],
 				[chr, palette.window, palette.highlight]
@@ -68,6 +69,15 @@ SGUI.report(win);
 SGUI.adapt(win);
 win.front;
 infoTextString.font= fntMono;
+
+buttonLookup= {|index|
+	var i= lookup[index];
+	case
+	{i<snapshotButtons.size} {snapshotButtons[i]}
+	{i<(snapshotButtons.size+bankButtons.size)} {bankButtons[i-snapshotButtons.size]}
+	{i==12} {recButton}
+	{i==13} {shiftButton}
+};
 
 sendOsc= {|arr|
 	var str= "";
@@ -140,27 +150,23 @@ Routine({
 					{state==4 and:{byte==255}} {
 						//[lo, hi].postln;  //debug
 						{
-							var val;
+							var but, val;
 							8.do{|i|
+								but= buttonLookup.value(i);
 								val= (lo&(1<<i)>0).not.binaryValue;
-								if(snapshotButtons[lookup[i]].value!=val, {
-									snapshotButtons[lookup[i]].valueAction= val;
-								});
+								if(but.value!=val, {but.valueAction= val});
 							};
 							4.do{|i|
+								but= buttonLookup.value(i+8);
 								val= (hi&(1<<i)>0).not.binaryValue;
-								if(bankButtons[lookup[i+8]].value!=val, {
-									bankButtons[lookup[i+8]].valueAction= val;
-								});
+								if(but.value!=val, {but.valueAction= val});
 							};
+							but= buttonLookup.value(8+4);
 							val= (hi&(1<<4)>0).not.binaryValue;
-							if(recButton[lookup[4+8]].value!=val, {
-								recButton[lookup[4+8]].valueAction= val;
-							});
+							if(but.value!=val, {but.valueAction= val});
+							but= buttonLookup.value(8+5);
 							val= (hi&(1<<5)>0).not.binaryValue;
-							if(shiftButton[lookup[5+8]].value!=val, {
-								shiftButton[lookup[5+8]].valueAction= val;
-							});
+							if(but.value!=val, {but.valueAction= val});
 						}.defer;
 						state= 0;
 					} {
