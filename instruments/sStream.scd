@@ -1893,7 +1893,7 @@ s.waitForBoot{
 	Pdefn(\sStream_avOctave, defaultOctave);
 	createStream= {|numVoices|
 		var pbind= Pbind(
-			\type, \midi,
+			\type, \vst_midi,
 			\dur, Pswitch1([
 				Pdefn(\sStream_dur),
 				60/Pdefn(\sStream_bpm)*0.25  //semiquavers
@@ -1928,7 +1928,7 @@ s.waitForBoot{
 		Pdef(\sStream, Ppar(
 			[
 				Pbindf(pbind,  //lv
-					\midiout, lvVst.midi,
+					\vst, lvVst,
 					\chan, 0,
 					\lag, 0,
 					\sustain, Pdefn(\sStream_lvSustain),
@@ -1974,7 +1974,7 @@ s.waitForBoot{
 			]++({|i|
 				var avFollowInit= 60, avFollowLast= 0, avFollowCnt= 0;  //TODO hack
 				Pbindf(pbind,  //av
-					\midiout, avVst.midi,
+					\vst, avVst,
 					\chan, i+1,
 					\lag, Pfunc({avDelaysArray[i]})*Pfunc({avEntryDelayElement.value}),
 					\sustain, Pdefn(\sStream_avSustain),
@@ -2093,8 +2093,8 @@ s.waitForBoot{
 				lvVst.open(plug.path);
 				avVst.open(plug.path);
 				s.sync;
-				//lvVst.info.keysValuesDo{|k, v| [k, v].postln};  //debug
-				//avVst.info.keysValuesDo{|k, v| [k, v].postln};  //debug
+				//lvVst.info.printParameters;  //debug
+				//avVst.info.printParameters;  //debug
 				lvVstEditorButton.states_([
 					["LVVst:"++lvVst.info.name, palette.buttonText, palette.button]
 				]);

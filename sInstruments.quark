@@ -2,7 +2,7 @@
 	\name: 				"sInstruments",
 	\summary:			"some instruments written in SuperCollider",
 	\isCompatible:		{Main.versionAtLeast(3, 10)},
-	\version:			"0.3.13",
+	\version:			"0.3.14",
 	\schelp:			"sInstrumentsOverview",
 	\author: 			"Fredrik Olofsson",
 	\country: 			"Germany & Sweden",
