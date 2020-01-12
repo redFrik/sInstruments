@@ -1,0 +1,24 @@
+CLASS:: SPlayFileDiskStereo
+SUMMARY:: a sound file player that streams from disk in stereo
+CATEGORIES:: SInstruments
+RELATED:: Classes/SPlayFileDiskView, Classes/SPlayFileDisk, Classes/SPlayFileDiskQuad
+
+DESCRIPTION::
+
+This class is a wrapper for link::Classes/VDiskIn:: and will take any soundfile with 1, 2 or 4 (by default) channels and mix it down and play it in STEREO.
+Use link::Classes/SPlayFileDisk:: for mixing down and playing in MONO, and link::Classes/SPlayFileDiskQuad:: for QUAD playback.
+
+For a graphical user interface use it together with the class link::Classes/SPlayFileDiskView::.
+
+CLASSMETHODS::
+
+INSTANCEMETHODS::
+
+PRIVATE::prMix
+
+EXAMPLES::
+
+CODE::
+s.boot;
+
+::

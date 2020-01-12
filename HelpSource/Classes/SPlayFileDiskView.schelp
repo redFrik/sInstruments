@@ -1,0 +1,61 @@
+CLASS:: SPlayFileDiskView
+SUMMARY:: a sound file player that streams from disk
+CATEGORIES:: SInstruments
+RELATED:: Classes/SPlayFileDiskView, Classes/SPlayFileDiskStereo, Classes/SPlayFileDiskQuad
+
+DESCRIPTION::
+
+This class is a wrapper for link::Classes/VDiskIn:: and will take any soundfile with 1, 2 or 4 (by default) channels and mix it down and play it in MONO.
+Use link::Classes/SPlayFileDiskStereo:: for mixing down and playing in STEREO, and link::Classes/SPlayFileDiskQuad:: for QUAD playback.
+
+For a graphical user interface use it together with the class link::Classes/SPlayFileDiskView::.
+
+CLASSMETHODS::
+
+INSTANCEMETHODS::
+
+PRIVATE::initSPlayFileDiskView
+
+EXAMPLES::
+
+CODE::
+s.boot;
+SPlayFileDiskView(nil, folder: "~/Documents/soundfiles").makeWindow;
+
+
+(
+s.waitForBoot{
+	var win= Window("", Rect(100, 100, 640, 480)).front;
+	var f= SPlayFileDiskStereo();
+	var fv;
+	win.view.layout_(VLayout(
+		StaticText().string_("embedded"),
+		Button().states_([
+			["show controls"], ["show controls"]
+		]).action_{|view| fv.controls= view.value.booleanValue},
+		(fv= SPlayFileDiskView(f, controls: false)).view
+	));
+	CmdPeriod.doOnce({win.close});
+};
+)
+
+
+s.boot;
+Window().front.view.layout_((v= SPlayFileDiskView(controls:true)).view);
+v.read(Platform.resourceDir+/+"sounds/a11wlk01.wav");
+v.timeCursorColor= Color.blue;
+v.waveColor= Color.red;
+v.rmsColor= Color.yellow;
+v.background= Color.black;
+v.xZoom= 0.25;
+v.yZoom= 0.5;
+v.controls= false;
+v.controls= true;
+v.play
+v.loop= 1
+v.rate= 0.75
+v.bus= 1
+v.vol= -3
+v.rel= 5
+v.stop
+::
