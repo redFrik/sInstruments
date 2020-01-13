@@ -1,24 +1,42 @@
 CLASS:: SPlayFileDisk
-SUMMARY:: a sound file player that streams from disk in mono
+SUMMARY:: a player for long soundfiles (mono)
 CATEGORIES:: SInstruments
 RELATED:: Classes/SPlayFileDiskView, Classes/SPlayFileDiskStereo, Classes/SPlayFileDiskQuad
 
 DESCRIPTION::
 
-This class is a wrapper for link::Classes/VDiskIn:: and will take any soundfile with 1, 2 or 4 (by default) channels and mix it down and play it in MONO.
-Use link::Classes/SPlayFileDiskStereo:: for mixing down and playing in STEREO, and link::Classes/SPlayFileDiskQuad:: for QUAD playback.
+This class is a wrapper for link::Classes/VDiskIn:: and will take any soundfile with 1, 2 or 4 channels (by default) and stream it from disk. The resulting sound is mixed down to MONO.
+Use the subclasses link::Classes/SPlayFileDiskStereo:: for mixing down to STEREO, and link::Classes/SPlayFileDiskQuad:: for QUAD.
 
 For a graphical user interface use it together with the class link::Classes/SPlayFileDiskView::.
+
+NOTE::
+This class is for playing back longer soundfiles from disk and it is using link::Classes/VDiskIn::. For shorter soundfiles use the class link::Classes/SPlayFile:: instead as it plays from memory using link::Classes/Buffer:: and link::Classes/BufRd::.
+::
+
 
 CLASSMETHODS::
 
 INSTANCEMETHODS::
 
-PRIVATE::initSPlayFileDisk, prCreateSynthDefs, prMix
+PRIVATE::prCreateSynthDefs
+
+METHOD::bufferSize
+Set disk buffer size for the internal cueSoundFile buffer. The default is 8192. Decrease for faster frame updates and quicker play start, increase for disk dropout safety.
+
+COPYMETHOD::AbstractSPlayFile -frame
 
 EXAMPLES::
 
 CODE::
 s.boot;
 
+a= SPlayFileDisk();  //NOTE this will be mono, use SPlayFileDiskStereo for stereo files
+a.doneAction= {|voice| voice.postln};
+a.play(Platform.resourceDir+/+"sounds/a11wlk01.wav");
+a.stop;
+a.play(Platform.resourceDir+/+"sounds/a11wlk01.wav", rate: 0.75, loop:1, startFrame: 50000);
+a.stop(2);
+
+a.free;
 ::

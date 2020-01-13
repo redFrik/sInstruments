@@ -1,23 +1,27 @@
 //f.olofsson 2020
 
-//related: SPlayFileDisk
-
 //single click - set playback position
 //double click - start playing from position
-//ctrl drag - scroll
-//ctrl+shift drag - zoom
+//ctrl drag left-right - scroll left-right
+//ctrl+shift drag up-down - zoom in-out
+//shift drag - (extend selection)
+//shift double click - (select all)
 
+//TODO cursors should survive cmdperiod
 //TODO time markers in seconds
 //TODO nicer loading with progress indication
 //TODO better way to mix down 1 ch for display and not only use the first channel as now
 //TODO increase cursor updaterate with predictive animation
 //TODO improve helpfile
 
-SPlayFileDiskView {
+AbstractSPlayFileView {
 	var <view;
 	var <spf;
 	var <duration= -1;
 	var <currentFilePath;
+	var soundfiles;
+	var cursorUpdater;
+	var selectedCursorPosition;
 	var volumeSpec;
 	var filePopup, readButton,
 	vZoomSlider, waveView, hZoomSlider,
@@ -25,25 +29,17 @@ SPlayFileDiskView {
 	volSlider, playButton, busText, busNumber;
 
 	*new {|spf, folder= "", controls= true|
-		^super.new.initSPlayFileDiskView(spf, folder, controls);
+		^super.new.initAbstractSPlayFileView(spf, folder, controls).init(spf);
 	}
+	initAbstractSPlayFileView {|argSpf, folder, controls|
+		var keyDownAction;
 
-	initSPlayFileDiskView {|argSpf, folder, controls|
-		var selectedCursorPosition, startPlaying;
-		var cursorUpdater;
-		var keyDownAction= {|view, char, mod, uni, keycode, key|
-			if(char==Char.space, {
-				playButton.valueAction= 1-playButton.value;
-			});
-		};
-		var soundfiles= [];
+		soundfiles= [];
+
 		folder= folder.standardizePath;
 		if(PathName(folder).isFolder, {
 			soundfiles= SoundFile.collect(folder+/+"*");
 		});
-
-		spf= argSpf??{SPlayFileDiskStereo()};
-		spf.server.ifNotRunning({"%: boot server first".format(this.class.name).warn});
 
 		view= VLayout(
 			HLayout(
@@ -65,7 +61,6 @@ SPlayFileDiskView {
 					.gridOn_(false)//.gridColor_(Color.grey(0, 0.1))
 					.rmsColor_(Color.grey(0, 0.5)).waveColors_(Color.grey(0.5)!8)
 					.background_(Color.clear)
-					.setSelectionColor(0, Color.clear)
 				),
 
 				hZoomSlider= RangeSlider().orientation_(\horizontal).canFocus_(false)
@@ -73,13 +68,13 @@ SPlayFileDiskView {
 
 			HLayout(
 				atkText= StaticText().string_("atk:"),
-				atkNumber= NumberBox().clipLo_(0).fixedWidth_(55),
+				atkNumber= NumberBox().clipLo_(0).scroll_step_(0.05).fixedWidth_(55),
 
 				relText= StaticText().string_("rel:"),
-				relNumber= NumberBox().clipLo_(0).fixedWidth_(55),
+				relNumber= NumberBox().clipLo_(0).scroll_step_(0.05).fixedWidth_(55),
 
 				rateText= StaticText().string_("rate:"),
-				rateNumber= NumberBox().clipLo_(0).fixedWidth_(55),
+				rateNumber= NumberBox().clipLo_(0).scroll_step_(0.05).fixedWidth_(55),
 
 				[View(), stretch: 1],
 
@@ -100,7 +95,9 @@ SPlayFileDiskView {
 			)
 		);
 
-		this.controls_(controls);
+		if(controls.not, {
+			this.controls_(false);
+		});
 
 		filePopup.action= {|view|
 			var val= view.value;
@@ -139,18 +136,19 @@ SPlayFileDiskView {
 		};
 		vZoomSlider.mouseMoveAction= vZoomSlider.mouseDownAction;
 
-		waveView.mouseUpAction= {|view|
+		waveView.mouseDownAction= {|view, x, y, mod, num, cnt|
 			selectedCursorPosition= view.timeCursorPosition;
+			if(cnt==2 and:{playButton.value==0}, {
+				waveView.setSelectionStart(0, selectedCursorPosition);
+				waveView.setSelectionSize(0, waveView.numFrames-selectedCursorPosition);
+				playButton.valueAction= 1;
+				true;  //block propagation
+			});
 		};
 		waveView.mouseMoveAction= {|view, x, y, mod|
 			if(mod.isCtrl, {
 				hZoomSlider.lo= waveView.scrollPos;
 				hZoomSlider.range= (waveView.xZoom/duration);
-			});
-		};
-		waveView.mouseDownAction= {|view, x, y, mod, num, cnt|
-			if(cnt==2 and:{playButton.value==0}, {
-				playButton.valueAction= 1;
 			});
 		};
 
@@ -194,49 +192,27 @@ SPlayFileDiskView {
 				view.value= 0;
 			}, {
 				if(view.value== 1, {
-					startPlaying.value;
+					this.startPlaying;
 				}, {
 					spf.stop;
 				});
 			});
 		};
 
-		spf.doneAction= {
-			{
-				playButton.value= 0;
-				waveView.timeCursorPosition= 0;
-			}.defer;
-		};
-
-		startPlaying= {
-			spf.play(
-				currentFilePath,
-				selectedCursorPosition?waveView.timeCursorPosition,
-				busNumber.value,
-				volumeSpec.map(volSlider.value).dbamp
-			);
-		};
-
 		busNumber.action= {|view|
 			spf.out= view.value.asInteger;
 		};
 
+		keyDownAction= {|view, char, mod, uni, keycode, key|
+			if(char==Char.space, {
+				playButton.valueAction= 1-playButton.value;
+			});
+		};
 		waveView.keyDownAction= keyDownAction;
 		atkNumber.keyDownAction= keyDownAction;
 		relNumber.keyDownAction= keyDownAction;
 		rateNumber.keyDownAction= keyDownAction;
 		busNumber.keyDownAction= keyDownAction;
-
-		cursorUpdater= Routine({
-			var lastFrame= 0;
-			inf.do{
-				if(spf.frame!=lastFrame, {
-					lastFrame= spf.frame;
-					waveView.timeCursorPosition= spf.frame;
-				});
-				0.01.wait;
-			};
-		}).play(AppClock);
 
 		waveView.onClose= {
 			spf.free;
@@ -244,13 +220,8 @@ SPlayFileDiskView {
 		};
 	}
 
-	controls_ {|show= true|
-		[
-			filePopup, readButton,
-			vZoomSlider, hZoomSlider,
-			atkText, atkNumber, relText, relNumber, rateText, rateNumber, loopButton,
-			volSlider, playButton, busText, busNumber
-		].do{|v| v.visible= show};
+	startPlaying {
+		^this.subclassResponsibility(thisMethod);
 	}
 
 	read {|path|
@@ -274,7 +245,17 @@ SPlayFileDiskView {
 		});
 	}
 
+	controls_ {|show= true|
+		[
+			filePopup, readButton,
+			vZoomSlider, hZoomSlider,
+			atkText, atkNumber, relText, relNumber, rateText, rateNumber, loopButton,
+			volSlider, playButton, busText, busNumber
+		].do{|v| v.visible= show};
+	}
+
 	yZoom_ {|amount= 1|
+		amount= amount.clip(0, 1);
 		vZoomSlider.setSpanActive(0.5-(amount*0.5), 0.5+(amount*0.5));
 	}
 	xZoom_ {|lo= 0, hi= 1|
@@ -302,5 +283,8 @@ SPlayFileDiskView {
 		^Window(this.class.name, Rect(pos.x, pos.y, 800, 400)).front.view.layout_(
 			view
 		)
+	}
+	focus {|flag= true|
+		waveView.focus(flag);
 	}
 }

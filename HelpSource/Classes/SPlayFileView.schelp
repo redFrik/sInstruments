@@ -1,11 +1,11 @@
-CLASS:: SPlayFileDiskView
-SUMMARY:: a sound file player that streams from disk
+CLASS:: SPlayFileView
+SUMMARY:: a sound file player that plays from memory
 CATEGORIES:: SInstruments
-RELATED:: Classes/SPlayFileDisk, Classes/SPlayFileView
+RELATED:: Classes/SPlayFile, Classes/SPlayFileDiskView
 
 DESCRIPTION::
 
-a gui for disk player.
+a gui for ram player.
 
 CLASSMETHODS::
 
@@ -17,20 +17,20 @@ EXAMPLES::
 
 CODE::
 s.boot;
-SPlayFileDiskView(nil, folder: "~/Documents/soundfiles").makeWindow;
+SPlayFileView(nil, folder: "~/Documents/soundfiles").makeWindow;
 
 
 (
 s.waitForBoot{
 	var win= Window("", Rect(100, 100, 640, 480)).front;
-	var f= SPlayFileDiskStereo();  //or pass in SPlayFileQuad for mixing to 4ch
+	var f= SPlayFileStereo();  //or pass in SPlayFileQuad for mixing to 4ch
 	var fv;
 	win.view.layout_(VLayout(
 		StaticText().string_("embedded"),
 		Button().states_([
 			["show controls"], ["show controls"]
 		]).action_{|view| fv.controls= view.value.booleanValue},
-		(fv= SPlayFileDiskView(f, controls: false)).view
+		(fv= SPlayFileView(f, controls: false)).view
 	));
 	CmdPeriod.doOnce({win.close});
 };
@@ -38,7 +38,7 @@ s.waitForBoot{
 
 
 s.boot;
-Window().front.view.layout_((v= SPlayFileDiskView(controls:true)).view);
+Window().front.view.layout_((v= SPlayFileView(controls:true)).view);
 v.read(Platform.resourceDir+/+"sounds/a11wlk01.wav");
 v.timeCursorColor= Color.blue;
 v.waveColor= Color.red;

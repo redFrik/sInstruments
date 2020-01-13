@@ -1,0 +1,37 @@
+CLASS:: AbstractSPlayFileView
+SUMMARY:: a gui for soundfile players
+CATEGORIES:: SInstruments
+RELATED:: Classes/SPlayFileView, Classes/SPlayFileDiskView, Classes/AbstractSPlayFile
+
+DESCRIPTION::
+
+Helper class for soundfile player gui classes.
+
+NOTE::
+Do not instantiate. Use the subclasses.
+::
+
+definitionlist::
+##single click || set playback position
+##double click || start playing from position
+##ctrl drag left-right || scroll left-right
+##ctrl+shift drag up-down || zoom in-out
+##shift drag || extend selection (SPlayFileView only)
+##shift double click || select all (SPlayFileView only)
+::
+
+CLASSTREE:: AbstractSPlayFileView
+
+and also see the corresponding classes:
+
+CLASSTREE:: AbstractSPlayFile
+
+CLASSMETHODS::
+
+INSTANCEMETHODS::
+
+PRIVATE::init
+
+
+EXAMPLES::
+See the helpfiles for subclasses.

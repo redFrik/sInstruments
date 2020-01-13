@@ -1,0 +1,50 @@
+CLASS:: SPlayFile
+SUMMARY:: a player for short soundfiles (mono)
+CATEGORIES:: SInstruments
+RELATED:: Classes/SPlayFileView, Classes/SPlayFileStereo, Classes/SPlayFileQuad
+
+DESCRIPTION::
+
+This class is a wrapper for link::Classes/BufRd:: and will take any soundfile with 1, 2 or 4 channels (by default) and play it from memory (RAM). The resulting sound is mixed down to MONO.
+Use the subclasses link::Classes/SPlayFileStereo:: for mixing down to STEREO, and link::Classes/SPlayFileQuad:: for QUAD.
+
+For a graphical user interface use it together with the class link::Classes/SPlayFileView::.
+
+NOTE::
+This class is for playing back shorter soundfiles from memory and it is using link::Classes/Buffer:: to read the file. For longer soundfiles use the class link::Classes/SPlayFileDisk:: instead as it streams from disk using link::Classes/VDiskIn::.
+::
+
+CLASSMETHODS::
+
+INSTANCEMETHODS::
+
+PRIVATE::initSPlayFile, prCreateSynthDefs
+
+COPYMETHOD::AbstractSPlayFile -frame
+
+METHOD::maxNumInactiveBuffers
+The maximum number of buffer objects to keep in the link::#-buffers:: list. Buffers not frequently played will be removed and free'd.
+
+METHOD::buffers
+A link::Classes/List:: of link::Classes/Buffer:: objects.
+
+METHOD::read
+Can be used to preload buffers.
+
+ARGUMENT::path
+A link::Classes/String:: pointing to a soundfile.
+
+EXAMPLES::
+
+CODE::
+s.boot;
+
+a= SPlayFile();  //NOTE this will be mono, use SPlayFileStereo for stereo files
+a.doneAction= {|voice| voice.postln};
+a.play(Platform.resourceDir+/+"sounds/a11wlk01.wav");
+a.stop;
+a.play(Platform.resourceDir+/+"sounds/a11wlk01.wav", rate: 0.75, loop:1, start: 0.5);
+a.stop(2);
+
+a.free;
+::

@@ -24,9 +24,13 @@ SECTION:: Classes
 
 Supporting and reusable classes.
 
+CLASSTREE:: AbstractSController
+
 CLASSTREE:: AbstractSInstrument
 
-CLASSTREE:: AbstractSController
+CLASSTREE:: AbstractSPlayFile
+
+CLASSTREE:: AbstractSPlayFileView
 
 CLASSTREE:: SGUI
 

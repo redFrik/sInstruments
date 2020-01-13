@@ -7,7 +7,9 @@ DESCRIPTION::
 
 Multi-channel control rate bus+synth for amplitudes, frequencies, panning positions etc.
 
-NOTE::do not instantiate. See subclasses for examples of how to inherit.::
+NOTE::
+Do not instantiate. Use the subclasses.
+::
 
 CLASSTREE:: AbstractSController
 

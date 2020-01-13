@@ -1,0 +1,32 @@
+CLASS:: AbstractSPlayFile
+SUMMARY:: an abstract class for all soundfile players
+CATEGORIES:: SInstruments
+RELATED:: Classes/SPlayFile, Classes/SPlayFileDisk, Classes/AbstractSPlayFileView
+
+DESCRIPTION::
+
+Helper class for soundfile players.
+
+NOTE::
+Do not instantiate. Use the subclasses.
+::
+
+CLASSTREE:: AbstractSPlayFile
+
+and also see the corresponding gui classes:
+
+CLASSTREE:: AbstractSPlayFileView
+
+CLASSMETHODS::
+
+INSTANCEMETHODS::
+
+PRIVATE::initAbstractSPlayFile, prCreateSynthDefs, prMix
+
+METHOD::frame
+Get currently playing frame i.e. the current position in the (latest started) soundfile.
+
+RETURNS:: a link::Classes/Float:: that is roughly indicates playhead position.
+
+EXAMPLES::
+See the helpfiles for subclasses.
