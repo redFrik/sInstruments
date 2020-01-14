@@ -1,4 +1,4 @@
-//related: SPlayFileDisk
+//related: SPlayFileDisk, SPlayFileView
 
 SPlayFileDiskView : AbstractSPlayFileView {
 
@@ -33,7 +33,7 @@ SPlayFileDiskView : AbstractSPlayFileView {
 			currentFilePath,
 			busNumber.value,
 			volumeSpec.map(volSlider.value).dbamp,
-			startFrame: selectedCursorPosition?waveView.timeCursorPosition
+			startFrame: waveView.timeCursorPosition
 		);
 	}
 }

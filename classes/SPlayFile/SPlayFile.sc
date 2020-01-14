@@ -52,6 +52,7 @@ SPlayFile : AbstractSPlayFile {
 					\rate, rate??{dict.rate},
 					\loo, loop??{dict.loo},
 					\atk, attack??{dict.atk},
+					\rel, dict.rel,
 					\cur, curve??{dict.cur},
 					\start, start??{dict.start},
 					\end, end??{dict.end},
@@ -113,14 +114,14 @@ SPlayFile : AbstractSPlayFile {
 			SynthDef((this.class.name++"_"++n).asSymbol, {|out= 0, buf, gate= 1,
 				amp= 1, rate= 1, loo= 0, atk= 0.01, rel= 0.05, cur= -4,
 				start= 0, end= 1, lag= 0.25, bus|
-				var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
 				var dur= BufFrames.ir(buf)*BufRateScale.ir(buf);
 				var diff= (end-start).lag2(lag).max(LFNoise2.kr(0.05).range(0.01, 0.02));
 				var pha= Phasor.ar(0, rate/dur/diff, 0, 1);
 				var pos= pha*diff+start.lag2(lag);
 				var snd= BufRd.ar(n, buf, pos*dur, loo);
 				var mix= SynthDef.wrap(this.prMix, nil, [snd]);
-				FreeSelf.kr(T2K.kr(HPZ1.ar(pos)<0)*(1-loo));
+				var done= SetResetFF.ar(HPZ1.ar(pos)<0*(1-loo));
+				var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate*(1-done), doneAction:2);
 				Out.kr(bus, pos);
 				Out.ar(out, mix*amp.lag*env);
 			}).add;

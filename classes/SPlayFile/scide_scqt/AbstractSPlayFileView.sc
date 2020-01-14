@@ -21,7 +21,6 @@ AbstractSPlayFileView {
 	var <currentFilePath;
 	var soundfiles;
 	var cursorUpdater;
-	var selectedCursorPosition;
 	var volumeSpec;
 	var filePopup, readButton,
 	vZoomSlider, waveView, hZoomSlider,
@@ -137,10 +136,9 @@ AbstractSPlayFileView {
 		vZoomSlider.mouseMoveAction= vZoomSlider.mouseDownAction;
 
 		waveView.mouseDownAction= {|view, x, y, mod, num, cnt|
-			selectedCursorPosition= view.timeCursorPosition;
 			if(cnt==2 and:{playButton.value==0}, {
-				waveView.setSelectionStart(0, selectedCursorPosition);
-				waveView.setSelectionSize(0, waveView.numFrames-selectedCursorPosition);
+				waveView.setSelectionStart(0, view.timeCursorPosition);
+				waveView.setSelectionSize(0, waveView.numFrames-view.timeCursorPosition);
 				playButton.valueAction= 1;
 				true;  //block propagation
 			});

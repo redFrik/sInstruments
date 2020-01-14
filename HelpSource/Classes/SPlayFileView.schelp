@@ -7,6 +7,10 @@ DESCRIPTION::
 
 a gui for ram player.
 
+NOTE::
+For now, for efficiency reasons, only the first channel is plotted.
+::
+
 CLASSMETHODS::
 
 INSTANCEMETHODS::
