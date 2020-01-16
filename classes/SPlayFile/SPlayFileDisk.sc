@@ -2,7 +2,7 @@
 
 SPlayFileDisk : AbstractSPlayFile {
 	classvar id= 2222;
-	var >bufferSize= 8192;  //decrease for faster frame updates, increase for disk dropout safety
+	var <>bufferSize= 8192;  //decrease for faster frame updates, increase for disk dropout safety
 
 	frame {
 		if(voices.size>0, {

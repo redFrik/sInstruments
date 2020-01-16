@@ -17,13 +17,28 @@ SPlayFileDiskView : AbstractSPlayFileView {
 
 		cursorUpdater= Routine({
 			var lastFrame= 0;
+			var lastTime= 0;
+			var timeDiff= 0;
 			inf.do{
 				var f= spf.frame;
-				if(f!=lastFrame, {
-					lastFrame= f;
+				var percentage;
+				if(f>0, {
+					if(f!=lastFrame, {
+						lastFrame= f;
+						timeDiff= spf.bufferSize/spf.server.sampleRate;
+						lastTime= Main.elapsedTime;
+					}, {
+						percentage= Main.elapsedTime.linlin(lastTime, lastTime+timeDiff, 0, 1);
+						f= lastFrame+(spf.bufferSize*percentage);
+					});
 					waveView.timeCursorPosition= f;
+				}, {
+					if(lastFrame!=0, {
+						waveView.timeCursorPosition= f;
+						lastFrame= 0;
+					});
 				});
-				0.01.wait;
+				(1/fps).wait;
 			};
 		}).play(AppClock);
 	}

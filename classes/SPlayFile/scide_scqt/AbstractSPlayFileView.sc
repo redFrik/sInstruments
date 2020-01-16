@@ -11,7 +11,6 @@
 //TODO time markers in seconds
 //TODO nicer loading with progress indication
 //TODO better way to mix down 1 ch for display and not only use the first channel as now
-//TODO increase cursor updaterate with predictive animation
 //TODO improve helpfile
 
 AbstractSPlayFileView {
@@ -19,6 +18,7 @@ AbstractSPlayFileView {
 	var <spf;
 	var <duration= -1;
 	var <currentFilePath;
+	var <>fps= 25;
 	var soundfiles;
 	var cursorUpdater;
 	var volumeSpec;

@@ -32,7 +32,7 @@ SPlayFileView : AbstractSPlayFileView {
 					lastFrame= f;
 					waveView.timeCursorPosition= f;
 				});
-				0.05.wait;
+				(1/fps).wait;
 			};
 		}).play(AppClock);
 	}

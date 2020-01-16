@@ -32,6 +32,8 @@ INSTANCEMETHODS::
 
 PRIVATE::init
 
+METHOD::fps
+Cursor update rate in frames per second.
 
 EXAMPLES::
 See the helpfiles for subclasses.
