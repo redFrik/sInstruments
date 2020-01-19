@@ -44,7 +44,7 @@ AbstractSPlayFileView {
 			HLayout(
 				[filePopup= PopUpMenu().items_(
 					["_"]++soundfiles.collect{|x| x.path.basename}
-				), \stretch: 1],
+				).canFocus_(false), \stretch: 1],
 
 				readButton= Button().states_([
 					["read"]
