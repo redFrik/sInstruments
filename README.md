@@ -1,8 +1,21 @@
+
 a [Quark](http://supercollider-quarks.github.io/quarks/) for [SuperCollider](http://supercollider.github.io)
 
 # sInstruments
 
 some instruments written in SuperCollider in collaboration with Tamas Ungvary.
+
+homepage: https://redfrik.github.io/sInstruments
+
+## Requirements
+
+[SuperCollider](http://supercollider.github.io) version 3.10 or newer running under macOS, Linux or Windows.
+
+## Dependancies
+
+sStream needs the latest [VST plugin](https://git.iem.at/pd/vstplugin/-/releases) and (for now) the [Pianoteq 6 STAGE](https://www.modartt.com/pianoteq) vst plug.
+
+## Installation
 
 ```supercollider
 //install
@@ -12,9 +25,7 @@ Quarks.install("sInstruments")
 SInstruments.openHelpFile
 ```
 
-## Dependancies
-
-sStream needs the [VST plugin](https://git.iem.at/pd/vstplugin/-/releases) and the [Pianoteq 6 STAGE](https://www.modartt.com/pianoteq) VST plug.
+[optional] put soundfiles and folders of soundfiles in the directory `soundfiles`.
 
 ## Notes
 
@@ -46,13 +57,13 @@ These instruments are made to be played with custom hardware (3D sensors, slider
 
 ## sInputs
 
-<img src="images/sGreybox.png" alt="sGreybox" width="454px"/>
+<img src="images/sGreybox.png" alt="sGreybox" width="454px"/> [<img src="images/sGreybox-schematics.svg" alt="sGreybox-schematics" width="200px"/>](images/sGreybox-schematics.svg) [<img src="images/sGreybox-photo.jpg" alt="sGreybox-photo" width="200px"/>](images/sGreybox-photo.jpg)
 
-<img src="images/sGreybox2.png" alt="sGreybox2" width="454px"/>
+<img src="images/sGreybox2.png" alt="sGreybox2" width="454px"/> [<img src="images/sGreybox2-schematics.svg" alt="sGreybox2-schematics" width="200px"/>](images/sGreybox2-schematics.svg) [<img src="images/sGreybox2-photo.jpg" alt="sGreybox2-photo" width="200px"/>](images/sGreybox2-photo.jpg)
 
 <img src="images/sKeyboard.png" alt="sKeyboard" width="912px"/>
 
-<img src="images/sKeyBpad.png" alt="sKeyBpad" width="512px"/>
+<img src="images/sKeyBpad.png" alt="sKeyBpad" width="512px"/> [<img src="images/sKeyBpad-photo.jpg" alt="sKeyBpad-photo" width="200px"/>](images/sKeyBpad-photo.jpg)
 
 <img src="images/sKeyCpad.png" alt="sKeyCpad" width="512px"/> [<img src="images/sKeyCpad-schematics.svg" alt="sKeyCpad-schematics" width="200px"/>](images/sKeyCpad-schematics.svg) [<img src="images/sKeyCpad-photo.jpg" alt="sKeyCpad-photo" width="200px"/>](images/sKeyCpad-photo.jpg)
 
