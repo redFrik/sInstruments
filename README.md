@@ -57,6 +57,11 @@ These instruments are made to be played with custom hardware (3D sensors, slider
 <img src="images/sKeyCpad.png" alt="sKeyCpad" width="512px"/>
 
 <img src="images/sKeyDpad.png" alt="sKeyDpad" width="262px"/>
+<object data="images/sKeyDpad-schematics.pdf" type="application/pdf" width="360px" height="360px">
+    <embed src="images/sKeyDpad-schematics.pdf">
+        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="sKeyDpad-schematics.pdf">Download PDF</a>.</p>
+    </embed>
+</object>
 
 <img src="images/sNanoKontrol.png" alt="sNanoKontrol" width="895px"/>
 
