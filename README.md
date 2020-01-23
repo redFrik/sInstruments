@@ -77,3 +77,6 @@ These instruments are made to be played with custom hardware (3D sensors, slider
 
 <img src="images/sText.png" alt="sText" width="512px"/>
 
+## other classes
+
+<img src="images/SPlayFileDiskView.png" alt="SPlayFileDiskView" width="912px"/>
