@@ -57,17 +57,17 @@ These instruments are made to be played with custom hardware (3D sensors, slider
 
 ## sInputs
 
-<img src="images/sGreybox.png" alt="sGreybox" width="454px"/> [<img src="images/sGreybox-photo.jpg" alt="sGreybox-photo" width="200px"/>](images/sGreybox-photo.jpg) [<img src="schematics/sGreybox-schematics.svg" alt="sGreybox-schematics" height="150px"/>](schematics/sGreybox-schematics.svg) [<img src="images/icon_firmware.svg" alt="arduino firmware" height="150px"/>](firmware/sGreybox-firmware.ino)
+<img src="images/sGreybox.png" alt="sGreybox" width="454px"/> [<img src="images/sGreybox-photo.jpg" alt="sGreybox-photo" width="200px"/>](images/sGreybox-photo.jpg) [<img src="schematics/sGreybox-schematics.svg" alt="sGreybox-schematics" height="100px"/>](schematics/sGreybox-schematics.svg) [<img src="images/icon_firmware.svg" alt="arduino firmware" height="50px"/>](firmware/sGreybox-firmware.ino)
 
-<img src="images/sGreybox2.png" alt="sGreybox2" width="454px"/> [<img src="images/sGreybox2-photo.jpg" alt="sGreybox2-photo" width="200px"/>](images/sGreybox2-photo.jpg) [<img src="schematics/sGreybox2-schematics.svg" alt="sGreybox2-schematics" height="150px"/>](schematics/sGreybox2-schematics.svg) [<img src="images/icon_firmware.svg" alt="arduino firmware" height="150px"/>](firmware/sGreybox2-firmware.ino)
+<img src="images/sGreybox2.png" alt="sGreybox2" width="454px"/> [<img src="images/sGreybox2-photo.jpg" alt="sGreybox2-photo" width="200px"/>](images/sGreybox2-photo.jpg) [<img src="schematics/sGreybox2-schematics.svg" alt="sGreybox2-schematics" height="100px"/>](schematics/sGreybox2-schematics.svg) [<img src="images/icon_firmware.svg" alt="arduino firmware" height="50px"/>](firmware/sGreybox2-firmware.ino)
 
 <img src="images/sKeyboard.png" alt="sKeyboard" width="912px"/>
 
-<img src="images/sKeyBpad.png" alt="sKeyBpad" width="512px"/> [<img src="images/sKeyBpad-photo.jpg" alt="sKeyBpad-photo" width="200px"/>](images/sKeyBpad-photo.jpg) [<img src="images/icon_firmware.svg" alt="arduino firmware" height="150px"/>](firmware/sKeyBpad-firmware.ino)
+<img src="images/sKeyBpad.png" alt="sKeyBpad" width="512px"/> [<img src="images/sKeyBpad-photo.jpg" alt="sKeyBpad-photo" width="200px"/>](images/sKeyBpad-photo.jpg) [<img src="images/icon_firmware.svg" alt="arduino firmware" height="50px"/>](firmware/sKeyBpad-firmware.ino)
 
-<img src="images/sKeyCpad.png" alt="sKeyCpad" width="512px"/> [<img src="images/sKeyCpad-photo.jpg" alt="sKeyCpad-photo" width="200px"/>](images/sKeyCpad-photo.jpg) [<img src="schematics/sKeyCpad-schematics.svg" alt="sKeyCpad-schematics" height="150px"/>](schematics/sKeyCpad-schematics.svg) [<img src="images/icon_firmware.svg" alt="arduino firmware" height="150px"/>](firmware/sKeyCpad-firmware.ino)
+<img src="images/sKeyCpad.png" alt="sKeyCpad" width="512px"/> [<img src="images/sKeyCpad-photo.jpg" alt="sKeyCpad-photo" width="200px"/>](images/sKeyCpad-photo.jpg) [<img src="schematics/sKeyCpad-schematics.svg" alt="sKeyCpad-schematics" height="100px"/>](schematics/sKeyCpad-schematics.svg) [<img src="images/icon_firmware.svg" alt="arduino firmware" height="50px"/>](firmware/sKeyCpad-firmware.ino)
 
-<img src="images/sKeyDpad.png" alt="sKeyDpad" width="262px"/> [<img src="images/sKeyDpad-photo.jpg" alt="sKeyDpad-photo" width="200px"/>](images/sKeyDpad-photo.jpg) [<img src="schematics/sKeyDpad-schematics.svg" alt="sKeyDpad-schematics" height="150px"/>](schematics/sKeyDpad-schematics.svg) [<img src="images/icon_firmware.svg" alt="arduino firmware" height="150px"/>](firmware/sKeyDpad-firmware.ino)
+<img src="images/sKeyDpad.png" alt="sKeyDpad" width="262px"/> [<img src="images/sKeyDpad-photo.jpg" alt="sKeyDpad-photo" width="200px"/>](images/sKeyDpad-photo.jpg) [<img src="schematics/sKeyDpad-schematics.svg" alt="sKeyDpad-schematics" height="100px"/>](schematics/sKeyDpad-schematics.svg) [<img src="images/icon_firmware.svg" alt="arduino firmware" height="50px"/>](firmware/sKeyDpad-firmware.ino)
 
 <img src="images/sNanoKontrol.png" alt="sNanoKontrol" width="895px"/>
 
