@@ -612,13 +612,13 @@ SGUIsettings : SGUI {
 	initSGUIsettings {
 		var size= Size(22, 22);
 		var button;
-		view= StackLayout(
+		view= View().maxHeight_(size.height).layout_(StackLayout(
 			UserView().drawFunc_({
 				Pen.strokeColor= currentPalette.buttonText;
 				SGUIicons.drawCog(size.width);
 			}).acceptsMouse_(false).fixedSize_(size),
 			button= Button().states_([]).fixedSize_(size)
-		).mode_(\stackAll);
+		).mode_(\stackAll));
 		button.action= {|view|
 			action.value(view);
 		};
