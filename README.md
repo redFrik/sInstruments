@@ -3,9 +3,9 @@ a [Quark](http://supercollider-quarks.github.io/quarks/) for [SuperCollider](htt
 
 # sInstruments
 
-some instruments written in SuperCollider in collaboration with Tamas Ungvary.
+Some instruments written in SuperCollider in collaboration with Tamas Ungvary.
 
-homepage: https://redfrik.github.io/sInstruments
+The code is available here: [https://github.com/redFrik/sInstruments](https://github.com/redFrik/sInstruments)
 
 ## Requirements
 
@@ -13,7 +13,7 @@ homepage: https://redfrik.github.io/sInstruments
 
 ## Dependancies
 
-sStream needs the latest [VST plugin](https://git.iem.at/pd/vstplugin/-/releases) and (for now) the [Pianoteq 6 STAGE](https://www.modartt.com/pianoteq) vst plug.
+One of the instruments, sStream, needs the latest [VST plugin](https://git.iem.at/pd/vstplugin/-/releases) and (for now) the [Pianoteq 6 STAGE](https://www.modartt.com/pianoteq) vst plug. All the other instruments can be run without any external libraries or plugins.
 
 ## Installation
 
