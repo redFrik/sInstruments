@@ -857,17 +857,19 @@ SGUIsnapshots : SGUI {
 	}
 	recall {|index, key|
 		"recalling snapshot %:%".format(files[index].key, key).postln;
-		banks[index][key].do{|assoc|
-			if(recallFunctions[assoc.key].notNil, {
-				recallFunctions[assoc.key].value(assoc.value);
-			}, {
-				include.pairsDo{|k, v|
-					if(k==assoc.key, {
-						v.valueAction= assoc.value;
-					});
-				};
-			});
-		};
+		Routine({
+			banks[index][key].do{|assoc|
+				if(recallFunctions[assoc.key].notNil, {
+					recallFunctions[assoc.key].value(assoc.value);
+				}, {
+					include.pairsDo{|k, v|
+						if(k==assoc.key, {
+							v.valueAction= assoc.value;
+						});
+					};
+				});
+			};
+		}).play(AppClock);
 	}
 	updateSnapButtons {|index|
 		snapButtons.do{|but, i|
