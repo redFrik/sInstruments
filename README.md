@@ -12,7 +12,7 @@ homepage: https://redfrik.github.io/sInstruments
 
 ## Dependancies
 
-sStream needs the latest [VST plugin](https://git.iem.at/pd/vstplugin/-/releases) and (for now) the [Pianoteq 6 STAGE](https://www.modartt.com/pianoteq) vst plug.
+sStream needs the latest [VST plugin](https://git.iem.at/pd/vstplugin/-/releases) and works best with the [Pianoteq 6 STAGE](https://www.modartt.com/pianoteq) vst plug.
 
 ## Installation
 
