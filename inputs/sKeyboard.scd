@@ -6,7 +6,7 @@ var winRect= Rect(0, 60, 800, 120);  //x, y, w, h
 var palette= SGUI.palette;
 var fnt= SGUI.font;
 var fnt2= SGUI.font.copy.size_(10);
-var range= [36, 96];  //minmax range in midinotes, first&last black keys are ignored
+var range= #[36, 96];  //minmax range in midinotes, first&last black keys are ignored
 
 //--functions and objects
 var keys, createKeys, numWhiteKeys, lastKey;
@@ -32,14 +32,14 @@ win.layout= VLayout(
 		View().fixedWidth_(55),
 		StaticText().string_("Presets:"),
 		[presetsPop= PopUpMenu(), stretch:1],
-		clearButton= Button().states_([["Clear"]])
+		clearButton= Button().states_(#[["Clear"]])
 	),
 	usrView= UserView().minSize_(Size(winRect.width-22, winRect.height*0.75)),
 	midiNotesText= TextView().maxHeight_(22),
 	midiVelocitiesText= TextView().maxHeight_(22),
 	HLayout(
 		midiSendPop= PopUpMenu().items_(#["sCluster", "sDrone", "sGliss", "sStream-patterns", "sStream"]),
-		midiSendBut= Button().states_([["Send"]])
+		midiSendBut= Button().states_(#[["Send"]])
 	)
 );
 SGUI.report(win);

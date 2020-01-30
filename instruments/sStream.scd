@@ -269,7 +269,7 @@ s.waitForBoot{
 					lvSynthParameters1= StackLayout(
 						View().layout_(
 							HLayout(
-								lvVstBrowseButton= Button().states_([["Browse"]]).maxWidth_(50),
+								lvVstBrowseButton= Button().states_(#[["Browse"]]).maxWidth_(50),
 								lvVstEditorButton= Button(),
 								lvVstProgramPopup= PopUpMenu().background_(palette.highlight.complementary)  //sound LV (bgr_1)
 							).margins_(0)
@@ -358,9 +358,9 @@ s.waitForBoot{
 					]), lvPitchesOnButtonSpec).fixedWidth_(145),
 					StaticText().string_("LV # Pitches").fixedWidth_(83),
 					lvPitchesNumber= NumberBox().fixedWidth_(55),
-					lvPitchesLoopPopup= PopUpMenu().items_(
-						#["Loop forward", "Loop backward", "Loop palindrome", "Stutter", "Scramble"]
-					)
+					lvPitchesLoopPopup= PopUpMenu().items_(#[
+						"Loop forward", "Loop backward", "Loop palindrome", "Stutter", "Scramble"
+					])
 				),
 				HLayout(
 					lvPitchMinMaxRangeElement.addView(RangeSlider().orientation_(\vertical).maxWidth_(22)),  //minimum Pitch, maximum Pitch (c_9, c_12)
@@ -384,9 +384,9 @@ s.waitForBoot{
 					]), lvVelocitiesOnButtonSpec).fixedWidth_(145),
 					StaticText().string_("LV # Velocities").fixedWidth_(83),
 					lvVelocitiesNumber= NumberBox().fixedWidth_(55),
-					lvVelocitiesLoopPopup= PopUpMenu().items_(
-						#["Loop forward", "Loop backward", "Loop palindrome", "Stutter", "Scramble"]
-					)
+					lvVelocitiesLoopPopup= PopUpMenu().items_(#[
+						"Loop forward", "Loop backward", "Loop palindrome", "Stutter", "Scramble"
+					])
 				),
 				HLayout(
 					lvVolumeElement.addView(Slider().orientation_(\vertical).maxWidth_(22)),  //LV Loudness (c_14)
@@ -412,7 +412,7 @@ s.waitForBoot{
 					avSynthParameters1= StackLayout(
 						View().layout_(
 							HLayout(
-								avVstBrowseButton= Button().states_([["Browse"]]).maxWidth_(50),
+								avVstBrowseButton= Button().states_(#[["Browse"]]).maxWidth_(50),
 								avVstEditorButton= Button(),
 								avVstProgramPopup= PopUpMenu().background_(palette.highlight.complementary)  //sound AV (bgr_7)
 							).margins_(0)
@@ -1999,26 +1999,26 @@ s.waitForBoot{
 				{
 					lvPitchesArray= msg.copyRange(1, maxNumSteps).cpsmidi;
 					lvPitchesNumber.value= lvPitchesArray.size;
-					lvPitchesRangeElement.valueAction= [0, 1];
+					lvPitchesRangeElement.valueAction= #[0, 1];
 				}.defer;
 			}, \patternFrequencies, recvPort:oscPort),
 			OSCFunc({|msg|
 				{
 					lvVelocitiesArray= msg.copyRange(1, maxNumSteps);
 					lvVelocitiesNumber.value= lvVelocitiesArray.size;
-					lvVelocitiesRangeElement.valueAction= [0, 1];
+					lvVelocitiesRangeElement.valueAction= #[0, 1];
 				}.defer;
 			}, \patternAmplitudes, recvPort:oscPort),
 			OSCFunc({|msg|
 				{
-					avPitchesArray= msg.copyRange(1, maxNumVoices).cpsmidi.round.asInteger-60;
-					avVoicesNumberElement.valueAction= avVoicesNumberSpec.unmap(avPitchesArray.size);
+					avPitchesBuffer= msg.copyRange(1, maxNumVoices).cpsmidi.round.asInteger-60;
+					avVoicesNumberElement.valueAction= avVoicesNumberSpec.unmap(avPitchesBuffer.size);
 				}.defer;
 			}, \frequencies, recvPort:oscPort),
 			OSCFunc({|msg|
 				{
-					avVelocitiesArray= msg.copyRange(1, maxNumVoices);
-					avVoicesNumberElement.valueAction= avVoicesNumberSpec.unmap(avVelocitiesArray.size);
+					avVelocitiesBuffer= msg.copyRange(1, maxNumVoices);
+					avVoicesNumberElement.valueAction= avVoicesNumberSpec.unmap(avVelocitiesBuffer.size);
 				}.defer;
 			}, \amplitudes, recvPort:oscPort),
 
