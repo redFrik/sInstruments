@@ -25,7 +25,7 @@ win.layout= VLayout(
 	amplitudesText= TextView(),
 	HLayout(
 		amplitudesSendPop= PopUpMenu().items_(#["sCluster", "sDrone", "sGliss", "sStream-patterns", "sStream"]),
-		amplitudesSendBut= Button().states_([["Send"]])
+		amplitudesSendBut= Button().states_(#[["Send"]])
 	),
 	View().fixedHeight_(10),
 	HLayout(
@@ -35,7 +35,7 @@ win.layout= VLayout(
 	frequenciesText= TextView(),
 	HLayout(
 		frequenciesSendPop= PopUpMenu().items_(#["sCluster", "sDrone", "sGliss", "sStream-patterns", "sStream"]),
-		frequenciesSendBut= Button().states_([["Send"]])
+		frequenciesSendBut= Button().states_(#[["Send"]])
 	)
 );
 SGUI.report(win);

@@ -1,4 +1,4 @@
-//f.olofsson & t.ungvary 2019
+//f.olofsson & t.ungvary 2019-2020
 //port of fIGMA
 
 (
@@ -45,11 +45,16 @@ var snapshotFiles= [  //name and file (both can be changed)
 	\Bank8 -> "sStream_snapshots_Bank8.scd",
 	\Bank9 -> "sStream_snapshots_Bank9.scd"
 ];
+var synthPopupItems= #[  //available synths and order in popup
+	\VSTPlug, \SineFB, \Sine, \Saw, \Pulse,
+	\Formant, \Pink, \Noise, \Karplus, \PulseWarm
+	//files and folders are generated automatically from soundfiles folder
+];
 
 //--defaults
 var defaultAttack= 0.1;
 var defaultRelease= 1;
-var defaultPlug= "Pianoteq*STAGE";  //wildcard
+var defaultPlug= "Pianoteq 6 STAGE";
 var defaultScale= Scale.chromatic;
 var defaultOctave= 5;
 var defaultSustain= 0.5;  //seconds
@@ -57,15 +62,22 @@ var defaultAVFalloutVoices= 5;  //percent
 var defaultAVFalloutChords= 0;  //percent
 var defaultMainVolume= 0.0;  //dB
 
+var soundfiles= SoundFile.collect(SInstruments.soundfilesDir+/+"*");
+var soundfolders= (SInstruments.soundfilesDir+/+"*").pathMatch.select{|x|
+	PathName(x).isFolder;
+}.collect{|f|
+	(path: f, soundfiles: SoundFile.collect(f+/+"*"));
+};
+
 s.options.numWireBufs= s.options.numWireBufs.max(128);
 s.options.memSize= s.options.memSize.max(2**16);
 s.latency= 0.08;
 s.waitForBoot{
 
 	//--functions and objects
+	var buffers;
 	var usrPadding= Size(20, 6);  //left, top+bottom
-	var strWidth= "127".bounds(fnt2).width;
-	var strHeight= "127".bounds(fnt2).height;
+	var strSize= Size("127".bounds(fnt2).width, "127".bounds(fnt2).height);
 
 	var patterns, readPatternsFromDisk, writeUserPatternsToDisk;
 	var chords, readChordsFromDisk, writeUserChordsToDisk;
@@ -115,7 +127,10 @@ s.waitForBoot{
 	var rateMultiplierSpec= ControlSpec(0, 3, 'lin', 1, 0);
 
 	var lvOnElement= SGUIelement();
-	var lvVstEditorButton, lvVstProgramPopup;
+	var lvSynthPopup;
+	var lvVstBrowseButton, lvVstEditorButton, lvVstProgramPopup;
+	var lvSynthParameters1, lvSynthParameters2;
+	var lvSynthAtkNumber, lvSynthRelNumber, lvSynthCurNumber;
 	var lvProgramSelectButtons= List.new;
 	var lvProgramSelectPopups= List.new;
 	var lvScaleList;
@@ -149,7 +164,10 @@ s.waitForBoot{
 	var lvVelocitiesRangeElement= SGUIelementRange();
 
 	var avOnElement= SGUIelement();
-	var avVstEditorButton, avVstProgramPopup;
+	var avSynthPopup;
+	var avVstBrowseButton, avVstEditorButton, avVstProgramPopup;
+	var avSynthParameters1, avSynthParameters2;
+	var avSynthAtkNumber, avSynthRelNumber, avSynthCurNumber;
 	var avProgramSelectButtons= List.new;
 	var avProgramSelectPopups= List.new;
 	var avScaleList;
@@ -253,23 +271,48 @@ s.waitForBoot{
 					lvOnElement.addView(Button().states_([  //LV on/off (b_73)
 						["  Leading Voice", palette.buttonText, palette.button],
 						["•Leading Voice", palette.buttonText, palette.highlight]
-					])),
-					lvVstEditorButton= Button().states_([
-						["LVVst:", palette.buttonText, palette.button]
-					]),
-					lvVstProgramPopup= PopUpMenu().background_(palette.highlight.complementary)  //sound LV (bgr_1)
+					]).fixedWidth_(120)),
+					lvSynthPopup= PopUpMenu().items_(synthPopupItems).fixedWidth_(90),
+					lvSynthParameters1= StackLayout(
+						View().layout_(
+							HLayout(
+								lvVstBrowseButton= Button().states_(#[["Browse"]]).maxWidth_(50),
+								lvVstEditorButton= Button(),
+								lvVstProgramPopup= PopUpMenu().background_(palette.highlight.complementary)  //sound LV (bgr_1)
+							).margins_(0)
+						),
+						View().layout_(
+							HLayout(
+								StaticText().string_("atk"),
+								StaticText().string_("rel"),
+								StaticText().string_("cur")
+							).margins_(0)
+						)
+					)
 				),
-				HLayout(
-					*(lvProgramSelectKeys.collect{|chr|
-						var but= Button().states_([
-							[chr.asString, palette.buttonText, palette.button],
-							[chr.asString, palette.buttonText, palette.highlight.complementary]
-						]).fixedWidth_(25);
-						var pop= PopUpMenu();
-						lvProgramSelectButtons.add(but);
-						lvProgramSelectPopups.add(pop);
-						[but, pop];
-					}.flat)
+				lvSynthParameters2= StackLayout(
+					View().layout_(
+						HLayout(
+							*(lvProgramSelectKeys.collect{|chr|
+								var but= Button().states_([
+									[chr.asString, palette.buttonText, palette.button],
+									[chr.asString, palette.buttonText, palette.highlight.complementary]
+								]).fixedWidth_(25);
+								var pop= PopUpMenu();
+								lvProgramSelectButtons.add(but);
+								lvProgramSelectPopups.add(pop);
+								[but, pop];
+							}.flat)
+						).margins_(0)
+					),
+					View().layout_(
+						HLayout(
+							View().fixedWidth_(120+90+4),
+							lvSynthAtkNumber= NumberBox().decimals_(3).scroll_step_(0.01).shift_scale_(0.1),
+							lvSynthRelNumber= NumberBox().decimals_(2).scroll_step_(0.1).shift_scale_(0.1),
+							lvSynthCurNumber= NumberBox().decimals_(1).scroll_step_(1).shift_scale_(0.1)
+						).margins_(0)
+					)
 				),
 				HLayout(
 					lvScaleList= ListView().maxSize_(Size(125, 115)).background_(Color.clear),
@@ -322,9 +365,9 @@ s.waitForBoot{
 					]), lvPitchesOnButtonSpec).fixedWidth_(145),
 					StaticText().string_("LV # Pitches").fixedWidth_(83),
 					lvPitchesNumber= NumberBox().fixedWidth_(55),
-					lvPitchesLoopPopup= PopUpMenu().items_(
-						#["Loop forward", "Loop backward", "Loop palindrome", "Stutter", "Scramble"]
-					)
+					lvPitchesLoopPopup= PopUpMenu().items_(#[
+						"Loop forward", "Loop backward", "Loop palindrome", "Stutter", "Scramble"
+					])
 				),
 				HLayout(
 					lvPitchMinMaxRangeElement.addView(RangeSlider().orientation_(\vertical).maxWidth_(22)),  //minimum Pitch, maximum Pitch (c_9, c_12)
@@ -348,9 +391,9 @@ s.waitForBoot{
 					]), lvVelocitiesOnButtonSpec).fixedWidth_(145),
 					StaticText().string_("LV # Velocities").fixedWidth_(83),
 					lvVelocitiesNumber= NumberBox().fixedWidth_(55),
-					lvVelocitiesLoopPopup= PopUpMenu().items_(
-						#["Loop forward", "Loop backward", "Loop palindrome", "Stutter", "Scramble"]
-					)
+					lvVelocitiesLoopPopup= PopUpMenu().items_(#[
+						"Loop forward", "Loop backward", "Loop palindrome", "Stutter", "Scramble"
+					])
 				),
 				HLayout(
 					lvVolumeElement.addView(Slider().orientation_(\vertical).maxWidth_(22)),  //LV Loudness (c_14)
@@ -371,23 +414,48 @@ s.waitForBoot{
 					avOnElement.addView(Button().states_([  //AV on/off (b_72)
 						["  Additional Voices", palette.buttonText, palette.button],
 						["•Additional Voices", palette.buttonText, palette.highlight]
-					])),
-					avVstEditorButton= Button().states_([
-						["AVVst:", palette.buttonText, palette.button]
-					]),
-					avVstProgramPopup= PopUpMenu().background_(palette.highlight.complementary)  //sound AV (bgr_7)
+					]).fixedWidth_(120)),
+					avSynthPopup= PopUpMenu().items_(synthPopupItems).fixedWidth_(90),
+					avSynthParameters1= StackLayout(
+						View().layout_(
+							HLayout(
+								avVstBrowseButton= Button().states_(#[["Browse"]]).maxWidth_(50),
+								avVstEditorButton= Button(),
+								avVstProgramPopup= PopUpMenu().background_(palette.highlight.complementary)  //sound AV (bgr_7)
+							).margins_(0)
+						),
+						View().layout_(
+							HLayout(
+								StaticText().string_("atk"),
+								StaticText().string_("rel"),
+								StaticText().string_("cur")
+							).margins_(0)
+						)
+					)
 				),
-				HLayout(
-					*(avProgramSelectKeys.collect{|chr|
-						var but= Button().states_([
-							[chr.asString, palette.buttonText, palette.button],
-							[chr.asString, palette.buttonText, palette.highlight.complementary]
-						]).fixedWidth_(25);
-						var pop= PopUpMenu();
-						avProgramSelectButtons.add(but);
-						avProgramSelectPopups.add(pop);
-						[but, pop];
-					}.flat)
+				avSynthParameters2= StackLayout(
+					View().layout_(
+						HLayout(
+							*(avProgramSelectKeys.collect{|chr|
+								var but= Button().states_([
+									[chr.asString, palette.buttonText, palette.button],
+									[chr.asString, palette.buttonText, palette.highlight.complementary]
+								]).fixedWidth_(25);
+								var pop= PopUpMenu();
+								avProgramSelectButtons.add(but);
+								avProgramSelectPopups.add(pop);
+								[but, pop];
+							}.flat)
+						).margins_(0)
+					),
+					View().layout_(
+						HLayout(
+							View().fixedWidth_(120+90+4),
+							avSynthAtkNumber= NumberBox().decimals_(3).scroll_step_(0.01).shift_scale_(0.1),
+							avSynthRelNumber= NumberBox().decimals_(2).scroll_step_(0.1).shift_scale_(0.1),
+							avSynthCurNumber= NumberBox().decimals_(1).scroll_step_(1).shift_scale_(0.1)
+						).margins_(0)
+					)
 				),
 				HLayout(
 					avScaleList= ListView().maxSize_(Size(125, 115)).background_(Color.clear),
@@ -527,11 +595,9 @@ s.waitForBoot{
 		{chr==Char.space} {onElement.valueAction= 1-onElement.value}
 		{lvProgramSelectKeys.includes(chr.toUpper)} {
 			lvProgramSelectButtons[lvProgramSelectKeys.indexOf(chr.toUpper)].valueAction= 1;
-			{lvProgramSelectButtons[lvProgramSelectKeys.indexOf(chr.toUpper)].value= 0}.defer(0.2);
 		}
 		{avProgramSelectKeys.includes(chr.toUpper)} {
 			avProgramSelectButtons[avProgramSelectKeys.indexOf(chr.toUpper)].valueAction= 1;
-			{avProgramSelectButtons[avProgramSelectKeys.indexOf(chr.toUpper)].value= 0}.defer(0.2);
 		}
 		{keycode==124} {lvOctaveElement.value= lvOctaveSpec.unmap(lvOctaveSpec.map(lvOctaveElement.value)+1)}  //right
 		{keycode==123} {lvOctaveElement.value= lvOctaveSpec.unmap(lvOctaveSpec.map(lvOctaveElement.value)-1)}  //left
@@ -549,6 +615,7 @@ s.waitForBoot{
 		oscResponders.do{|x| x.free};
 		//stream.stop;
 		mainOutSyn.release(1);
+		buffers.do{|b| b.free};
 		backgroundImage.free;
 		{
 			sStream_bus.free;
@@ -589,13 +656,17 @@ s.waitForBoot{
 		Pdefn(\sStream_note, lvVal);
 		if(lvPitchBendOnElement.value>0, {
 			lb= val-0.5*lvPitchBendElement.value*(lvPitchBendSpec.maxval/2400)+0.5;
-			lvVst.set('Pitch Bend', lb);
+			if(lvVst.info.name==defaultPlug, {  //TODO remove this temp check later
+				lvVst.set('Pitch Bend', lb);
+			});
 			midiOutput.bend(0, lb*16383);
 		});
 		if(avPitchBendOnElement.value>0, {
 			ab= val-0.5*avPitchBendElement.value*(avPitchBendSpec.maxval/2400)+0.5;
-			avVst.set('Pitch Bend', ab);
-			midiOutput.bend(1, ab*16383);
+			if(avVst.info.name==defaultPlug, {  //TODO remove this temp check later
+				avVst.set('Pitch Bend', ab);
+			});
+			midiOutput.bend(1, ab*16383);  //TODO should send out on more channels
 		});
 	};
 
@@ -634,6 +705,52 @@ s.waitForBoot{
 		SInputs.destinations[\sGreybox].sendMsg(\led, \lvOn, val);
 	};
 
+	lvSynthPopup.action= {|view|
+		Routine({
+			var synthType= view.items[view.value];
+			var sf, str;
+			case
+			{synthType==\VSTPlug} {
+				lvSynthParameters1.index= 0;
+				lvSynthParameters2.index= 0;
+			}
+			{(str= synthType.asString).beginsWith("File_")} {
+				str= str.copyToEnd(str.indexOf($_)?(-1)+1);  //remove File_ or Fold_
+				sf= soundfiles.detect{|f| f.path.basename.split($.)[0]==str};
+				buffers[0].free;
+				buffers[0]= Buffer.read(s, sf.path);
+				s.sync;
+				buffers[0].normalize;
+				s.sync;
+			}
+			{
+				lvSynthParameters1.index= 1;
+				lvSynthParameters2.index= 1;
+			};
+			createStream.value;
+		}).play(AppClock);
+	};
+
+	lvSynthAtkNumber.value= 0.01;
+	lvSynthAtkNumber.action= {|view|
+		var val= view.value.max(0);
+		view.value= val;
+		Pdefn(\sStream_lvSynthAtk, val);
+	};
+	lvSynthRelNumber.value= 0.1;
+	lvSynthRelNumber.action= {|view|
+		var val= view.value.max(0);
+		view.value= val;
+		Pdefn(\sStream_lvSynthRel, val);
+	};
+	lvSynthCurNumber.value= -4;
+	lvSynthCurNumber.action= {|view|
+		Pdefn(\sStream_lvSynthCur, view.value);
+	};
+
+	lvVstBrowseButton.action= {|view|
+		lvVst.browse;
+	};
 	lvVstEditorButton.action= {|view|
 		lvVst.gui;
 	};
@@ -643,7 +760,10 @@ s.waitForBoot{
 
 	lvProgramSelectButtons.do{|but, i|
 		but.action= {|view|
-			lvVstProgramPopup.valueAction= lvProgramSelectPopups[i].value;
+			if(view.value==1, {
+				lvVstProgramPopup.valueAction= lvProgramSelectPopups[i].value;
+				{view.value= 0}.defer(0.2);
+			});
 		};
 	};
 
@@ -663,7 +783,9 @@ s.waitForBoot{
 		lvPitchesUsrAnimRedraw= true;
 	};
 	lvSustainOnElement.action= {|val|
-		lvVst.set('Sustain Pedal', val);
+		if(lvVst.info.name==defaultPlug, {  //TODO remove this temp check later
+			lvVst.set('Sustain Pedal', val);
+		});
 		SInputs.destinations[\sGreybox].sendMsg(\led, \sustain, val);
 	};
 
@@ -908,24 +1030,24 @@ s.waitForBoot{
 				Pen.addOval(Rect.aboutPoint(Point(x, y), 5, 5));
 			});
 			if(lvPitchesArray.size>30, {
-				if(x-xLastStr>(strHeight*0.75), {
+				if(x-xLastStr>(strSize.height*0.75), {
 					xLastStr= x;
 					Pen.push;
 					Pen.rotate(-0.5pi, x, y);
 					str= val.asInteger.asString;
 					if(val>112, {
-						Pen.stringRightJustIn(str, Rect.aboutPoint(Point(x-(strWidth*1.5), y), strWidth, strHeight));
+						Pen.stringRightJustIn(str, Rect.aboutPoint(Point(x-(strSize.width*1.5), y), strSize.width, strSize.height));
 					}, {
-						Pen.stringLeftJustIn(str, Rect.aboutPoint(Point(x+(strWidth*1.5), y), strWidth, strHeight));
+						Pen.stringLeftJustIn(str, Rect.aboutPoint(Point(x+(strSize.width*1.5), y), strSize.width, strSize.height));
 					});
 					Pen.pop;
 				});
 			}, {
 				str= val.asInteger.asString;
 				if(val>112, {
-					Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x, y+strHeight), strWidth, strHeight));
+					Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x, y+strSize.height), strSize.width, strSize.height));
 				}, {
-					Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x, y-strHeight), strWidth, strHeight));
+					Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x, y-strSize.height), strSize.width, strSize.height));
 				});
 			});
 		};
@@ -946,7 +1068,7 @@ s.waitForBoot{
 			var y= i.linlin(0, numMarkings-1, 0, 0-uh);
 			Pen.moveTo(Point(0, y));
 			Pen.lineTo(Point(uw, y));
-			Pen.stringRightJustIn(freq.asString, Rect.aboutPoint(Point(x, y), strWidth, strHeight));
+			Pen.stringRightJustIn(freq.asString, Rect.aboutPoint(Point(x, y), strSize.width, strSize.height));
 		};
 		Pen.stroke;
 	};
@@ -1023,7 +1145,9 @@ s.waitForBoot{
 	};
 
 	lvVolumeElement.action= {|val|
-		lvVst.set('Volume', val);
+		if(lvVst.info.name==defaultPlug, {  //TODO remove this temp check later
+			lvVst.set('Volume', val);
+		});
 	};
 
 	lvVelocitiesUsrAnim.background= Color.clear;
@@ -1058,24 +1182,24 @@ s.waitForBoot{
 				Pen.addOval(Rect.aboutPoint(Point(x, y), 5, 5));
 			});
 			if(lvVelocitiesArray.size>30, {
-				if(x-xLastStr>(strHeight*0.75), {
+				if(x-xLastStr>(strSize.height*0.75), {
 					xLastStr= x;
 					str= SGUI.fixDec(val, 1);
 					Pen.push;
 					Pen.rotate(-0.5pi, x, y);
 					if(val<0.85, {
-						Pen.stringLeftJustIn(str, Rect.aboutPoint(Point(x+(strWidth*1.5), y), strWidth, strHeight));
+						Pen.stringLeftJustIn(str, Rect.aboutPoint(Point(x+(strSize.width*1.5), y), strSize.width, strSize.height));
 					}, {
-						Pen.stringRightJustIn(str, Rect.aboutPoint(Point(x-(strWidth*1.5), y), strWidth, strHeight));
+						Pen.stringRightJustIn(str, Rect.aboutPoint(Point(x-(strSize.width*1.5), y), strSize.width, strSize.height));
 					});
 					Pen.pop;
 				});
 			}, {
 				str= SGUI.fixDec(val, 1);
 				if(val<0.93, {
-					Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x, y-strHeight), strWidth, strHeight));
+					Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x, y-strSize.height), strSize.width, strSize.height));
 				}, {
-					Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x, y+strHeight), strWidth, strHeight));
+					Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x, y+strSize.height), strSize.width, strSize.height));
 				});
 			});
 		};
@@ -1096,7 +1220,7 @@ s.waitForBoot{
 			var y= i.linlin(0, numMarkings-1, 0, 0-uh);
 			Pen.moveTo(Point(0, y));
 			Pen.lineTo(Point(uw, y));
-			Pen.stringRightJustIn(SGUI.fixDec(amp, 1), Rect.aboutPoint(Point(x, y), strWidth, strHeight));
+			Pen.stringRightJustIn(SGUI.fixDec(amp, 1), Rect.aboutPoint(Point(x, y), strSize.width, strSize.height));
 		};
 		Pen.stroke;
 	};
@@ -1154,6 +1278,52 @@ s.waitForBoot{
 		SInputs.destinations[\sGreybox].sendMsg(\led, \avOn, val);
 	};
 
+	avSynthPopup.action= {|view|
+		Routine({
+			var synthType= view.items[view.value];
+			var sf, str;
+			case
+			{synthType==\VSTPlug} {
+				avSynthParameters1.index= 0;
+				avSynthParameters2.index= 0;
+			}
+			{(str= synthType.asString).beginsWith("File_")} {
+				str= str.copyToEnd(str.indexOf($_)?(-1)+1);  //remove File_ or Fold_
+				sf= soundfiles.detect{|f| f.path.basename.split($.)[0]==str};
+				buffers[1].free;
+				buffers[1]= Buffer.read(s, sf.path);
+				s.sync;
+				buffers[1].normalize;
+				s.sync;
+			}
+			{
+				avSynthParameters1.index= 1;
+				avSynthParameters2.index= 1;
+			};
+			createStream.value;
+		}).play(AppClock);
+	};
+
+	avSynthAtkNumber.value= 0.01;
+	avSynthAtkNumber.action= {|view|
+		var val= view.value.max(0);
+		view.value= val;
+		Pdefn(\sStream_avSynthAtk, val);
+	};
+	avSynthRelNumber.value= 0.1;
+	avSynthRelNumber.action= {|view|
+		var val= view.value.max(0);
+		view.value= val;
+		Pdefn(\sStream_avSynthRel, val);
+	};
+	avSynthCurNumber.value= -4;
+	avSynthCurNumber.action= {|view|
+		Pdefn(\sStream_avSynthCur, view.value);
+	};
+
+	avVstBrowseButton.action= {|view|
+		avVst.browse;
+	};
 	avVstEditorButton.action= {|view|
 		avVst.gui;
 	};
@@ -1163,7 +1333,10 @@ s.waitForBoot{
 
 	avProgramSelectButtons.do{|but, i|
 		but.action= {|view|
-			avVstProgramPopup.valueAction= avProgramSelectPopups[i].value;
+			if(view.value==1, {
+				avVstProgramPopup.valueAction= avProgramSelectPopups[i].value;
+				{view.value= 0}.defer(0.2);
+			});
 		};
 	};
 
@@ -1184,7 +1357,9 @@ s.waitForBoot{
 		avPitchesUsrAnimRedraw= true;
 	};
 	avSustainOnElement.action= {|val|
-		avVst.set('Sustain Pedal', val);
+		if(avVst.info.name==defaultPlug, {  //TODO remove this temp check later
+			avVst.set('Sustain Pedal', val);
+		});
 		SInputs.destinations[\sGreybox].sendMsg(\led, \avSustainOn, val);
 	};
 
@@ -1343,7 +1518,7 @@ s.waitForBoot{
 		avPitchesArray= avPitchesBuffer.copyRange(0, numVoices-1);
 		avDelaysArray= avDelaysBuffer.copyRange(0, numVoices-1);
 		avVelocitiesArray= avVelocitiesBuffer.copyRange(0, numVoices-1);
-		createStream.value(numVoices);
+		createStream.value;
 		avPitchesUsrBack.refresh;
 		avVelocitiesUsrBack.refresh;
 		avPitchesUsrAnimRedraw= true;
@@ -1368,8 +1543,8 @@ s.waitForBoot{
 	avPitchesUsrAnim.acceptsMouse= false;
 	avPitchesUsrAnim.drawFunc= {|usr|
 		var uw= usr.bounds.width-usrPadding.width;
-		var uh= usr.bounds.height-(usrPadding.height*2)-strHeight;
-		var dur= avSustainSpec.map(avSustainElement.value).linlin(0, maxEntryDelay, 0, uw-(strWidth*2), nil);
+		var uh= usr.bounds.height-(usrPadding.height*2)-strSize.height;
+		var dur= avSustainSpec.map(avSustainElement.value).linlin(0, maxEntryDelay, 0, uw-(strSize.width*2), nil);
 		var scale= scales[avScaleList.value];
 		Pen.translate(usrPadding.width, uh+usrPadding.height);
 		Pen.font= fnt2;
@@ -1378,7 +1553,7 @@ s.waitForBoot{
 		avPitchesArray.do{|val, i|
 			var x, y, str;
 			val= (val+60).nearestInScale(scale)-60;
-			x= (avDelaysArray[i]*avEntryDelayElement.value).linlin(0, maxEntryDelay, strWidth, uw-strWidth);
+			x= (avDelaysArray[i]*avEntryDelayElement.value).linlin(0, maxEntryDelay, strSize.width, uw-strSize.width);
 			y= val.linlin(0-maxChordPitch, maxChordPitch, 0, 0-uh);
 			Pen.addRect(Rect.aboutPoint(Point(x, y), 1, 1));
 			if(avVelocitiesArray[i]>0, {
@@ -1394,14 +1569,14 @@ s.waitForBoot{
 				Pen.addOval(Rect.aboutPoint(Point(x, y), 5, 5));
 			});
 			str= val.asInteger.asString;
-			Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x-(strWidth*0.75), y), strWidth, strHeight));
+			Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x-(strSize.width*0.75), y), strSize.width, strSize.height));
 		};
 		Pen.stroke;
 	};
 
 	avPitchesUsrBack.drawFunc= {|usr|
 		var uw= usr.bounds.width-usrPadding.width;
-		var uh= usr.bounds.height-(usrPadding.height*2)-strHeight;
+		var uh= usr.bounds.height-(usrPadding.height*2)-strSize.height;
 		var numMarkingsFreq= 9;
 		var numMarkingsTime= 5;
 		Pen.translate(usrPadding.width, uh+usrPadding.height);
@@ -1412,16 +1587,16 @@ s.waitForBoot{
 			var freq= i.linlin(0, numMarkingsFreq-1, 0-maxChordPitch, maxChordPitch).asInteger;
 			var x= 0-usrPadding.width+1;
 			var y= i.linlin(0, numMarkingsFreq-1, 0, 0-uh);
-			Pen.stringRightJustIn(freq.asString, Rect.aboutPoint(Point(x, y), strWidth, strHeight));
+			Pen.stringRightJustIn(freq.asString, Rect.aboutPoint(Point(x, y), strSize.width, strSize.height));
 		};
 		Pen.moveTo(Point(0, 0-uh*0.5));
 		Pen.lineTo(Point(uw, 0-uh*0.5));
 		numMarkingsTime.do{|i|
 			var time= i.linlin(0, numMarkingsTime-1, 0, maxEntryDelay);
-			var x= i.linlin(0, numMarkingsTime-1, strWidth, uw-strWidth);
+			var x= i.linlin(0, numMarkingsTime-1, strSize.width, uw-strSize.width);
 			var str= SGUI.fixDec(time, 1);
 			if(i==(numMarkingsTime-1), {str= " "++str++"s"});
-			Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x, strHeight), strWidth, strHeight));
+			Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x, strSize.height), strSize.width, strSize.height));
 			if(i==0, {
 				Pen.moveTo(Point(x, 0));
 				Pen.lineTo(Point(x, 0-uh));
@@ -1438,8 +1613,8 @@ s.waitForBoot{
 	avPitchesUsrBack.mouseMoveAction= {|view, x, y, mod|
 		var vx, vy, xLock, yLock, angle;
 		if(avPitchesClosestIndex.notNil, {
-			vx= x.linlin(usrPadding.width+strWidth, view.bounds.width-strWidth, 0, maxEntryDelay)/avEntryDelayElement.value;
-			vy= y.linlin(usrPadding.height, view.bounds.height-usrPadding.height-strHeight, maxChordPitch, 0-maxChordPitch);
+			vx= x.linlin(usrPadding.width+strSize.width, view.bounds.width-strSize.width, 0, maxEntryDelay)/avEntryDelayElement.value;
+			vy= y.linlin(usrPadding.height, view.bounds.height-usrPadding.height-strSize.height, maxChordPitch, 0-maxChordPitch);
 			vy= vy.round;
 			xLock= false;
 			yLock= false;
@@ -1476,12 +1651,12 @@ s.waitForBoot{
 	};
 	avPitchesSetClosestIndex= {|x, y|
 		var uw= avPitchesUsrBack.bounds.width-usrPadding.width;
-		var uh= avPitchesUsrBack.bounds.height-(usrPadding.height*2)-strHeight;
+		var uh= avPitchesUsrBack.bounds.height-(usrPadding.height*2)-strSize.height;
 		var minDist= inf;
 		x= x-usrPadding.width;
 		y= y-(uh+usrPadding.height);
 		avPitchesArray.do{|val, i|
-			var ox= (avDelaysArray[i]*avEntryDelayElement.value).linlin(0, maxEntryDelay, strWidth, uw-strWidth);
+			var ox= (avDelaysArray[i]*avEntryDelayElement.value).linlin(0, maxEntryDelay, strSize.width, uw-strSize.width);
 			var oy= val.linlin(0-maxChordPitch, maxChordPitch, 0, 0-uh);
 			var dist= (ox-x).abs+(oy-y).abs;  //manhattan
 			if(dist<minDist, {
@@ -1497,7 +1672,9 @@ s.waitForBoot{
 	};
 
 	avVolumeElement.action= {|val|
-		avVst.set('Volume', val);
+		if(avVst.info.name==defaultPlug, {  //TODO remove this temp check later
+			avVst.set('Volume', val);
+		});
 	};
 
 	avVelocitiesUsrAnim.background= Color.clear;
@@ -1505,7 +1682,7 @@ s.waitForBoot{
 	avVelocitiesUsrAnim.acceptsMouse= false;
 	avVelocitiesUsrAnim.drawFunc= {|usr|
 		var uw= usr.bounds.width-usrPadding.width;
-		var uh= usr.bounds.height-(usrPadding.height*2)-strHeight;
+		var uh= usr.bounds.height-(usrPadding.height*2)-strSize.height;
 		Pen.translate(usrPadding.width, uh+usrPadding.height);
 		Pen.strokeColor= palette.buttonText;
 		avVelocitiesArray.do{|val, i|
@@ -1532,7 +1709,7 @@ s.waitForBoot{
 
 	avVelocitiesUsrBack.drawFunc= {|usr|
 		var uw= usr.bounds.width-usrPadding.width;
-		var uh= usr.bounds.height-(usrPadding.height*2)-strHeight;
+		var uh= usr.bounds.height-(usrPadding.height*2)-strSize.height;
 		var numMarkings= 6;
 		Pen.translate(usrPadding.width, uh+usrPadding.height);
 		Pen.font= fnt2;
@@ -1544,12 +1721,12 @@ s.waitForBoot{
 			var y= i.linlin(0, numMarkings-1, 0, 0-uh);
 			Pen.moveTo(Point(0, y));
 			Pen.lineTo(Point(uw, y));
-			Pen.stringRightJustIn(SGUI.fixDec(amp, 1), Rect.aboutPoint(Point(x, y), strWidth, strHeight));
+			Pen.stringRightJustIn(SGUI.fixDec(amp, 1), Rect.aboutPoint(Point(x, y), strSize.width, strSize.height));
 		};
 		Pen.stroke;
 		avVelocitiesArray.size.do{|i|
 			var x= i.linlin(-0.5, avVelocitiesArray.size-0.5, 0, uw);
-			Pen.stringCenteredIn((i+1).asString, Rect.aboutPoint(Point(x, strHeight), strWidth, strHeight));
+			Pen.stringCenteredIn((i+1).asString, Rect.aboutPoint(Point(x, strSize.height), strSize.width, strSize.height));
 		};
 	};
 
@@ -1557,7 +1734,7 @@ s.waitForBoot{
 		avVelocitiesUsrBack.mouseMoveAction.value(view, x, y, mod);
 	};
 	avVelocitiesUsrBack.mouseMoveAction= {|view, x, y, mod|
-		var val= y.linlin(usrPadding.height, view.bounds.height-usrPadding.height-strHeight, 1, 0).round(1/128);
+		var val= y.linlin(usrPadding.height, view.bounds.height-usrPadding.height-strSize.height, 1, 0).round(1/128);
 		avVelocitiesClosestIndex= x.linlin(usrPadding.width, view.bounds.width, 0, avVelocitiesArray.size-1).round.asInteger;
 		if(avVelocitiesArray[avVelocitiesClosestIndex]!=val, {
 			avVelocitiesArray[avVelocitiesClosestIndex]= val;
@@ -1584,6 +1761,10 @@ s.waitForBoot{
 	snapshots.recallFunctions= (
 		snapshotInstrument: {},
 		snapshotVersion: {},
+		lvVstName: {|val| if(val!=lvVst.info.path, {lvVst.open(val); s.sync})},
+		avVstName: {|val| if(val!=avVst.info.path, {avVst.open(val); s.sync})},
+		lvVstProgram: {|val| lvVstProgramPopup.valueAction= val},
+		avVstProgram: {|val| avVstProgramPopup.valueAction= val},
 		lvVst: {|val| lvVst.setProgramData(val)},
 		avVst: {|val| avVst.setProgramData(val)},
 		lvProgramSelectPopups: {|val| val.do{|x, i| lvProgramSelectPopups[i].value= x}},
@@ -1597,7 +1778,13 @@ s.waitForBoot{
 	);
 	snapshots.include= [  //order is important
 		snapshotInstrument: \sStream,
-		snapshotVersion: 1.2,
+		snapshotVersion: 1.3,
+		lvSynthPopup: lvSynthPopup,
+		avSynthPopup: avSynthPopup,
+		lvVstName: {lvVst.info.path},
+		avVstName: {avVst.info.path},
+		lvVstProgram: {lvVst.program},
+		avVstProgram: {avVst.program},
 		lvVst: {|cond| var data; lvVst.getProgramData({|d| data= d; cond.unhang}); cond.hang; data},
 		avVst: {|cond| var data; avVst.getProgramData({|d| data= d; cond.unhang}); cond.hang; data},
 		onElement: onElement,
@@ -1681,8 +1868,12 @@ s.waitForBoot{
 	};
 
 	masterTuning.action= {|value|
-		lvVst.set('Diapason', value.linlin(220, 880, 0, 1));
-		avVst.set('Diapason', value.linlin(220, 880, 0, 1));
+		if(lvVst.info.name==defaultPlug, {  //TODO remove this temp check later
+			lvVst.set('Diapason', value.linlin(220, 880, 0, 1));
+		});
+		if(avVst.info.name==defaultPlug, {  //TODO remove this temp check later
+			avVst.set('Diapason', value.linlin(220, 880, 0, 1));
+		});
 	};
 
 	mainVolume.action= {|val|
@@ -1840,26 +2031,26 @@ s.waitForBoot{
 				{
 					lvPitchesArray= msg.copyRange(1, maxNumSteps).cpsmidi;
 					lvPitchesNumber.value= lvPitchesArray.size;
-					lvPitchesRangeElement.valueAction= [0, 1];
+					lvPitchesRangeElement.valueAction= #[0, 1];
 				}.defer;
 			}, \patternFrequencies, recvPort:oscPort),
 			OSCFunc({|msg|
 				{
 					lvVelocitiesArray= msg.copyRange(1, maxNumSteps);
 					lvVelocitiesNumber.value= lvVelocitiesArray.size;
-					lvVelocitiesRangeElement.valueAction= [0, 1];
+					lvVelocitiesRangeElement.valueAction= #[0, 1];
 				}.defer;
 			}, \patternAmplitudes, recvPort:oscPort),
 			OSCFunc({|msg|
 				{
-					avPitchesArray= msg.copyRange(1, maxNumVoices).cpsmidi.round.asInteger-60;
-					avVoicesNumberElement.valueAction= avVoicesNumberSpec.unmap(avPitchesArray.size);
+					avPitchesBuffer= msg.copyRange(1, maxNumVoices).cpsmidi.round.asInteger-60;
+					avVoicesNumberElement.valueAction= avVoicesNumberSpec.unmap(avPitchesBuffer.size);
 				}.defer;
 			}, \frequencies, recvPort:oscPort),
 			OSCFunc({|msg|
 				{
-					avVelocitiesArray= msg.copyRange(1, maxNumVoices);
-					avVoicesNumberElement.valueAction= avVoicesNumberSpec.unmap(avVelocitiesArray.size);
+					avVelocitiesBuffer= msg.copyRange(1, maxNumVoices);
+					avVoicesNumberElement.valueAction= avVoicesNumberSpec.unmap(avVelocitiesBuffer.size);
 				}.defer;
 			}, \amplitudes, recvPort:oscPort),
 
@@ -1873,27 +2064,36 @@ s.waitForBoot{
 	};
 
 	//--stream
-	Pdefn(\sStream_dur, 0.125);  //rate slider (y)
+	Pdefn(\sStream_dur, 0.125);  //rate slider (y: 0.032 - 1.744)
 	Pdefn(\sStream_bpm, 120);  //metronome slider
-	Pdefn(\sStream_metronomeOn, 0);  //metronome button
-	Pdefn(\sStream_note, 0);  //pitch slider (x)
-	Pdefn(\sStream_pitches, 0);  //frequency pattern sequencer
-	Pdefn(\sStream_velocity, 0);  //velocity slider (z)
-	Pdefn(\sStream_velocities, 1);  //velocity pattern sequencer
-	Pdefn(\sStream_velocitiesSelect, 0);
-	Pdefn(\sStream_lvVelocities_index, 0);  //step in velocity pattern sequencer
-	Pdefn(\sStream_lvPitches_index, 0);  //step in frequency pattern sequencer
-	Pdefn(\sStream_lvScale, defaultScale);
-	Pdefn(\sStream_avScale, defaultScale);
-	Pdefn(\sStream_lvSustain, 1);  //lv sustain slider
-	Pdefn(\sStream_avSustain, 1);  //av sustain slider
-	Pdefn(\sStream_lvCstranspose, 0);
-	Pdefn(\sStream_avCstranspose, 0);
+	Pdefn(\sStream_metronomeOn, 0);  //metronome button (0/1)
+	Pdefn(\sStream_note, 0);  //pitch slider (x: +/- 63.5)
+	Pdefn(\sStream_pitches, 0);  //frequency pattern sequencer (Pseq with midinotes)
+	Pdefn(\sStream_velocity, 0);  //velocity slider (z: 0.0 - 1.0)
+	Pdefn(\sStream_velocities, 1);  //velocity pattern sequencer (Pseq with 0.0 - 1.0)
+	Pdefn(\sStream_velocitiesSelect, 0);  //(0 - 3)
+	Pdefn(\sStream_lvPitches_index, 0);  //step in frequency pattern sequencer (Pseq with indices)
+	Pdefn(\sStream_lvVelocities_index, 0);  //step in velocity pattern sequencer (Pseq with indices)
+	Pdefn(\sStream_lvScale, defaultScale);  //Scale instance
+	Pdefn(\sStream_avScale, defaultScale);  //Scale instance
+	Pdefn(\sStream_lvSustain, 1);  //lv sustain slider (0.01 - 4.0)
+	Pdefn(\sStream_avSustain, 1);  //av sustain slider (0.01 - 4.0)
+	Pdefn(\sStream_lvCstranspose, 0);  //semitones
+	Pdefn(\sStream_avCstranspose, 0);  //semitones
 	Pdefn(\sStream_lvOctave, defaultOctave);
 	Pdefn(\sStream_avOctave, defaultOctave);
-	createStream= {|numVoices|
+	Pdefn(\sStream_lvSynthAtk, lvSynthAtkNumber.value);
+	Pdefn(\sStream_lvSynthRel, lvSynthRelNumber.value);
+	Pdefn(\sStream_lvSynthCur, lvSynthCurNumber.value);
+	Pdefn(\sStream_avSynthAtk, avSynthAtkNumber.value);
+	Pdefn(\sStream_avSynthRel, avSynthRelNumber.value);
+	Pdefn(\sStream_avSynthCur, avSynthCurNumber.value);
+
+	createStream= {
+		var numVoices= avVoicesNumberSpec.map(avVoicesNumberElement.value).asInteger;
+		var lvSynthType, avSynthType;
 		var pbind= Pbind(
-			\type, \vst_midi,
+			\out, sStream_bus,
 			\dur, Pswitch1([
 				Pdefn(\sStream_dur),
 				60/Pdefn(\sStream_bpm)*0.25  //semiquavers
@@ -1909,7 +2109,7 @@ s.waitForBoot{
 			], Pdefn(\sStream_velocitiesSelect)).min(1),
 			\finish, {|ev|
 				var m;
-				if(ev.amp==0, {
+				if(ev.amp==0 or:{ev.type==\vst_midi and:{ev.vst.loaded.not}}, {
 					ev.type= \rest;
 				}, {
 					m= ev.midinote.value+ev.ctranspose;
@@ -1925,11 +2125,27 @@ s.waitForBoot{
 				});
 			}
 		);
+
+		lvSynthType= lvSynthPopup.items[lvSynthPopup.value];
+		if(lvSynthType.asString.beginsWith("File_"), {
+			lvSynthType= \File_++buffers[0].numChannels;
+		});
+		avSynthType= avSynthPopup.items[avSynthPopup.value];
+		if(avSynthType.asString.beginsWith("File_"), {
+			avSynthType= \File_++buffers[1].numChannels;
+		});
+
 		Pdef(\sStream, Ppar(
 			[
 				Pbindf(pbind,  //lv
+					\instrument, ('sStream_'++lvSynthType).asSymbol,
+					\type, if(lvSynthType==\VSTPlug, {\vst_midi}, {\note}),
 					\vst, lvVst,
 					\chan, 0,
+					\buf, buffers[0],
+					\atk, Pdefn(\sStream_lvSynthAtk),
+					\rel, Pdefn(\sStream_lvSynthRel),
+					\cur, Pdefn(\sStream_lvSynthCur),
 					\lag, 0,
 					\sustain, Pdefn(\sStream_lvSustain),
 					\scale, Pdefn(\sStream_lvScale),
@@ -1974,8 +2190,14 @@ s.waitForBoot{
 			]++({|i|
 				var avFollowInit= 60, avFollowLast= 0, avFollowCnt= 0;  //TODO hack
 				Pbindf(pbind,  //av
+					\instrument, ('sStream_'++avSynthType).asSymbol,
+					\type, if(avSynthType==\VSTPlug, {\vst_midi}, {\note}),
 					\vst, avVst,
 					\chan, i+1,
+					\buf, buffers[1],
+					\atk, Pdefn(\sStream_avSynthAtk),
+					\rel, Pdefn(\sStream_avSynthRel),
+					\cur, Pdefn(\sStream_avSynthCur),
 					\lag, Pfunc({avDelaysArray[i]})*Pfunc({avEntryDelayElement.value}),
 					\sustain, Pdefn(\sStream_avSustain),
 					\scale, Pdefn(\sStream_avScale),
@@ -2064,149 +2286,283 @@ s.waitForBoot{
 	clock= TempoClock(1, queueSize:8192);
 
 	//--audio
-	SynthDef(\sStream, {|out= 0, atk= 0.1, rel= 1, on= 1, vol= 0|
+	SynthDef(\sStream, {|outBus= 0, synBus, atk= 0.1, rel= 1, on= 1, vol= 0|
 		var onEnv= EnvGen.kr(Env.asr(atk, 1, rel), on);
+		var syn= In.ar(synBus, 2)*0.2;
 		var lv= VSTPlugin.ar(nil, 2, id:\lv);
 		var av= VSTPlugin.ar(nil, 2, id:\av);
-		Out.ar(out, (lv+av)*vol.dbamp.lag*onEnv*0.7);
+		Out.ar(outBus, (lv+av+syn)*vol.dbamp.lag*onEnv*0.7);
 	}).add;
+	SynthDef(\sStream_SineFB, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= SinOscFB.ar(freq, LFNoise2.kr(0.1).range(0.25, 0.75), AmpComp.kr(freq)*amp);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_Sine, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= SinOsc.ar(freq, Rand(0, 2pi), AmpComp.kr(freq)*1.25*amp);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_Saw, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= VarSaw.ar(freq, Rand(0, 1), LFNoise2.kr(0.1, 0.45, 0.5), AmpComp.kr(freq));
+		Out.ar(out, Pan2.ar(snd*env*amp, pan));
+	}).add;
+	SynthDef(\sStream_Pulse, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= RLPF.ar(
+			LPF.ar(
+				Pulse.ar(freq, LFNoise2.kr(0.1).range(0.5, 0.95), AmpComp.kr(freq)),
+				9000
+			),
+			LFNoise2.kr(0.1).exprange(1200, 12000),
+			LFNoise2.kr(0.1, 0.4, 1),
+			amp
+		);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_PulseWarm, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= RLPF.ar(
+			Pulse.ar(freq, LFNoise2.kr(0.1).range(0.1, 0.2), AmpComp.kr(freq)),
+			LFNoise2.kr(0.1).exprange(300, 1000),
+			0.1,
+			amp
+		);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_Formant, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= Formant.ar(
+			freq,
+			freq*IRand(1, 4),
+			LFNoise2.kr(0.1).exprange(200, 1000),
+			AmpComp.kr(freq)*amp*0.5
+		);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_Karplus, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= Pluck.ar(
+			PinkNoise.ar(amp),
+			Dust.kr(amp*2+6),
+			0.05,
+			1/freq.max(20),
+			8,
+			LFNoise2.kr(0.1)*0.01,
+			AmpComp.kr(freq)*amp*1.5
+		);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_Noise, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= RHPF.ar(
+			RLPF.ar(
+				WhiteNoise.ar(0.75),
+				freq,
+				LFNoise2.kr(0.1).exprange(0.05, 0.25),
+				AmpComp.kr(freq)
+			),
+			freq,
+			LFNoise2.kr(0.1).range(0.25, 1),
+			amp
+		);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_Pink, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= RHPF.ar(
+			RLPF.ar(
+				PinkNoise.ar(2),
+				freq,
+				LFNoise2.kr(0.1).exprange(0.05, 0.25),
+				AmpComp.kr(freq)
+			),
+			freq*0.5,
+			LFNoise2.kr(0.1).range(0.25, 1),
+			amp
+		);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_File_1, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var buf= \buf.ir;
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var rate= freq.explin(20, 12000, 1/3, 3);
+		var pos= \pos.kr(0)%1*BufFrames.ir(buf);
+		var loop= \loop.kr(1);
+		var snd= PlayBuf.ar(1, buf, rate*BufRateScale.ir(buf), 1, pos, loop)*amp;
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_File_2, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var buf= \buf.ir;
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var rate= freq.explin(20, 12000, 1/3, 3);
+		var pos= \pos.kr(0)%1*BufFrames.ir(buf);
+		var loop= \loop.kr(1);
+		var snd= PlayBuf.ar(2, buf, rate*BufRateScale.ir(buf), 1, pos, loop)*amp;
+		snd= snd*env;
+		Out.ar(out, Balance2.ar(snd[0], snd[1], pan));
+	}).add;
+
+	buffers= [Buffer.alloc(s, 1), Buffer.alloc(s, 1)];
 	sStream_bus= Bus.audio(s, 2);
 	s.sync;
-	Routine({
-		mainOutSyn= Synth(\sStream, [
-			\outBus, sStream_bus,
-			\atk, attackSpec.map(attackElement.value),
-			\rel, releaseSpec.map(releaseElement.value),
-			\on, onElement.value
-		]);
-		lvVst= VSTPluginController(mainOutSyn, \lv);
-		avVst= VSTPluginController(mainOutSyn, \av);
-		VSTPlugin.search(s, action:{
-			var terms= defaultPlug.split($*);
-			var plug= VSTPlugin.plugins.detect{|p|
-				var str= p.name.asString;
-				terms.every{|t| str.contains(t)}
-			};
-			if(plug.isNil, {
-				"sStream: default plugin not found".warn;
-			}, {
-				lvVst.open(plug.path);
-				avVst.open(plug.path);
-				s.sync;
-				//lvVst.info.printParameters;  //debug
-				//avVst.info.printParameters;  //debug
-				lvVstEditorButton.states_([
-					["LVVst:"++lvVst.info.name, palette.buttonText, palette.button]
-				]);
-				avVstEditorButton.states_([
-					["AVVst:"++avVst.info.name, palette.buttonText, palette.button]
-				]);
-				lvVstProgramPopup.items= lvVst.programNames;
-				avVstProgramPopup.items= avVst.programNames;
-				lvProgramSelectPopups.do{|pop, i|
-					pop.items= lvVst.programNames;
-					pop.value= i+1;
-				};
-				avProgramSelectPopups.do{|pop, i|
-					pop.items= avVst.programNames;
-					pop.value= lvProgramSelectPopups.size+i+1;
-				};
-
-				Pdef(\sStream).clear;
-
-				routineGui= Routine({
-					inf.do{
-						onElement.update;
-						attackElement.update;
-						releaseElement.update;
-						pitchElement.update;
-						rateElement.update;
-						velocityElement.update;
-						metronomeElement.update;
-						metronomeOnElement.update;
-						rateScaleElement.update;
-						rateMultiplierElement.update;
-
-						lvOnElement.update;
-						lvPitchBendElement.update;
-						lvPitchBendOnElement.update;
-						lvSustainElement.update;
-						lvSustainOnElement.update;
-						lvScaleButtonElement.update;
-						lvChromTranspElement.update;
-						lvOctaveElement.update;
-						lvPitchesOnButtonElement.update;
-						lvPitchMinMaxRangeElement.update;
-						if(lvPitchesUsrAnimRedraw, {
-							lvPitchesUsrAnim.refresh;
-							lvPitchesUsrAnimRedraw= false;
-						});
-						lvPitchesRangeElement.update;
-						lvVelocitiesOnButtonElement.update;
-						lvVolumeElement.update;
-						if(lvVelocitiesUsrAnimRedraw, {
-							lvVelocitiesUsrAnim.refresh;
-							lvVelocitiesUsrAnimRedraw= false;
-						});
-						lvVelocitiesRangeElement.update;
-
-						avOnElement.update;
-						avPitchBendElement.update;
-						avPitchBendOnElement.update;
-						avSustainElement.update;
-						avSustainOnElement.update;
-						avPitchesOnButtonElement.update;
-						avChromTranspElement.update;
-						avOctaveElement.update;
-						avVoicesNumberElement.update;
-						avFollowStepNumberElement.update;
-						avFollowPopupElement.update;
-						avPitchMinMaxRangeElement.update;
-						if(avPitchesUsrAnimRedraw, {
-							avPitchesUsrAnim.refresh;
-							avPitchesUsrAnimRedraw= false;
-						});
-						avVolumeElement.update;
-						if(avVelocitiesUsrAnimRedraw, {
-							avVelocitiesUsrAnim.refresh;
-							avVelocitiesUsrAnimRedraw= false;
-						});
-						avEntryDelayElement.update;
-						avDisplacementElement.update;
-						avFalloutVoicesElement.update;
-						avFalloutChordsElement.update;
-
-						fps.reciprocal.wait;
-					};
-				}).play(AppClock);
-
-				rateScaleElement.value= 0.5;
-
-				lvOnElement.valueAction= 1;
-				lvPitchBendElement.value= lvPitchBendSpec.unmap(lvPitchBendSpec.default);
-				lvSustainElement.value= lvSustainSpec.unmap(lvSustainSpec.default);
-				lvChromTranspElement.value= 0.5;
-				lvOctaveElement.value= lvOctaveSpec.unmap(lvOctaveSpec.default);
-				lvPatternsPopup.valueAction= 0;  //default patterns
-				lvVolumeElement.value= 92/127;
-
-				avPitchBendElement.value= avPitchBendSpec.unmap(avPitchBendSpec.default);
-				avSustainElement.value= avSustainSpec.unmap(avSustainSpec.default);
-				avChromTranspElement.value= 0.5;
-				avOctaveElement.value= avOctaveSpec.unmap(avOctaveSpec.default);
-				avFollowStepNumberElement.value= avFollowStepNumberSpec.unmap(avFollowStepNumberSpec.default);
-				avFollowPopupElement.value= 0;  //default follow mode
-				avChordsPopup.valueAction= 0;  //default chord
-				avVolumeElement.value= 92/127;
-				avEntryDelayElement.value= 1;
-				avFalloutVoicesElement.valueAction= avFalloutVoicesSpec.unmap(avFalloutVoicesSpec.default);
-				avFalloutChordsElement.valueAction= avFalloutChordsSpec.unmap(avFalloutChordsSpec.default);
-
-				mainVolume.valueAction= defaultMainVolume;
-				setupOscResponders.value;
-				win.front;
-			});
+	mainOutSyn= Synth(\sStream, [
+		\outBus, 0,
+		\synBus, sStream_bus,
+		\atk, attackSpec.map(attackElement.value),
+		\rel, releaseSpec.map(releaseElement.value),
+		\on, onElement.value
+	]);
+	soundfiles.do{|f|
+		var type;
+		var name= f.path.basename;
+		if(f.numChannels<=2, {
+			type= ("File_"++(name.split($.)[0])).asSymbol;
+			lvSynthPopup.items= lvSynthPopup.items++type;
+			avSynthPopup.items= avSynthPopup.items++type;
+		}, {
+			"soundfiles with % channels not supported - % ignored".format(f.numChannels, name).warn;
 		});
-	}).play(AppClock);
+	};
+
+	//--vst
+	lvVst= VSTPluginController(mainOutSyn, \lv);
+	avVst= VSTPluginController(mainOutSyn, \av);
+	VSTPlugin.search(s, action:{
+		var plug= VSTPlugin.plugins[defaultPlug.asSymbol];
+		if(plug.isNil, {
+			"sStream: plugin % not found".format(defaultPlug).warn;
+		}, {
+			[
+				[lvVst, lvVstEditorButton, lvVstProgramPopup, lvProgramSelectPopups],
+				[avVst, avVstEditorButton, avVstProgramPopup, avProgramSelectPopups]
+			].do{|arr|
+				SimpleController(arr[0]).put('/open', {|vst, what ...args|
+					if(vst.info.notNil, {
+						if(vst.info.isSynth, {
+							if(args[1], {
+								//vst.info.print(true);  //debug
+								{
+									arr[1].states_([
+										[vst.info.name, palette.buttonText, palette.button]
+									]);
+									arr[2].items= vst.programNames;
+									arr[3].do{|pop, i|
+										pop.items= vst.programNames;
+										pop.value= i+1;
+									};
+								}.defer;
+							}, {
+								"sStream: plugin % failed to load".format(args[0]).warn;
+							});
+						}, {
+							"sStream: plugin % is not an instrument (VSTi)".format(args[0]).warn;
+						});
+					}, {
+						"sStream: plugin % could not be opened".format(args[0]).error;
+					});
+				});
+			};
+			lvVst.open(plug.path);
+			avVst.open(plug.path);
+			s.sync;
+			//lvVst.dump;  //debug
+			//lvVst.info.dump;  //debug
+
+			Pdef(\sStream).clear;
+			routineGui= Routine({
+				inf.do{
+					onElement.update;
+					attackElement.update;
+					releaseElement.update;
+					pitchElement.update;
+					rateElement.update;
+					velocityElement.update;
+					metronomeElement.update;
+					metronomeOnElement.update;
+					rateScaleElement.update;
+					rateMultiplierElement.update;
+
+					lvOnElement.update;
+					lvPitchBendElement.update;
+					lvPitchBendOnElement.update;
+					lvSustainElement.update;
+					lvSustainOnElement.update;
+					lvScaleButtonElement.update;
+					lvChromTranspElement.update;
+					lvOctaveElement.update;
+					lvPitchesOnButtonElement.update;
+					lvPitchMinMaxRangeElement.update;
+					if(lvPitchesUsrAnimRedraw, {
+						lvPitchesUsrAnim.refresh;
+						lvPitchesUsrAnimRedraw= false;
+					});
+					lvPitchesRangeElement.update;
+					lvVelocitiesOnButtonElement.update;
+					lvVolumeElement.update;
+					if(lvVelocitiesUsrAnimRedraw, {
+						lvVelocitiesUsrAnim.refresh;
+						lvVelocitiesUsrAnimRedraw= false;
+					});
+					lvVelocitiesRangeElement.update;
+
+					avOnElement.update;
+					avPitchBendElement.update;
+					avPitchBendOnElement.update;
+					avSustainElement.update;
+					avSustainOnElement.update;
+					avPitchesOnButtonElement.update;
+					avChromTranspElement.update;
+					avOctaveElement.update;
+					avVoicesNumberElement.update;
+					avFollowStepNumberElement.update;
+					avFollowPopupElement.update;
+					avPitchMinMaxRangeElement.update;
+					if(avPitchesUsrAnimRedraw, {
+						avPitchesUsrAnim.refresh;
+						avPitchesUsrAnimRedraw= false;
+					});
+					avVolumeElement.update;
+					if(avVelocitiesUsrAnimRedraw, {
+						avVelocitiesUsrAnim.refresh;
+						avVelocitiesUsrAnimRedraw= false;
+					});
+					avEntryDelayElement.update;
+					avDisplacementElement.update;
+					avFalloutVoicesElement.update;
+					avFalloutChordsElement.update;
+
+					fps.reciprocal.wait;
+				};
+			}).play(AppClock);
+
+			rateScaleElement.value= 0.5;
+
+			lvOnElement.valueAction= 1;
+			lvPitchBendElement.value= lvPitchBendSpec.unmap(lvPitchBendSpec.default);
+			lvSustainElement.value= lvSustainSpec.unmap(lvSustainSpec.default);
+			lvChromTranspElement.value= 0.5;
+			lvOctaveElement.value= lvOctaveSpec.unmap(lvOctaveSpec.default);
+			lvPatternsPopup.valueAction= 0;  //default patterns
+			lvVolumeElement.value= 92/127;
+
+			avPitchBendElement.value= avPitchBendSpec.unmap(avPitchBendSpec.default);
+			avSustainElement.value= avSustainSpec.unmap(avSustainSpec.default);
+			avChromTranspElement.value= 0.5;
+			avOctaveElement.value= avOctaveSpec.unmap(avOctaveSpec.default);
+			avFollowStepNumberElement.value= avFollowStepNumberSpec.unmap(avFollowStepNumberSpec.default);
+			avFollowPopupElement.value= 0;  //default follow mode
+			avChordsPopup.valueAction= 0;  //default chord
+			avVolumeElement.value= 92/127;
+			avEntryDelayElement.value= 1;
+			avFalloutVoicesElement.valueAction= avFalloutVoicesSpec.unmap(avFalloutVoicesSpec.default);
+			avFalloutChordsElement.valueAction= avFalloutChordsSpec.unmap(avFalloutChordsSpec.default);
+
+			mainVolume.valueAction= defaultMainVolume;
+			setupOscResponders.value;
+			win.front;
+		});
+	});
 };
 )

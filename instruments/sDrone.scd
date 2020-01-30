@@ -56,8 +56,11 @@ s.waitForBoot{
 
 	//--functions and objects
 	var soundfiles= SoundFile.collect(SInstruments.soundfilesDir+/+"*");
-	var folders= (SInstruments.soundfilesDir+/+"*").pathMatch.select{|x| PathName(x).isFolder};
-	var soundfolders= folders.collect{|f| (path: f, soundfiles: SoundFile.collect(f+/+"*"))};
+	var soundfolders= (SInstruments.soundfilesDir+/+"*").pathMatch.select{|x|
+		PathName(x).isFolder;
+	}.collect{|f|
+		(path: f, soundfiles: SoundFile.collect(f+/+"*"));
+	};
 	var buffer, fileIndex, loadBuffer;
 	var typeFromPopup, itemFromPopup, filePathFromPopup, filePathInFolderFromPopup;
 	var drone, createDrone;
