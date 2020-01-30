@@ -46,7 +46,9 @@ var snapshotFiles= [  //name and file (both can be changed)
 	\Bank9 -> "sStream_snapshots_Bank9.scd"
 ];
 var synthPopupItems= #[  //available synths and order in popup
-	"VSTPlug"
+	"VSTPlug", "SineFB", "Sine", "Saw", "Pulse",
+	"Formant", "Pink", "Noise", "Karplus", "PulseWarm",
+	//"File", "Folder"  //TODO
 ];
 
 //--defaults
@@ -121,6 +123,7 @@ s.waitForBoot{
 	var lvSynthPopup;
 	var lvVstBrowseButton, lvVstEditorButton, lvVstProgramPopup;
 	var lvSynthParameters1, lvSynthParameters2;
+	var lvSynthAtkNumber, lvSynthRelNumber, lvSynthCurNumber;
 	var lvProgramSelectButtons= List.new;
 	var lvProgramSelectPopups= List.new;
 	var lvScaleList;
@@ -157,6 +160,7 @@ s.waitForBoot{
 	var avSynthPopup;
 	var avVstBrowseButton, avVstEditorButton, avVstProgramPopup;
 	var avSynthParameters1, avSynthParameters2;
+	var avSynthAtkNumber, avSynthRelNumber, avSynthCurNumber;
 	var avProgramSelectButtons= List.new;
 	var avProgramSelectPopups= List.new;
 	var avScaleList;
@@ -269,6 +273,13 @@ s.waitForBoot{
 								lvVstEditorButton= Button(),
 								lvVstProgramPopup= PopUpMenu().background_(palette.highlight.complementary)  //sound LV (bgr_1)
 							).margins_(0)
+						),
+						View().layout_(
+							HLayout(
+								StaticText().string_("atk"),
+								StaticText().string_("rel"),
+								StaticText().string_("cur")
+							).margins_(0)
 						)
 					)
 				),
@@ -285,6 +296,14 @@ s.waitForBoot{
 								lvProgramSelectPopups.add(pop);
 								[but, pop];
 							}.flat)
+						).margins_(0)
+					),
+					View().layout_(
+						HLayout(
+							View().fixedWidth_(120+90+4),
+							lvSynthAtkNumber= NumberBox().decimals_(3).scroll_step_(0.01).shift_scale_(0.1),
+							lvSynthRelNumber= NumberBox().decimals_(2).scroll_step_(0.1).shift_scale_(0.1),
+							lvSynthCurNumber= NumberBox().decimals_(1).scroll_step_(1).shift_scale_(0.1)
 						).margins_(0)
 					)
 				),
@@ -397,6 +416,13 @@ s.waitForBoot{
 								avVstEditorButton= Button(),
 								avVstProgramPopup= PopUpMenu().background_(palette.highlight.complementary)  //sound AV (bgr_7)
 							).margins_(0)
+						),
+						View().layout_(
+							HLayout(
+								StaticText().string_("atk"),
+								StaticText().string_("rel"),
+								StaticText().string_("cur")
+							).margins_(0)
 						)
 					)
 				),
@@ -413,6 +439,14 @@ s.waitForBoot{
 								avProgramSelectPopups.add(pop);
 								[but, pop];
 							}.flat)
+						).margins_(0)
+					),
+					View().layout_(
+						HLayout(
+							View().fixedWidth_(120+90+4),
+							avSynthAtkNumber= NumberBox().decimals_(3).scroll_step_(0.01).shift_scale_(0.1),
+							avSynthRelNumber= NumberBox().decimals_(2).scroll_step_(0.1).shift_scale_(0.1),
+							avSynthCurNumber= NumberBox().decimals_(1).scroll_step_(1).shift_scale_(0.1)
 						).margins_(0)
 					)
 				),
@@ -664,12 +698,34 @@ s.waitForBoot{
 	};
 
 	lvSynthPopup.action= {|view|
-		var type= lvSynthPopup.items[view.value].asSymbol;
+		var synthType= view.items[view.value].asSymbol;
 		case
-		{type==\VSTPlug} {
+		{synthType==\VSTPlug} {
 			lvSynthParameters1.index= 0;
 			lvSynthParameters2.index= 0;
 		}
+		{
+			lvSynthParameters1.index= 1;
+			lvSynthParameters2.index= 1;
+		};
+		createStream.value;
+	};
+
+	lvSynthAtkNumber.value= 0.01;
+	lvSynthAtkNumber.action= {|view|
+		var val= view.value.max(0);
+		view.value= val;
+		Pdefn(\sStream_lvSynthAtk, val);
+	};
+	lvSynthRelNumber.value= 0.1;
+	lvSynthRelNumber.action= {|view|
+		var val= view.value.max(0);
+		view.value= val;
+		Pdefn(\sStream_lvSynthRel, val);
+	};
+	lvSynthCurNumber.value= -4;
+	lvSynthCurNumber.action= {|view|
+		Pdefn(\sStream_lvSynthCur, view.value);
 	};
 
 	lvVstBrowseButton.action= {|view|
@@ -1203,12 +1259,34 @@ s.waitForBoot{
 	};
 
 	avSynthPopup.action= {|view|
-		var type= avSynthPopup.items[view.value].asSymbol;
+		var synthType= view.items[view.value].asSymbol;
 		case
-		{type==\VSTPlug} {
+		{synthType==\VSTPlug} {
 			avSynthParameters1.index= 0;
 			avSynthParameters2.index= 0;
 		}
+		{
+			avSynthParameters1.index= 1;
+			avSynthParameters2.index= 1;
+		};
+		createStream.value;
+	};
+
+	avSynthAtkNumber.value= 0.01;
+	avSynthAtkNumber.action= {|view|
+		var val= view.value.max(0);
+		view.value= val;
+		Pdefn(\sStream_avSynthAtk, val);
+	};
+	avSynthRelNumber.value= 0.1;
+	avSynthRelNumber.action= {|view|
+		var val= view.value.max(0);
+		view.value= val;
+		Pdefn(\sStream_avSynthRel, val);
+	};
+	avSynthCurNumber.value= -4;
+	avSynthCurNumber.action= {|view|
+		Pdefn(\sStream_avSynthCur, view.value);
 	};
 
 	avVstBrowseButton.action= {|view|
@@ -1408,7 +1486,7 @@ s.waitForBoot{
 		avPitchesArray= avPitchesBuffer.copyRange(0, numVoices-1);
 		avDelaysArray= avDelaysBuffer.copyRange(0, numVoices-1);
 		avVelocitiesArray= avVelocitiesBuffer.copyRange(0, numVoices-1);
-		createStream.value(numVoices);
+		createStream.value;
 		avPitchesUsrBack.refresh;
 		avVelocitiesUsrBack.refresh;
 		avPitchesUsrAnimRedraw= true;
@@ -1669,6 +1747,8 @@ s.waitForBoot{
 	snapshots.include= [  //order is important
 		snapshotInstrument: \sStream,
 		snapshotVersion: 1.3,
+		lvSynthPopup: lvSynthPopup,
+		avSynthPopup: avSynthPopup,
 		lvVstName: {lvVst.info.path},
 		avVstName: {avVst.info.path},
 		lvVstProgram: {lvVst.program},
@@ -1970,9 +2050,19 @@ s.waitForBoot{
 	Pdefn(\sStream_avCstranspose, 0);  //semitones
 	Pdefn(\sStream_lvOctave, defaultOctave);
 	Pdefn(\sStream_avOctave, defaultOctave);
-	createStream= {|numVoices|
+	Pdefn(\sStream_lvSynthAtk, lvSynthAtkNumber.value);
+	Pdefn(\sStream_lvSynthRel, lvSynthRelNumber.value);
+	Pdefn(\sStream_lvSynthCur, lvSynthCurNumber.value);
+	Pdefn(\sStream_avSynthAtk, avSynthAtkNumber.value);
+	Pdefn(\sStream_avSynthRel, avSynthRelNumber.value);
+	Pdefn(\sStream_avSynthCur, avSynthCurNumber.value);
+
+	createStream= {
+		var numVoices= avVoicesNumberSpec.map(avVoicesNumberElement.value).asInteger;
+		var lvSynthType= lvSynthPopup.items[lvSynthPopup.value].asSymbol;
+		var avSynthType= avSynthPopup.items[avSynthPopup.value].asSymbol;
 		var pbind= Pbind(
-			\type, \vst_midi,
+			\out, sStream_bus,
 			\dur, Pswitch1([
 				Pdefn(\sStream_dur),
 				60/Pdefn(\sStream_bpm)*0.25  //semiquavers
@@ -1988,7 +2078,7 @@ s.waitForBoot{
 			], Pdefn(\sStream_velocitiesSelect)).min(1),
 			\finish, {|ev|
 				var m;
-				if(ev.amp==0 or:{ev.vst.loaded.not}, {
+				if(ev.amp==0 or:{ev.type==\vst_midi and:{ev.vst.loaded.not}}, {
 					ev.type= \rest;
 				}, {
 					m= ev.midinote.value+ev.ctranspose;
@@ -2007,8 +2097,13 @@ s.waitForBoot{
 		Pdef(\sStream, Ppar(
 			[
 				Pbindf(pbind,  //lv
+					\instrument, ('sStream_'++lvSynthType).asSymbol,
+					\type, if(lvSynthType==\VSTPlug, {\vst_midi}, {\note}),
 					\vst, lvVst,
 					\chan, 0,
+					\atk, Pdefn(\sStream_lvSynthAtk),
+					\rel, Pdefn(\sStream_lvSynthRel),
+					\cur, Pdefn(\sStream_lvSynthCur),
 					\lag, 0,
 					\sustain, Pdefn(\sStream_lvSustain),
 					\scale, Pdefn(\sStream_lvScale),
@@ -2053,8 +2148,13 @@ s.waitForBoot{
 			]++({|i|
 				var avFollowInit= 60, avFollowLast= 0, avFollowCnt= 0;  //TODO hack
 				Pbindf(pbind,  //av
+					\instrument, ('sStream_'++avSynthType).asSymbol,
+					\type, if(avSynthType==\VSTPlug, {\vst_midi}, {\note}),
 					\vst, avVst,
 					\chan, i+1,
+					\atk, Pdefn(\sStream_avSynthAtk),
+					\rel, Pdefn(\sStream_avSynthRel),
+					\cur, Pdefn(\sStream_avSynthCur),
 					\lag, Pfunc({avDelaysArray[i]})*Pfunc({avEntryDelayElement.value}),
 					\sustain, Pdefn(\sStream_avSustain),
 					\scale, Pdefn(\sStream_avScale),
@@ -2143,16 +2243,110 @@ s.waitForBoot{
 	clock= TempoClock(1, queueSize:8192);
 
 	//--audio
-	SynthDef(\sStream, {|out= 0, atk= 0.1, rel= 1, on= 1, vol= 0|
+	SynthDef(\sStream, {|outBus= 0, synBus, atk= 0.1, rel= 1, on= 1, vol= 0|
 		var onEnv= EnvGen.kr(Env.asr(atk, 1, rel), on);
+		var syn= In.ar(synBus, 2)*0.2;
 		var lv= VSTPlugin.ar(nil, 2, id:\lv);
 		var av= VSTPlugin.ar(nil, 2, id:\av);
-		Out.ar(out, (lv+av)*vol.dbamp.lag*onEnv*0.7);
+		Out.ar(outBus, (lv+av+syn)*vol.dbamp.lag*onEnv*0.7);
 	}).add;
+	SynthDef(\sStream_SineFB, {|out= 0, freq= 400, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= SinOscFB.ar(freq, LFNoise2.kr(0.1).range(0.25, 0.75), AmpComp.kr(freq)*amp);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_Sine, {|out= 0, freq= 400, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= SinOsc.ar(freq, Rand(0, 2pi), AmpComp.kr(freq)*1.25*amp);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_Saw, {|out= 0, freq= 400, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= VarSaw.ar(freq, Rand(0, 1), LFNoise2.kr(0.1, 0.45, 0.5), AmpComp.kr(freq));
+		Out.ar(out, Pan2.ar(snd*env*amp, pan));
+	}).add;
+	SynthDef(\sStream_Pulse, {|out= 0, freq= 400, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= RLPF.ar(
+			LPF.ar(
+				Pulse.ar(freq, LFNoise2.kr(0.1).range(0.5, 0.95), AmpComp.kr(freq)),
+				9000
+			),
+			LFNoise2.kr(0.1).exprange(1200, 12000),
+			LFNoise2.kr(0.1, 0.4, 1),
+			amp
+		);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_PulseWarm, {|out= 0, freq= 400, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= RLPF.ar(
+			Pulse.ar(freq, LFNoise2.kr(0.1).range(0.1, 0.2), AmpComp.kr(freq)),
+			LFNoise2.kr(0.1).exprange(300, 1000),
+			0.1,
+			amp
+		);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_Formant, {|out= 0, freq= 400, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= Formant.ar(
+			freq,
+			freq*IRand(1, 4),
+			LFNoise2.kr(0.1).exprange(200, 1000),
+			AmpComp.kr(freq)*amp*0.5
+		);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_Karplus, {|out= 0, freq= 400, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= Pluck.ar(
+			PinkNoise.ar(amp),
+			Dust.kr(amp*2+6),
+			0.05,
+			1/freq.max(20),
+			8,
+			LFNoise2.kr(0.1)*0.01,
+			AmpComp.kr(freq)*amp*1.5
+		);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_Noise, {|out= 0, freq= 400, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= RHPF.ar(
+			RLPF.ar(
+				WhiteNoise.ar(0.75),
+				freq,
+				LFNoise2.kr(0.1).exprange(0.05, 0.25),
+				AmpComp.kr(freq)
+			),
+			freq,
+			LFNoise2.kr(0.1).range(0.25, 1),
+			amp
+		);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+	SynthDef(\sStream_Pink, {|out= 0, freq= 400, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+		var snd= RHPF.ar(
+			RLPF.ar(
+				PinkNoise.ar(2),
+				freq,
+				LFNoise2.kr(0.1).exprange(0.05, 0.25),
+				AmpComp.kr(freq)
+			),
+			freq*0.5,
+			LFNoise2.kr(0.1).range(0.25, 1),
+			amp
+		);
+		Out.ar(out, Pan2.ar(snd*env, pan));
+	}).add;
+
 	sStream_bus= Bus.audio(s, 2);
 	s.sync;
 	mainOutSyn= Synth(\sStream, [
-		\outBus, sStream_bus,
+		\outBus, 0,
+		\synBus, sStream_bus,
 		\atk, attackSpec.map(attackElement.value),
 		\rel, releaseSpec.map(releaseElement.value),
 		\on, onElement.value
