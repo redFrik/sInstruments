@@ -177,13 +177,16 @@ SQWERTYKeyboard {
 		"%: listening for \hid on port %".format(name, SInputs.destinations[name.asSymbol].port).postln;
 	}
 	lookupButton {|sym|
+		var i= 0;
 		var button;
-		rows.do{|row|
-			var but= row[sym];
-			if(but.notNil, {
-				button= but;
+		while({i<rows.size}, {
+			button= rows[i][sym];
+			if(button.notNil, {
+				i= inf;
+			}, {
+				i= i+1;
 			});
-		};
+		});
 		^button;
 	}
 	sendOsc {|arr|
