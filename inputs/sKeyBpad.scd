@@ -1,6 +1,6 @@
 //f.olofsson 2019
 
-//arduino nano with keybpad.ino
+//arduino nano with sKeyBpad-firmware.ino
 
 (
 //--settings
