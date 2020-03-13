@@ -179,7 +179,7 @@ SGlissVOsc : AbstractSGlissVoice {
 	*type {^\VOsc}
 	func {
 		^{|fre, amp|
-			var buffers= {
+			var buffer= {
 				var num= 4.rrand(9);
 				LocalBuf.newFrom(
 					Env(
@@ -188,9 +188,15 @@ SGlissVOsc : AbstractSGlissVoice {
 						{rand2(9.0)}!num
 					).asSignal(1024).asWavetable
 				)
-			}.dup(3);
-			var bufpos= buffers[0]+LFNoise1.kr(0.1).range(0, 2);
-			LeakDC.ar(VOsc.ar(bufpos, fre, Rand(0, 2pi), AmpComp.kr(fre)*amp));
+			}.dup(3)[0];
+			LeakDC.ar(
+				VOsc.ar(
+					buffer+LFNoise1.kr(0.1).range(0, 2),
+					fre,
+					Rand(0, 2pi),
+					AmpComp.kr(fre)*amp
+				)
+			);
 		};
 	}
 }

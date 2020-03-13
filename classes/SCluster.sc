@@ -148,6 +148,33 @@ SClusterPulseWarm : SCluster {
 		};
 	}
 }
+SClusterVOsc : SCluster {
+	*type {^\VOsc}
+	func {
+		^{|freqs, dists, amps|
+			var buffers= {
+				{
+					var num= 4.rrand(9);
+					LocalBuf.newFrom(
+						Env(
+							[0, {0.5.rand2}!(num-1), 0].flat,
+							{1.0.rand(9)}!num,
+							{rand2(9.0)}!num
+						).asSignal(1024).asWavetable
+					);
+				}.dup(3)[0];  //return only the first buffer
+			}.dup(this.numChannels);
+			LeakDC.ar(
+				VOsc.ar(
+					buffers+LFDNoise1.kr(dists+0.01).range(0, 2),  //scan all three buffers
+					freqs,
+					2pi.rand!this.numChannels,
+					AmpComp.kr(freqs)*amps
+				)
+			);
+		};
+	}
+}
 SClusterFormant : SCluster {
 	*type {^\Formant}
 	func {

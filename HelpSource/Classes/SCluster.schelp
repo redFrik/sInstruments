@@ -29,7 +29,11 @@ ARGUMENT::args
 extra arguments as an LINK::Classes/Array:: with key/value pairs.
 
 METHOD::type
-a LINK::Classes/Symbol:: describing the type of sound produced for example CODE::\SineFB::.
+a LINK::Classes/Symbol:: describing the type of sound produced. For example CODE::\Pink::.
+
+CODE::
+([SCluster]++SCluster.subclasses).do{|x| x.type.postln}  //list all available types
+::
 
 INSTANCEMETHODS::
 

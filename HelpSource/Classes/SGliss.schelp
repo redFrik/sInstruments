@@ -104,8 +104,7 @@ ARGUMENT::num
 the number of voices to be added.
 
 ARGUMENT::type
-a LINK::Classes/Symbol:: defining the type of sounds to add.
-valid types are CODE::\Saw, \Sine, \SineFB, \Pulse, \VOsc, \Formant, \Noise, \Pink, \File, \Folder::.
+a LINK::Classes/Symbol:: describing the type of sound to add. For example CODE::\Pink::.
 
 ARGUMENT::args
 extra arguments as an LINK::Classes/Array:: with key/value pairs.
