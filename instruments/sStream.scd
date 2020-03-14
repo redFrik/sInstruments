@@ -47,7 +47,7 @@ var snapshotFiles= [  //name and file (both can be changed)
 ];
 var synthPopupItems= #[  //available synths and order in popup
 	\VSTPlug, \SineFB, \Sine, \Saw, \Pulse,
-	\Formant, \Pink, \Noise, \Karplus, \PulseWarm
+	\Formant, \Pink, \Noise, \Karplus, \PulseWarm, \VOsc
 	//files and folders are generated automatically from soundfiles folder
 ];
 
@@ -2286,123 +2286,147 @@ s.waitForBoot{
 	clock= TempoClock(1, queueSize:8192);
 
 	//--audio
-	SynthDef(\sStream, {|outBus= 0, synBus, atk= 0.1, rel= 1, on= 1, vol= 0|
-		var onEnv= EnvGen.kr(Env.asr(atk, 1, rel), on);
-		var syn= In.ar(synBus, 2)*0.2;
-		var lv= VSTPlugin.ar(nil, 2, id:\lv);
-		var av= VSTPlugin.ar(nil, 2, id:\av);
-		Out.ar(outBus, (lv+av+syn)*vol.dbamp.lag*onEnv*0.7);
-	}).add;
-	SynthDef(\sStream_SineFB, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
-		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
-		var snd= SinOscFB.ar(freq, LFNoise2.kr(0.1).range(0.25, 0.75), AmpComp.kr(freq)*amp);
-		Out.ar(out, Pan2.ar(snd*env, pan));
-	}).add;
-	SynthDef(\sStream_Sine, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
-		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
-		var snd= SinOsc.ar(freq, Rand(0, 2pi), AmpComp.kr(freq)*1.25*amp);
-		Out.ar(out, Pan2.ar(snd*env, pan));
-	}).add;
-	SynthDef(\sStream_Saw, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
-		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
-		var snd= VarSaw.ar(freq, Rand(0, 1), LFNoise2.kr(0.1, 0.45, 0.5), AmpComp.kr(freq));
-		Out.ar(out, Pan2.ar(snd*env*amp, pan));
-	}).add;
-	SynthDef(\sStream_Pulse, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
-		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
-		var snd= RLPF.ar(
-			LPF.ar(
-				Pulse.ar(freq, LFNoise2.kr(0.1).range(0.5, 0.95), AmpComp.kr(freq)),
-				9000
-			),
-			LFNoise2.kr(0.1).exprange(1200, 12000),
-			LFNoise2.kr(0.1, 0.4, 1),
-			amp
-		);
-		Out.ar(out, Pan2.ar(snd*env, pan));
-	}).add;
-	SynthDef(\sStream_PulseWarm, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
-		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
-		var snd= RLPF.ar(
-			Pulse.ar(freq, LFNoise2.kr(0.1).range(0.1, 0.2), AmpComp.kr(freq)),
-			LFNoise2.kr(0.1).exprange(300, 1000),
-			0.1,
-			amp
-		);
-		Out.ar(out, Pan2.ar(snd*env, pan));
-	}).add;
-	SynthDef(\sStream_Formant, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
-		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
-		var snd= Formant.ar(
-			freq,
-			freq*IRand(1, 4),
-			LFNoise2.kr(0.1).exprange(200, 1000),
-			AmpComp.kr(freq)*amp*0.5
-		);
-		Out.ar(out, Pan2.ar(snd*env, pan));
-	}).add;
-	SynthDef(\sStream_Karplus, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
-		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
-		var snd= Pluck.ar(
-			PinkNoise.ar(amp),
-			Dust.kr(amp*2+6),
-			0.05,
-			1/freq.max(20),
-			8,
-			LFNoise2.kr(0.1)*0.01,
-			AmpComp.kr(freq)*amp*1.5
-		);
-		Out.ar(out, Pan2.ar(snd*env, pan));
-	}).add;
-	SynthDef(\sStream_Noise, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
-		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
-		var snd= RHPF.ar(
-			RLPF.ar(
-				WhiteNoise.ar(0.75),
+	{
+		SynthDef(\sStream, {|outBus= 0, synBus, atk= 0.1, rel= 1, on= 1, vol= 0|
+			var onEnv= EnvGen.kr(Env.asr(atk, 1, rel), on);
+			var syn= In.ar(synBus, 2)*0.2;
+			var lv= VSTPlugin.ar(nil, 2, id:\lv);
+			var av= VSTPlugin.ar(nil, 2, id:\av);
+			Out.ar(outBus, (lv+av+syn)*vol.dbamp.lag*onEnv*0.7);
+		}).add;
+		SynthDef(\sStream_SineFB, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+			var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+			var snd= SinOscFB.ar(freq, LFNoise2.kr(0.1).range(0.25, 0.75), AmpComp.kr(freq)*amp);
+			Out.ar(out, Pan2.ar(snd*env, pan));
+		}).add;
+		SynthDef(\sStream_Sine, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+			var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+			var snd= SinOsc.ar(freq, Rand(0, 2pi), AmpComp.kr(freq)*1.25*amp);
+			Out.ar(out, Pan2.ar(snd*env, pan));
+		}).add;
+		SynthDef(\sStream_Saw, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+			var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+			var snd= VarSaw.ar(freq, Rand(0, 1), LFNoise2.kr(0.1, 0.45, 0.5), AmpComp.kr(freq));
+			Out.ar(out, Pan2.ar(snd*env*amp, pan));
+		}).add;
+		SynthDef(\sStream_Pulse, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+			var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+			var snd= RLPF.ar(
+				LPF.ar(
+					Pulse.ar(freq, LFNoise2.kr(0.1).range(0.5, 0.95), AmpComp.kr(freq)),
+					9000
+				),
+				LFNoise2.kr(0.1).exprange(1200, 12000),
+				LFNoise2.kr(0.1, 0.4, 1),
+				amp
+			);
+			Out.ar(out, Pan2.ar(snd*env, pan));
+		}).add;
+		SynthDef(\sStream_PulseWarm, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+			var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+			var snd= RLPF.ar(
+				Pulse.ar(freq, LFNoise2.kr(0.1).range(0.1, 0.2), AmpComp.kr(freq)),
+				LFNoise2.kr(0.1).exprange(300, 1000),
+				0.1,
+				amp
+			);
+			Out.ar(out, Pan2.ar(snd*env, pan));
+		}).add;
+		SynthDef(\sStream_VOsc, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+			var buffer= {
+				var num= 4.rrand(9);
+				LocalBuf.newFrom(
+					Env(
+						[0, {0.5.rand2}!(num-1), 0].flat,
+						{1.0.rand(9)}!num,
+						{rand2(9.0)}!num
+					).asSignal(1024).asWavetable
+				)
+			}.dup(3)[0];
+			var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+			var snd= LeakDC.ar(
+				VOsc.ar(
+					buffer+LFNoise1.kr(0.1).range(0, 2),
+					freq,
+					Rand(0, 2pi),
+					AmpComp.kr(freq)*amp
+				)
+			);
+			Out.ar(out, Pan2.ar(snd*env, pan));
+		}).add;
+		SynthDef(\sStream_Formant, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+			var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+			var snd= Formant.ar(
 				freq,
-				LFNoise2.kr(0.1).exprange(0.05, 0.25),
-				AmpComp.kr(freq)
-			),
-			freq,
-			LFNoise2.kr(0.1).range(0.25, 1),
-			amp
-		);
-		Out.ar(out, Pan2.ar(snd*env, pan));
-	}).add;
-	SynthDef(\sStream_Pink, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
-		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
-		var snd= RHPF.ar(
-			RLPF.ar(
-				PinkNoise.ar(2),
+				freq*IRand(1, 4),
+				LFNoise2.kr(0.1).exprange(200, 1000),
+				AmpComp.kr(freq)*amp*0.5
+			);
+			Out.ar(out, Pan2.ar(snd*env, pan));
+		}).add;
+		SynthDef(\sStream_Karplus, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+			var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+			var snd= Pluck.ar(
+				PinkNoise.ar(amp),
+				Dust.kr(amp*2+6),
+				0.05,
+				1/freq.max(20),
+				8,
+				LFNoise2.kr(0.1)*0.01,
+				AmpComp.kr(freq)*amp*1.5
+			);
+			Out.ar(out, Pan2.ar(snd*env, pan));
+		}).add;
+		SynthDef(\sStream_Noise, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+			var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+			var snd= RHPF.ar(
+				RLPF.ar(
+					WhiteNoise.ar(0.75),
+					freq,
+					LFNoise2.kr(0.1).exprange(0.05, 0.25),
+					AmpComp.kr(freq)
+				),
 				freq,
-				LFNoise2.kr(0.1).exprange(0.05, 0.25),
-				AmpComp.kr(freq)
-			),
-			freq*0.5,
-			LFNoise2.kr(0.1).range(0.25, 1),
-			amp
-		);
-		Out.ar(out, Pan2.ar(snd*env, pan));
-	}).add;
-	SynthDef(\sStream_File_1, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
-		var buf= \buf.ir;
-		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
-		var rate= freq.explin(20, 12000, 1/3, 3);
-		var pos= \pos.kr(0)%1*BufFrames.ir(buf);
-		var loop= \loop.kr(1);
-		var snd= PlayBuf.ar(1, buf, rate*BufRateScale.ir(buf), 1, pos, loop)*amp;
-		Out.ar(out, Pan2.ar(snd*env, pan));
-	}).add;
-	SynthDef(\sStream_File_2, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
-		var buf= \buf.ir;
-		var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
-		var rate= freq.explin(20, 12000, 1/3, 3);
-		var pos= \pos.kr(0)%1*BufFrames.ir(buf);
-		var loop= \loop.kr(1);
-		var snd= PlayBuf.ar(2, buf, rate*BufRateScale.ir(buf), 1, pos, loop)*amp;
-		snd= snd*env;
-		Out.ar(out, Balance2.ar(snd[0], snd[1], pan));
-	}).add;
+				LFNoise2.kr(0.1).range(0.25, 1),
+				amp
+			);
+			Out.ar(out, Pan2.ar(snd*env, pan));
+		}).add;
+		SynthDef(\sStream_Pink, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+			var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+			var snd= RHPF.ar(
+				RLPF.ar(
+					PinkNoise.ar(2),
+					freq,
+					LFNoise2.kr(0.1).exprange(0.05, 0.25),
+					AmpComp.kr(freq)
+				),
+				freq*0.5,
+				LFNoise2.kr(0.1).range(0.25, 1),
+				amp
+			);
+			Out.ar(out, Pan2.ar(snd*env, pan));
+		}).add;
+		SynthDef(\sStream_File_1, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+			var buf= \buf.ir;
+			var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+			var rate= freq.explin(20, 12000, 1/3, 3);
+			var pos= \pos.kr(0)%1*BufFrames.ir(buf);
+			var loop= \loop.kr(1);
+			var snd= PlayBuf.ar(1, buf, rate*BufRateScale.ir(buf), 1, pos, loop)*amp;
+			Out.ar(out, Pan2.ar(snd*env, pan));
+		}).add;
+		SynthDef(\sStream_File_2, {|out= 0, freq= 99, amp= 0.1, pan= 0, atk= 0.01, rel= 0.1, cur= -4, gate= 1|
+			var buf= \buf.ir;
+			var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
+			var rate= freq.explin(20, 12000, 1/3, 3);
+			var pos= \pos.kr(0)%1*BufFrames.ir(buf);
+			var loop= \loop.kr(1);
+			var snd= PlayBuf.ar(2, buf, rate*BufRateScale.ir(buf), 1, pos, loop)*amp;
+			snd= snd*env;
+			Out.ar(out, Balance2.ar(snd[0], snd[1], pan));
+		}).add;
+	}.value;
 
 	buffers= [Buffer.alloc(s, 1), Buffer.alloc(s, 1)];
 	sStream_bus= Bus.audio(s, 2);
