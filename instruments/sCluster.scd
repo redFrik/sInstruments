@@ -316,7 +316,7 @@ s.waitForBoot{
 		var uh= usr.bounds.height-(usrPadding.height*2);
 		Pen.translate(usrPadding.width, uh+usrPadding.height);
 		Pen.font= fnt2;
-		Pen.strokeColor= palette.baseText;
+		Pen.strokeColor= palette.buttonText;
 		Pen.fillColor= palette.highlight;
 		freqs= cluster.getFrequencies.last;
 		dists= cluster.getDistortions.last;
@@ -389,7 +389,7 @@ s.waitForBoot{
 		var uh= usr.bounds.height-(usrPadding.height*2);
 		var str, strWidth, y;
 		Pen.font= fnt2;
-		Pen.fillColor= palette.baseText;
+		Pen.fillColor= palette.buttonText;
 
 		Pen.push;
 		Pen.translate(up, uh+usrPadding.height);
