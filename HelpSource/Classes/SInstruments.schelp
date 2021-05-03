@@ -11,6 +11,8 @@ CODE::
 (Quarks.all.detect{|x| x.name=="sInstruments"}.localPath+/+"startMenu.scd").load
 ::
 
+most instruments are started with the 'space' key.
+
 CLASSMETHODS::
 
 INSTANCEMETHODS::

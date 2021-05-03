@@ -1,14 +1,14 @@
-a [Quark](http://supercollider-quarks.github.io/quarks/) for [SuperCollider](http://supercollider.github.io)
+a [Quark](https://supercollider-quarks.github.io/quarks/) for [SuperCollider](https://supercollider.github.io)
 
 # sInstruments
 
 some instruments written in SuperCollider in collaboration with Tamas Ungvary.
 
-homepage: https://redfrik.github.io/sInstruments
+homepage: <https://redfrik.github.io/sInstruments>
 
 ## Requirements
 
-[SuperCollider](http://supercollider.github.io) version 3.10 or newer running under macOS, Linux or Windows.
+[SuperCollider](https://supercollider.github.io) version 3.10 or newer running under macOS, Linux or Windows.
 
 ## Dependancies
 
