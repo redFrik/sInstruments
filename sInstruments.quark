@@ -1,8 +1,8 @@
 (
 	\name: 				"sInstruments",
 	\summary:			"some instruments written in SuperCollider",
-	\isCompatible:		{Main.versionAtLeast(3, 10)},
-	\version:			"0.4.2",
+	\isCompatible:		{Main.versionAtLeast(3, 11)},
+	\version:			"0.4.3",
 	\schelp:			"sInstrumentsOverview",
 	\author: 			"Fredrik Olofsson",
 	\country: 			"Germany & Sweden",

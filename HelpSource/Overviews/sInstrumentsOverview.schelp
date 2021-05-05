@@ -14,10 +14,25 @@ These are complete instruments and can be found in the folder CODE::instruments:
 
 DEFINITIONLIST::
 ## sGliss || a glissing sInstrument.
+code::
+(SInstruments.rootDir+/+"instruments/sGliss.scd").load
+::
 ## sDrone || a droning sInstrument based on the Ndef used for 'Strange Foreign Bodies'.
+code::
+(SInstruments.rootDir+/+"instruments/sDrone.scd").load
+::
 ## sFormant || a formant sInstrument based on optoformant3.
+code::
+(SInstruments.rootDir+/+"instruments/sFormant.scd").load
+::
 ## sCluster || a cluster sInstrument.
+code::
+(SInstruments.rootDir+/+"instruments/sCluster.scd").load
+::
 ## sStream || based on fIGMA-stream maxpatch.
+code::
+(SInstruments.rootDir+/+"instruments/sStream.scd").load
+::
 ::
 
 Note: use the 'space' key to start playing an instrument.

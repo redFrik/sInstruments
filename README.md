@@ -8,7 +8,7 @@ homepage: <https://redfrik.github.io/sInstruments>
 
 ## Requirements
 
-[SuperCollider](https://supercollider.github.io) version 3.10 or newer running under macOS, Linux or Windows.
+[SuperCollider](https://supercollider.github.io) version 3.11 or newer running under macOS, Linux or Windows.
 
 ## Dependancies
 
