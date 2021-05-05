@@ -752,7 +752,11 @@ s.waitForBoot{
 		lvVst.browse;
 	};
 	lvVstEditorButton.action= {|view|
-		lvVst.gui;
+		if(lvVst.info.editor, {
+			lvVst.editor;
+		}, {
+			lvVst.gui;
+		});
 	};
 	lvVstProgramPopup.action= {|view|
 		lvVst.program= view.value;
@@ -1325,7 +1329,11 @@ s.waitForBoot{
 		avVst.browse;
 	};
 	avVstEditorButton.action= {|view|
-		avVst.gui;
+		if(avVst.info.editor, {
+			avVst.editor;
+		}, {
+			avVst.gui;
+		});
 	};
 	avVstProgramPopup.action= {|view|
 		avVst.program= view.value;
@@ -2462,18 +2470,19 @@ s.waitForBoot{
 				[lvVst, lvVstEditorButton, lvVstProgramPopup, lvProgramSelectPopups],
 				[avVst, avVstEditorButton, avVstProgramPopup, avProgramSelectPopups]
 			].do{|arr|
-				SimpleController(arr[0]).put('/open', {|vst, what ...args|
+				SimpleController(arr[0]).put('open', {|vst, what ...args|
 					if(vst.info.notNil, {
-						if(vst.info.isSynth, {
+						if(vst.info.synth, {
 							if(args[1], {
 								//vst.info.print(true);  //debug
 								{
+									var programNames= vst.info.programs.collect{|x| x.name};
 									arr[1].states_([
 										[vst.info.name, palette.buttonText, palette.button]
 									]);
-									arr[2].items= vst.programNames;
+									arr[2].items= programNames;
 									arr[3].do{|pop, i|
-										pop.items= vst.programNames;
+										pop.items= programNames;
 										pop.value= i+1;
 									};
 								}.defer;
