@@ -200,6 +200,11 @@ SNanoKontrol {
 			infoTextElementString.addView(StaticText().fixedHeight_(" ".bounds(fntMono).height*2)
 				.align_(\topLeft).background_(Color.grey(0.9, 0.5)))
 		);
+		if(SGUI.currentTheme!=\dark, {
+			win.view.children.select{|v| v.isKindOf(Slider)}.do{|v|
+				v.background= Color.grey(0.7725, 0.5);
+			};
+		});
 		win.onClose= {
 			NetAddr.localAddr.sendMsg(\closed, name.asSymbol);
 			ccResponders.do{|x| x.free};

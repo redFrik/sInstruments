@@ -212,6 +212,11 @@ s.waitForBoot{
 		};
 	});
 	win.view.setBackgroundImage(backgroundImage, 10, 0.15);
+	if(SGUI.currentTheme!=\dark, {
+		win.view.children.select{|v| v.isKindOf(Slider)}.do{|v|
+			v.background= Color.grey(0.7725, 0.5);
+		};
+	});
 	win.view.keyDownAction= {|view, chr, mod, unicode, keycode, key|
 		if(unicode==13, {
 			win.view.focus;

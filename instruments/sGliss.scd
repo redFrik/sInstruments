@@ -421,6 +421,12 @@ s.waitForBoot{
 		Pen.stroke;
 	});
 	win.view.setBackgroundImage(backgroundImage, 10, 0.3);
+	if(SGUI.currentTheme!=\dark, {
+		(win.view.children++ampRandProbElement.views)
+		.select{|v| v.isKindOf(Slider) or:{v.isKindOf(RangeSlider)}}.do{|v|
+			v.background= Color.grey(0.7725, 0.5);
+		};
+	});
 	win.view.keyDownAction= {|view, chr, mod, unicode, keycode, key|
 		case
 		{unicode==13} {

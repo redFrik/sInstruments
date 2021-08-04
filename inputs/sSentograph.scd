@@ -353,6 +353,11 @@ calibrateSentograph= {|index|
 		)
 	);
 	SGUI.adapt(calibrateWin);
+	if(SGUI.currentTheme!=\dark, {
+		calibrateWin.view.children.select{|v| v.isKindOf(Slider)}.do{|v|
+			v.background= Color.grey(0.7725, 0.5);
+		};
+	});
 	calibrateWin.front;
 	CmdPeriod.doOnce({calibrateWin.close});
 	calibrateWin.view.keyDownAction= {|view, chr, mod, unicode, keycode, key|
@@ -545,5 +550,10 @@ routineGui= Routine({
 SGUI.report(win);
 SGUI.adapt(win);
 infoTextElementString.views.do{|view| view.font= fntMono};
+if(SGUI.currentTheme!=\dark, {
+	win.view.children.select{|v| v.isKindOf(Slider)}.do{|v|
+		v.background= Color.grey(0.7725, 0.5);
+	};
+});
 win.front;
 )

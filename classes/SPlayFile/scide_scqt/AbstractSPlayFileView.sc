@@ -53,7 +53,8 @@ AbstractSPlayFileView {
 
 			VLayout(
 				HLayout(
-					vZoomSlider= RangeSlider().orientation_(\vertical).canFocus_(false),
+					vZoomSlider= RangeSlider().orientation_(\vertical).canFocus_(false)
+					.background_(Color.grey(0.5)),
 
 					waveView= SoundFileView().setData([0])
 					.timeCursorOn_(true).timeCursorColor_(Color.white)
@@ -63,6 +64,7 @@ AbstractSPlayFileView {
 				),
 
 				hZoomSlider= RangeSlider().orientation_(\horizontal).canFocus_(false)
+				.background_(Color.grey(0.5))
 			),
 
 			HLayout(
@@ -83,7 +85,11 @@ AbstractSPlayFileView {
 			),
 
 			HLayout(
-				[volSlider= Slider().orientation_(\horizontal).canFocus_(false), stretch: 1],
+				[
+					volSlider= Slider().orientation_(\horizontal).canFocus_(false)
+					.background_(Color.grey(0.5)),
+					stretch: 1
+				],
 
 				playButton= Button().states_([
 					["play"], ["play", Color.black, Color(0.5, 1, 0.5)]

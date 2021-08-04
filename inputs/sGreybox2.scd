@@ -382,6 +382,11 @@ streamButtonElements[21].action= {|val| if(val==1, {
 })};
 
 plate.allChildren.do{|view| if(view.isKindOf(StaticText), {view.acceptsMouse= false})};
+if(SGUI.currentTheme!=\dark, {
+	plate.children.select{|v| v.isKindOf(Slider)}.do{|v|
+		v.background= Color.grey(0.7725, 0.5);
+	};
+});
 
 routineGui= Routine({
 	inf.do{
