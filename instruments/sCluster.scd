@@ -105,7 +105,7 @@ s.waitForBoot{
 	var masterTuning;
 	var glissTime;
 	var typePopup;
-	var nextButton, randButton, lockButton;
+	var nextButton, randButton, lockButton, folderText;
 	var numVoicesNumber, onButton, attackNumber, releaseNumber;
 	var transposition;
 	var snapshots;
@@ -185,6 +185,7 @@ s.waitForBoot{
 					["lock", palette.buttonText, palette.button],
 					["lock", palette.buttonText, palette.highlight]
 				]).fixedWidth_(30),
+				folderText= StaticText().minHeight_(25),
 				View()
 			),
 			HLayout(
@@ -699,6 +700,7 @@ s.waitForBoot{
 	};
 	loadBuffer= {|path|
 		buffer= Buffer.readChannel(s, path, channels:[0]);
+		folderText.string= path.basename;
 		s.sync;
 		buffer.normalize;
 		s.sync;
@@ -996,6 +998,7 @@ s.waitForBoot{
 					]);
 					randButton.visible= true;
 					lockButton.visible= true;
+					folderText.visible= true;
 				},
 				\Folder, {
 					loadBuffer.value(filePathInFolderFromPopup.value);
@@ -1005,11 +1008,13 @@ s.waitForBoot{
 					randButton.states_([["rand"]]);
 					randButton.visible= true;
 					lockButton.visible= true;
+					folderText.visible= true;
 				},
 				{
 					nextButton.visible= false;
 					randButton.visible= false;
 					lockButton.visible= false;
+					folderText.visible= false;
 				}
 			);
 			//"_________".postln; args.pairsDo{|a, b| [a, b].postln};  //debug

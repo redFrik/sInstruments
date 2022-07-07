@@ -1,7 +1,7 @@
 //related SPlayFileDiskView, SPlayFile
 
 SPlayFileDisk : AbstractSPlayFile {
-	classvar id= 2222;
+	const id= 2223;  //magic number to use as VDiskIn sendID
 	var <>bufferSize= 8192;  //decrease for faster frame updates, increase for disk dropout safety
 
 	frame {

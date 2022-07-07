@@ -6,7 +6,7 @@ var oscPort= 13060;
 var maxNumVoices= 99;  //maximum number of voices each synth can play
 var numGliss= 9;  //number of synths right hand side
 var maxNumTargets= 50;  //maximum number of amp and freq targets
-var winRect= Rect(242, 242, 1050, 780);  //x, y, w, h
+var winRect= Rect(242, 242, 1150, 780);  //x, y, w, h
 var palette= SGUI.palette((highlight: Color.blue(2/3, 0.5)));
 var fnt= SGUI.font;
 var fnt2= SGUI.font.copy.size_(10);
@@ -363,7 +363,8 @@ s.waitForBoot{
 						\lockButton, Button().states_([
 							["lock", palette.buttonText, palette.button],
 							["lock", palette.buttonText, palette.highlight]
-						]).fixedWidth_(30)
+						]).fixedWidth_(30),
+						\folderText, StaticText().minHeight_(25),
 					];
 					go.putAll(arr);
 					arr.select{|o, i| i.odd};
@@ -1554,6 +1555,7 @@ s.waitForBoot{
 	};
 	loadBuffer= {|go, path|
 		go.buffer= Buffer.readChannel(s, path, channels:[0]);
+		go.folderText.string= path.basename;
 		s.sync;
 		go.buffer.normalize;
 		s.sync;
@@ -1607,6 +1609,7 @@ s.waitForBoot{
 						]);
 						go.randButton.visible= true;
 						go.lockButton.visible= true;
+						go.folderText.visible= true;
 					},
 					\Folder, {
 						loadBuffer.value(go, findFileInFolder.value(go));
@@ -1615,11 +1618,13 @@ s.waitForBoot{
 						go.randButton.states_([["rand"]]);
 						go.randButton.visible= true;
 						go.lockButton.visible= true;
+						go.folderText.visible= true;
 					},
 					{
 						go.nextButton.visible= false;
 						go.randButton.visible= false;
 						go.lockButton.visible= false;
+						go.folderText.visible= false;
 					}
 				);
 				go.numNumber.valueAction= go.numNumber.value.max(1);  //at least one voice
@@ -1629,6 +1634,7 @@ s.waitForBoot{
 		go.nextButton.visible= false;
 		go.randButton.visible= false;
 		go.lockButton.visible= false;
+		go.folderText.visible= false;
 		go.volSlider.action= {|view|
 			go.gliss.set(\vol, (view.value*1.25).ampdb.max(-90));
 		};
