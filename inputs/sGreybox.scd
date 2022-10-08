@@ -9,8 +9,7 @@
 var serialPortName= "usbmodem2062641";  //greybox
 var winRect= Rect(0, 80, 320, 240);  //x, y, w, h
 var palette= SGUI.palette;
-var fnt= SGUI.font;
-var fntMono= Font.monospace(10);
+var fnt= Font.monospace(10);
 var fps= 15;  //maximum gui updaterate - does not affect sensor input rate
 var sliderInvert= #[false, false, false, false, true, false, false, true, true, true, true, true, true, true, true, true];  //true will be inverted
 
@@ -44,7 +43,7 @@ win.layout= VLayout(
 		["•Greybox", palette.buttonText, palette.highlight]
 	]),
 	plate= View().fixedSize_(Size(320, 240)).background_(Color.grey(0.9, 0.5)),
-	infoTextElementString.addView(StaticText().fixedHeight_(" ".bounds(fntMono).height*2)
+	infoTextElementString.addView(StaticText().fixedHeight_(" ".bounds(fnt).height*2)
 		.align_(\topLeft).background_(Color.grey(0.9, 0.5)))
 );
 
@@ -459,7 +458,7 @@ routineGui= Routine({
 }).play(AppClock);
 SGUI.report(win);
 SGUI.adapt(win);
-infoTextElementString.views.do{|view| view.font= fntMono};
+infoTextElementString.views.do{|view| view.font= fnt};
 setupOscResponders.value;
 win.front;
 )

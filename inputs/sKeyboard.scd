@@ -4,8 +4,7 @@
 //--settings
 var winRect= Rect(0, 60, 800, 120);  //x, y, w, h
 var palette= SGUI.palette;
-var fnt= SGUI.font;
-var fnt2= SGUI.font.copy.size_(10);
+var fnt= SGUI.font.copy.size_(10);
 var range= #[36, 96];  //minmax range in midinotes, first&last black keys are ignored
 
 //--functions and objects
@@ -159,7 +158,7 @@ usrView.drawFunc= {|usr|
 			});
 			key.put(\velPoint, velPoint);
 			strRect= Rect(x, whiteKeySize.height-20, whiteKeySize.width, 20);
-			Pen.stringCenteredIn(key.note.asString, strRect, fnt2, Color.black);
+			Pen.stringCenteredIn(key.note.asString, strRect, fnt, Color.black);
 			x= x+whiteKeySize.width;
 		});
 	};
@@ -186,7 +185,7 @@ usrView.drawFunc= {|usr|
 			});
 			key.put(\velPoint, velPoint);
 			strRect= Rect(xx, blackKeySize.height-20, blackKeySize.width, 20);
-			Pen.stringCenteredIn(key.note.asString, strRect, fnt2, Color.white);
+			Pen.stringCenteredIn(key.note.asString, strRect, fnt, Color.white);
 		}, {
 			x= x+whiteKeySize.width;
 		});

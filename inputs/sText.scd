@@ -2,7 +2,6 @@
 //--settings
 var winRect= Rect(0, 60, 400, 400);  //x, y, w, h
 var palette= SGUI.palette;
-var fnt= SGUI.font;
 
 //--functions and objects
 var parseAmplitudes, parseFrequencies;

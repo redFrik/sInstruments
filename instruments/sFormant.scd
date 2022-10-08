@@ -6,7 +6,6 @@
 var oscPort= 13063;
 var winRect= Rect(242, 242, 600, 600);  //x, y, w, h
 var palette= SGUI.palette((highlight: Color.grey(2/3, 0.5)));
-var fnt= SGUI.font;
 var fps= 25;  //maximum gui updaterate - does not affect sensor input rate
 var minFreq= 5, maxFreq= 500;  //Hz
 var snapshotKeys= #[  //more can be added

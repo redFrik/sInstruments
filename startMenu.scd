@@ -2,7 +2,6 @@
 //--settings
 var prefName= "startMenuPref.json";
 var winRect= Rect(1, 550, 240, 320);  //x, y, w, h
-var fnt= SGUI.font;
 
 //--functions and objects
 var keyFunc;

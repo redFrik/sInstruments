@@ -7,8 +7,7 @@
 var serialPortName= "/dev/cu.wchusbserial14[0-9]*0";  //regexp
 var winRect= Rect(170, 70, 160, 150);  //x, y, w, h
 var palette= SGUI.palette;
-var fnt= SGUI.font;
-var fntMono= Font.monospace(10);
+var fnt= Font.monospace(10);
 var recTimeout= 3;  //number of seconds to keep snapshot record gate open
 
 //--functions and objects
@@ -63,13 +62,13 @@ win.layout= VLayout(
 		]).fixedWidth_(30),
 		View()
 	),
-	infoTextString= StaticText().fixedHeight_(" ".bounds(fntMono).height*6)
+	infoTextString= StaticText().fixedHeight_(" ".bounds(fnt).height*6)
 	.align_(\topLeft).background_(Color.grey(0.9, 0.5))
 );
 SGUI.report(win);
 SGUI.adapt(win);
 win.front;
-infoTextString.font= fntMono;
+infoTextString.font= fnt;
 
 buttonLookup= {|index|
 	var i= lookup[index];

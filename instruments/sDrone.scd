@@ -6,8 +6,7 @@ var oscPort= 13061;
 var maxNumVoices= 30;  //maximum number of voices for the synth
 var winRect= Rect(242, 242, 900, 780);  //x, y, w, h
 var palette= SGUI.palette((highlight: Color.red(2/3, 0.5)));
-var fnt= SGUI.font;
-var fnt2= SGUI.font.copy.size_(10);
+var fnt= SGUI.font.copy.size_(10);
 var fps= 25;
 var minFreq= 20, maxFreq= 12000;  //Hz
 var glag= 1;  //global control lag for dist, hp, dmin etc
@@ -654,7 +653,7 @@ s.waitForBoot{
 				Pen.stroke;
 			},
 			{
-				Pen.font= fnt2;
+				Pen.font= fnt;
 				Pen.fillColor= palette.buttonText;
 				amps= drone.getAmplitudes.last;  //read from control bus
 				ampWidth= uw/amps.size*0.4;
@@ -673,7 +672,7 @@ s.waitForBoot{
 	ampUserView= SGUIampUserView(ampUsr, usrPadding);
 	ampUsr.drawFunc= {|usr|
 		Pen.translate(usrPadding.width, usrPadding.height+ampUserView.uh);
-		Pen.font= fnt2;
+		Pen.font= fnt;
 		ampUserView.drawMarkings(5, ampRangeElement.value[0], ampRangeElement.value[1]);
 		switch(ampStack.index,
 			0, {  //targets
@@ -1007,7 +1006,7 @@ s.waitForBoot{
 				Pen.stroke;
 			},
 			{
-				Pen.font= fnt2;
+				Pen.font= fnt;
 				Pen.fillColor= palette.buttonText;
 				freqs= drone.getFrequencies.last;  //read from control bus
 				freqWidth= uw/freqs.size*0.4;
@@ -1031,7 +1030,7 @@ s.waitForBoot{
 	freqUserView= SGUIfreqUserView(freqUsr, usrPadding, minFreq, maxFreq);
 	freqUsr.drawFunc= {|usr|
 		Pen.translate(usrPadding.width, usrPadding.height+freqUserView.uh);
-		Pen.font= fnt2;
+		Pen.font= fnt;
 		freqUserView.drawMarkings(
 			10,
 			freqRangeSpec.map(freqRangeElement.value[0]),

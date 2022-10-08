@@ -6,8 +6,7 @@ var oscPort= 13064;
 var maxNumVoices= 100;  //maximum number of voices for the synth
 var winRect= Rect(242, 242, 900, 780);  //x, y, w, h
 var palette= SGUI.palette((highlight: Color.yellow(2/3, 0.5)));
-var fnt= SGUI.font;
-var fnt2= SGUI.font.copy.size_(10);
+var fnt= SGUI.font.copy.size_(10);
 var fps= 25;
 var minFreq= 9, maxFreq= 9999;  //Hz
 var transposeKeys= #[
@@ -321,7 +320,7 @@ s.waitForBoot{
 		var uw2= uw-5;  //right side margin
 		var uh= usr.bounds.height-(usrPadding.height*2);
 		Pen.translate(usrPadding.width, uh+usrPadding.height);
-		Pen.font= fnt2;
+		Pen.font= fnt;
 		Pen.strokeColor= palette.buttonText;
 		Pen.fillColor= palette.highlight;
 		freqs= cluster.getFrequencies.last;
@@ -351,7 +350,7 @@ s.waitForBoot{
 			});
 			qx= qx.min(uw-20);
 			qy= qy+10;
-			Pen.stringCenteredIn(str, Rect.aboutPoint(Point(qx, qy), 25, fnt2.size));
+			Pen.stringCenteredIn(str, Rect.aboutPoint(Point(qx, qy), 25, fnt.size));
 		};
 		Pen.stroke;
 
@@ -394,7 +393,7 @@ s.waitForBoot{
 		var uw= usr.bounds.width-up;
 		var uh= usr.bounds.height-(usrPadding.height*2);
 		var str, strWidth, y;
-		Pen.font= fnt2;
+		Pen.font= fnt;
 		Pen.fillColor= palette.buttonText;
 
 		Pen.push;
@@ -428,28 +427,28 @@ s.waitForBoot{
 		Pen.pop;
 
 		Pen.push;
-		Pen.translate(up, fnt2.size*0.5);
+		Pen.translate(up, fnt.size*0.5);
 		str= "Distortion";
-		strWidth= str.bounds.width(fnt2);
-		Pen.stringCenteredIn(str, Rect.aboutPoint(Point(uw*0.5-strWidth, 0), strWidth*0.5, fnt2.size));
+		strWidth= str.bounds.width(fnt);
+		Pen.stringCenteredIn(str, Rect.aboutPoint(Point(uw*0.5-strWidth, 0), strWidth*0.5, fnt.size));
 		numDistMarkings.do{|i|
 			var dist= i.linlin(0, numDistMarkings-1, 0, 1);
 			var x= i.linlin(0, numDistMarkings-1, 0.5, 1)*uw;
 			str= SGUI.fixDec(dist, 1);
-			Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x, 0), 20, fnt2.size));
+			Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x, 0), 20, fnt.size));
 		};
 		Pen.pop;
 
 		Pen.push;
-		Pen.translate(up, usr.bounds.height-(fnt2.size*0.5));
+		Pen.translate(up, usr.bounds.height-(fnt.size*0.5));
 		str= "Amplitude";
-		strWidth= str.bounds.width(fnt2);
-		Pen.stringCenteredIn(str, Rect.aboutPoint(Point(uw*0.5+strWidth, 0), strWidth*0.5, fnt2.size));
+		strWidth= str.bounds.width(fnt);
+		Pen.stringCenteredIn(str, Rect.aboutPoint(Point(uw*0.5+strWidth, 0), strWidth*0.5, fnt.size));
 		numAmpMarkings.do{|i|
 			var amp= i.linlin(0, numAmpMarkings-1, 0, 1);
 			var x= i.linlin(0, numAmpMarkings-1, 0, 0.5)*uw;
 			str= SGUI.fixDec(amp, 1);
-			Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x, 0), 20, fnt2.size));
+			Pen.stringCenteredIn(str, Rect.aboutPoint(Point(x, 0), 20, fnt.size));
 		};
 		Pen.pop;
 	};

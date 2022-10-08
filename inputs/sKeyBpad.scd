@@ -7,8 +7,7 @@
 var serialPortName= "/dev/cu.wchusbserial14[0-9]*0";  //regexp
 var winRect= Rect(0, 70, 400, 200);  //x, y, w, h
 var palette= SGUI.palette;
-var fnt= SGUI.font;
-var fntMono= Font.monospace(10);
+var fnt= Font.monospace(10);
 
 //--functions and objects
 var sendOsc;
@@ -36,13 +35,13 @@ win.layout= VLayout(
 		)
 	}!4)
 	++
-	infoTextString= StaticText().fixedHeight_(" ".bounds(fntMono).height*2)
+	infoTextString= StaticText().fixedHeight_(" ".bounds(fnt).height*2)
 	.align_(\topLeft).background_(Color.grey(0.9, 0.5))
 );
 SGUI.report(win);
 SGUI.adapt(win);
 win.front;
-infoTextString.font= fntMono;
+infoTextString.font= fnt;
 
 buttons= buttons.reverse;
 sendOsc= {|arr|

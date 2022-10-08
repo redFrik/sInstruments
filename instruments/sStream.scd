@@ -10,8 +10,7 @@ var maxChordPitch= 24;  //range in semitones +/-
 var maxEntryDelay= 1;  //seconds
 var winRect= Rect(242, 242, 1150, 750);  //x, y, w, h
 var palette= SGUI.palette((highlight: Color.green(2/3, 0.25)));
-var fnt= SGUI.font;
-var fnt2= SGUI.font.copy.size_(10);
+var fnt= SGUI.font.copy.size_(10);
 var fps= 25;
 var scales= [  //more can be added. see Scale.directory
 	Scale.bartok,
@@ -77,7 +76,7 @@ s.waitForBoot{
 	//--functions and objects
 	var buffers;
 	var usrPadding= Size(20, 6);  //left, top+bottom
-	var strSize= Size("127".bounds(fnt2).width, "127".bounds(fnt2).height);
+	var strSize= Size("127".bounds(fnt).width, "127".bounds(fnt).height);
 
 	var patterns, readPatternsFromDisk, writeUserPatternsToDisk;
 	var chords, readChordsFromDisk, writeUserChordsToDisk;
@@ -1015,7 +1014,7 @@ s.waitForBoot{
 		var xLastStr= -999;
 		var scale= scales[lvScaleList.value];
 		Pen.translate(usrPadding.width+(stepWidth*0.5), uh+usrPadding.height);
-		Pen.font= fnt2;
+		Pen.font= fnt;
 		Pen.strokeColor= palette.buttonText;
 		Pen.fillColor= palette.highlight;
 		lvPitchesArray.do{|val, i|
@@ -1068,7 +1067,7 @@ s.waitForBoot{
 		var uh= usr.bounds.height-(usrPadding.height*2);
 		var numMarkings= 7;
 		Pen.translate(usrPadding.width, uh+usrPadding.height);
-		Pen.font= fnt2;
+		Pen.font= fnt;
 		Pen.fillColor= palette.buttonText;
 		Pen.strokeColor= Color.grey(0.5, 0.5);
 		numMarkings.do{|i|
@@ -1169,7 +1168,7 @@ s.waitForBoot{
 		var xLastStr= -999;
 		var str;
 		Pen.translate(usrPadding.width+(stepWidth*0.5), uh+usrPadding.height);
-		Pen.font= fnt2;
+		Pen.font= fnt;
 		Pen.strokeColor= palette.buttonText;
 		Pen.fillColor= palette.highlight;
 		lvVelocitiesArray.do{|val, i|
@@ -1220,7 +1219,7 @@ s.waitForBoot{
 		var uh= usr.bounds.height-(usrPadding.height*2);
 		var numMarkings= 6;
 		Pen.translate(usrPadding.width, uh+usrPadding.height);
-		Pen.font= fnt2;
+		Pen.font= fnt;
 		Pen.fillColor= palette.buttonText;
 		Pen.strokeColor= Color.grey(0.5, 0.5);
 		numMarkings.do{|i|
@@ -1560,7 +1559,7 @@ s.waitForBoot{
 		var dur= avSustainSpec.map(avSustainElement.value).linlin(0, maxEntryDelay, 0, uw-(strSize.width*2), nil);
 		var scale= scales[avScaleList.value];
 		Pen.translate(usrPadding.width, uh+usrPadding.height);
-		Pen.font= fnt2;
+		Pen.font= fnt;
 		Pen.strokeColor= palette.buttonText;
 		Pen.fillColor= palette.highlight;
 		avPitchesArray.do{|val, i|
@@ -1593,7 +1592,7 @@ s.waitForBoot{
 		var numMarkingsFreq= 9;
 		var numMarkingsTime= 5;
 		Pen.translate(usrPadding.width, uh+usrPadding.height);
-		Pen.font= fnt2;
+		Pen.font= fnt;
 		Pen.fillColor= palette.buttonText;
 		Pen.strokeColor= Color.grey(0.5, 0.5);
 		numMarkingsFreq.do{|i|
@@ -1725,7 +1724,7 @@ s.waitForBoot{
 		var uh= usr.bounds.height-(usrPadding.height*2)-strSize.height;
 		var numMarkings= 6;
 		Pen.translate(usrPadding.width, uh+usrPadding.height);
-		Pen.font= fnt2;
+		Pen.font= fnt;
 		Pen.fillColor= palette.buttonText;
 		Pen.strokeColor= Color.grey(0.5, 0.5);
 		numMarkings.do{|i|

@@ -6,8 +6,7 @@
 //--settings
 var winRect= Rect(0, 80, 320, 400);  //x, y, w, h
 var palette= SGUI.palette;
-var fnt= SGUI.font;
-var fntMono= Font.monospace(10);
+var fnt= Font.monospace(10);
 var fps= 15;  //maximum gui updaterate - does not affect sensor input rate
 
 //--functions and objects
@@ -74,7 +73,7 @@ win.layout= VLayout(
 		Button().states_([["Play"]]),
 		PopUpMenu().items_(["_"]),
 	),
-	infoTextElementString.addView(StaticText().fixedHeight_(" ".bounds(fntMono).height*4)
+	infoTextElementString.addView(StaticText().fixedHeight_(" ".bounds(fnt).height*4)
 		.align_(\topLeft).background_(Color.grey(0.9, 0.5))),
 	View()
 );
@@ -549,7 +548,7 @@ routineGui= Routine({
 }).play(AppClock);
 SGUI.report(win);
 SGUI.adapt(win);
-infoTextElementString.views.do{|view| view.font= fntMono};
+infoTextElementString.views.do{|view| view.font= fnt};
 if(SGUI.currentTheme!=\dark, {
 	win.view.children.select{|v| v.isKindOf(Slider)}.do{|v|
 		v.background= Color.grey(0.7725, 0.5);

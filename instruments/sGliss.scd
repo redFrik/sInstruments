@@ -8,8 +8,7 @@ var numGliss= 9;  //number of synths right hand side
 var maxNumTargets= 50;  //maximum number of amp and freq targets
 var winRect= Rect(242, 242, 1150, 780);  //x, y, w, h
 var palette= SGUI.palette((highlight: Color.blue(2/3, 0.5)));
-var fnt= SGUI.font;
-var fnt2= SGUI.font.copy.size_(10);
+var fnt= SGUI.font.copy.size_(10);
 var fps= 25;
 var minFreq= 20, maxFreq= 12000;  //Hz
 var ampLag= 0.1;  //seconds
@@ -656,7 +655,7 @@ s.waitForBoot{
 				Pen.stroke;
 			},
 			{
-				Pen.font= fnt2;
+				Pen.font= fnt;
 				Pen.strokeColor= palette.buttonText;
 				Pen.fillColor= palette.highlight;
 				amps= glissandi[0].gliss.getAmplitudes[0];
@@ -680,7 +679,7 @@ s.waitForBoot{
 	ampUserView= SGUIampUserView(ampUsr, usrPadding);
 	ampUsr.drawFunc= {|usr|
 		Pen.translate(usrPadding.width, usrPadding.height+ampUserView.uh);
-		Pen.font= fnt2;
+		Pen.font= fnt;
 		ampUserView.drawMarkings(5, ampRangeElement.value[0], ampRangeElement.value[1]);
 		switch(ampStack.index,
 			0, {  //targets
@@ -1038,7 +1037,7 @@ s.waitForBoot{
 				Pen.stroke;
 			},
 			{
-				Pen.font= fnt2;
+				Pen.font= fnt;
 				Pen.strokeColor= palette.buttonText;
 				Pen.fillColor= palette.highlight;
 				freqs= glissandi[0].gliss.getFrequencies[0];
@@ -1067,7 +1066,7 @@ s.waitForBoot{
 	freqUserView= SGUIfreqUserView(freqUsr, usrPadding, minFreq, maxFreq);
 	freqUsr.drawFunc= {|usr|
 		Pen.translate(usrPadding.width, usrPadding.height+freqUserView.uh);
-		Pen.font= fnt2;
+		Pen.font= fnt;
 		freqUserView.drawMarkings(
 			10,
 			freqRangeSpec.map(freqRangeElement.value[0]),
