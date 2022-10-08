@@ -67,9 +67,9 @@ These instruments are made to be played with custom hardware (3D sensors, slider
 
 <img src="images/sKeyCpad.png" alt="sKeyCpad" width="512px"/> [<img src="images/sKeyCpad-photo.jpg" alt="sKeyCpad-photo" width="200px"/>](images/sKeyCpad-photo.jpg) [<img src="images/icon_schematics.svg" alt="sKeyCpad-schematics" width="50px"/>](schematics/sKeyCpad-schematics.pdf) [<img src="images/icon_firmware.svg" alt="sKeyCpad-firmware" width="50px"/>](firmware/sKeyCpad-firmware.ino)
 
-<img src="images/sKeyDpad.png" alt="sKeyDpad" width="262px"/> [<img src="images/sKeyDpad-photo.jpg" alt="sKeyDpad-photo" width="200px"/>](images/sKeyDpad-photo.jpg) [<img src="images/icon_schematics.svg" alt="sKeyDpad-schematics" width="50px"/>](schematics/sKeyDpad-schematics.pdf) [<img src="images/icon_firmware.svg" alt="sKeyDpad-firmware" width="50px"/>](firmware/sKeyDpad-firmware.ino)
+<img src="images/sKeyDpad.png" alt="sKeyDpad" width="262px"/> [<img src="images/sKeyDpad-photo.jpg" alt="sKeyDpad-photo" width="200px"/>](images/sKeyDpad-photo.jpg) [<img src="images/icon_schematics.svg" alt="sKeyDpad-schematics" width="50px"/>](schematics/sKeyDpad-schematics.pdf) [<img src="images/icon_firmware.svg" alt="sKeyDpad-firmware" width="50px"/>](firmware/sKeyDpad-firmware.ino) [<img src="images/icon_mappings.svg" alt="sKeyDpad-mappings" width="25px"/>](mappings/sKeyDpad-mappings.png)
 
-<img src="images/sNanoKontrol.png" alt="sNanoKontrol" width="895px"/>
+<img src="images/sNanoKontrol.png" alt="sNanoKontrol" width="895px"/> [<img src="images/icon_mappings.svg" alt="sNanoKontrol-mappings-sGliss" width="25px"/>](mappings/sNanoKontrol-mappings-sGliss.png)
 
 <img src="images/sQWERTYKeyboard.png" alt="sQWERTYKeyboard" width="592px"/>
 
