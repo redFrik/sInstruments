@@ -1967,6 +1967,8 @@ s.waitForBoot{
 
 			OSCFunc({|msg| avOnElement.valueAction= 1-avOnElement.value}, \avOn, recvPort:oscPort),
 			OSCFunc({|msg| avVolumeElement.value= msg[1]}, \avVolume, recvPort:oscPort),
+
+			//--from sKeyDpad
 			OSCFunc({|msg|
 				var mod= if(msg[2]==1, {131072}, {0});
 				{snapshots.keyDownAction(msg[1].asString[0], mod)}.defer;

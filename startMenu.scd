@@ -14,6 +14,7 @@ var themes= SGUI.themes.keys.asArray.sort;
 var preferencesButton;
 var buttons= List.new;
 var pwin, win= Window("sInstruments menu", winRect);
+win.userCanClose= false;
 win.layout= VLayout(
 	HLayout(
 		StaticText().string_("sInstruments: "++SInstruments.version),

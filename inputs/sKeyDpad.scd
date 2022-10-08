@@ -23,6 +23,7 @@ var snapshotKeys= #[
 var bankKeys= #[  //more can be added
 	$1, $2, $3, $4, $5, $6, $7, $8, $9
 ];
+var switches= [0, 0, 0, 0];
 
 //--gui
 var snapshotButtons= List.new;
@@ -62,7 +63,7 @@ win.layout= VLayout(
 		]).fixedWidth_(30),
 		View()
 	),
-	infoTextString= StaticText().fixedHeight_(" ".bounds(fntMono).height*2)
+	infoTextString= StaticText().fixedHeight_(" ".bounds(fntMono).height*6)
 	.align_(\topLeft).background_(Color.grey(0.9, 0.5))
 );
 SGUI.report(win);
@@ -191,8 +192,18 @@ Routine({
 //--button functions
 snapshotButtons.do{|but, i|
 	but.action= {|view|
+		var row;
 		if(view.value==1, {
 			sendOsc.value([
+				[\sCluster, \snapshots, bankKeys.last.asString],
+				[\sDrone, \snapshots, bankKeys.last.asString],
+				[\sGliss, \snapshots, bankKeys.last.asString]
+			]);
+			row= switches[i%4]+i.div(4)%2;
+			sendOsc.value([
+				[\sCluster, \snapshots, snapshotKeys[row][i%4].asString, 0],
+				[\sDrone, \snapshots, snapshotKeys[row][i%4].asString, 0],
+				[\sGliss, \snapshots, snapshotKeys[row][i%4].asString, 0],
 				[\sStream, \snapshots, snapshotKeys[shiftButton.value][i].asString, recButton.value]
 			]);
 			{view.value= 0}.defer(0.15);
@@ -204,14 +215,28 @@ bankButtons.do{|but, i|
 	but.action= {|view|
 		if(view.value==1, {
 			sendOsc.value([
+				[\sCluster, \snapshots, bankKeys.last.asString],
+				[\sDrone, \snapshots, bankKeys.last.asString],
+				[\sGliss, \snapshots, bankKeys.last.asString]
+			]);
+			sendOsc.value([
+				[\sCluster, \snapshots, snapshotKeys[switches[i]][i].asString, 1],
+				[\sDrone, \snapshots, snapshotKeys[switches[i]][i].asString, 1],
+				[\sGliss, \snapshots, snapshotKeys[switches[i]][i].asString, 1],
 				[\sStream, \snapshots, bankKeys[i].asString]
 			]);
+			switches.put(i, 1-switches[i]);
 			{view.value= 0}.defer(0.15);
 		});
 	};
 };
 
 recButton.action= {|view|
+	sendOsc.value([
+		[\sCluster, \mainRecord],
+		[\sDrone, \mainRecord],
+		[\sGliss, \mainRecord]
+	]);
 	{view.value= 0}.defer(recTimeout);
 };
 
@@ -222,5 +247,10 @@ shiftButton.action= {|view|
 			[snapshotKeys[shiftButton.value][i], palette.window, palette.highlight]
 		];
 	};
+	sendOsc.value([
+		[\sCluster, \onOff, 0],
+		[\sDrone, \onOff, 0],
+		[\sGliss, \onOff, 0]
+	]);
 };
 )

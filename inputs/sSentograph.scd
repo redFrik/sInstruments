@@ -98,14 +98,10 @@ calButton2.action= {calibrateSentograph.value(0)};
 
 
 xyz1Elements[0].action= {|val|
-	var bal= val.linlin(0, 1, -0.6, 0.6);
 	sendOsc.value([
 		[\sCluster, \ampLfoDepth, (val-0.5*3).abs],
-		[\sDrone, \mainBalance, bal],
-		[\sFormant, \fundFreq, val],
-		[\sFormant, \x, val-0.5],
-		[\sFormant, \mainBalance, bal],
-		[\sGliss, \mainBalance, bal],
+		[\sDrone, \efxDec, 0, val-0.5],
+		[\sGliss, \ampLfoRateAdd, (val-0.5).abs*2],
 		[\sStream, \x, val]
 	]);
 };
@@ -113,36 +109,40 @@ xyz1Elements[1].action= {|val|
 	sendOsc.value([
 		[\sCluster, \freqLfoDepth, (val-0.5*3).abs],
 		[\sDrone, \freqLfoDepth, (val-0.5*3).abs],
-		[\sFormant, \formFreq, val],
-		[\sFormant, \y, val-0.5],
 		[\sStream, \y, val]
 	]);
 };
 xyz1Elements[2].action= {|val|
 	sendOsc.value([
-		[\sCluster, \amp, val],
-		[\sDrone, \amp, val],
-		[\sFormant, \amp, val],
-		[\sGliss, \amp, val],
+		[\sDrone, \efxDel, val],
+		[\sGliss, \freqLfoRateAdd, val],
 		[\sStream, \z, val]
 	]);
 };
 
 xyz2Elements[0].action= {|val|
+	var bal= val.linlin(0, 1, -0.6, 0.6);
 	sendOsc.value([
-		[\sDrone, \efxDec, 0, val-0.5],
-		[\sGliss, \ampLfoRateAdd, (val-0.5).abs*2]
+		[\sDrone, \mainBalance, bal],
+		[\sFormant, \fundFreq, val],
+		[\sFormant, \x, val-0.5],
+		[\sFormant, \mainBalance, bal],
+		[\sGliss, \mainBalance, bal]
 	]);
 };
 xyz2Elements[1].action= {|val|
 	sendOsc.value([
-		[\sDrone, \distortion, 0, val-0.5*1.5]
+		[\sDrone, \distortion, 0, val-0.5*1.5],
+		[\sFormant, \formFreq, val],
+		[\sFormant, \y, val-0.5]
 	]);
 };
 xyz2Elements[2].action= {|val|
 	sendOsc.value([
-		[\sDrone, \efxDel, val],
-		[\sGliss, \freqLfoRateAdd, val]
+		[\sCluster, \amp, val],
+		[\sDrone, \amp, val],
+		[\sFormant, \amp, val],
+		[\sGliss, \amp, val]
 	]);
 };
 

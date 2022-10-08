@@ -73,6 +73,7 @@ nk.nanoSliderElements[0].action= {|val|
 		[\sDrone, \mainVolume, vol],
 		[\sFormant, \mainVolume, vol],
 		[\sGliss, \mainVolume, vol],
+		[\sGliss, \mix0, val],
 		[\sStream, \lvPitchesArrayPatternRangeLo, val]
 	]);
 };
@@ -81,6 +82,7 @@ nk.nanoSliderElements[1].action= {|val|
 		[\sCluster, \glissTime, val],
 		[\sDrone, \glissTime, val],
 		[\sGliss, \glissTime, val],
+		[\sGliss, \mix1, val],
 		[\sStream, \lvPitchesArrayPatternRangeHi, val]
 	]);
 };
@@ -89,6 +91,7 @@ nk.nanoSliderElements[2].action= {|val|
 		[\sCluster, \ampRange, val],
 		[\sDrone, \efxDel, val],
 		[\sGliss, \ampRange, val],
+		[\sGliss, \mix2, val],
 		[\sStream, \lvVelocitiesPatternRangeLo, val]
 	]);
 };
@@ -97,6 +100,7 @@ nk.nanoSliderElements[3].action= {|val|
 		[\sCluster, \freqRange, val],
 		[\sDrone, \freqRange, val],
 		[\sGliss, \freqRange, val],
+		[\sGliss, \mix3, val],
 		[\sStream, \lvVelocitiesPatternRangeHi, val]
 	]);
 };
@@ -108,6 +112,7 @@ nk.nanoSliderElements[4].action= {|val|
 		[\sFormant, \lagUp, fold],
 		[\sFormant, \lagDown, val],
 		[\sGliss, \ampLfoDepth, val],
+		[\sGliss, \mix4, val],
 		[\sStream, \avPitchBend, val]
 	]);
 };
@@ -117,6 +122,7 @@ nk.nanoSliderElements[5].action= {|val|
 		[\sDrone, \ampLfoRate, val],
 		[\sFormant, \detune, val],
 		[\sGliss, \ampLfoRate, val],
+		[\sGliss, \mix5, val],
 		[\sStream, \avSustain, val]
 	]);
 };
@@ -126,6 +132,7 @@ nk.nanoSliderElements[6].action= {|val|
 		[\sDrone, \freqLfoDepth, val],
 		[\sFormant, \formOffset, val],
 		[\sGliss, \freqLfoDepth, val],
+		[\sGliss, \mix6, val],
 		[\sStream, \avFalloutVoices, val]
 	]);
 };
@@ -135,6 +142,7 @@ nk.nanoSliderElements[7].action= {|val|
 		[\sDrone, \freqLfoRate, val],
 		[\sFormant, \fundOffset, val],
 		[\sGliss, \freqLfoRate, val],
+		[\sGliss, \mix7, val],
 		[\sStream, \avFalloutChords, val]
 	]);
 };
@@ -265,7 +273,9 @@ nk.nanoCtrlButtons.collect{|d| d[\ff]}.do{|button|
 nk.nanoCtrlButtons.collect{|d| d[\cycle]}.do{|button|
 	button.action= {|view|
 		if(view.value>0, {
-			nk.sendOsc([]);
+			nk.sendOsc([
+				[\sGliss, \mixSwitch, 1]
+			]);
 		});
 	};
 };

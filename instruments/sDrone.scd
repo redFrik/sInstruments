@@ -1537,6 +1537,15 @@ s.waitForBoot{
 				{droneButton.valueAction= 1-droneButton.value}.defer;
 			}, \on, recvPort:oscPort),
 
+			//--from sKeyDpad
+			OSCFunc({|msg|
+				var mod= if(msg[2]==1, {131072}, {0});
+				{snapshots.keyDownAction(msg[1].asString[0], mod)}.defer;
+			}, \snapshots, recvPort:oscPort),
+			OSCFunc({|msg|
+				{droneButton.valueAction= 0}.defer;
+			}, \onOff, recvPort:oscPort),
+
 			//--from sNanokontrol
 			OSCFunc({|msg| ampLfoDepthElement.value= msg[1]}, \ampLfoDepth, recvPort:oscPort),
 			OSCFunc({|msg| ampLfoRateElement.value= msg[1]}, \ampLfoRate, recvPort:oscPort),

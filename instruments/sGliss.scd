@@ -83,6 +83,7 @@ s.waitForBoot{
 	var routineGui;
 	var sGliss_bus;
 	var mainOutSyn;
+	var mixSwitch= 0;  //states for nanokontrol. 0= default, 1= mixer
 
 	//--gui
 	var ampSelectButtons, ampStack;
@@ -1453,6 +1454,15 @@ s.waitForBoot{
 			//--from sKeyCpad
 			OSCFunc({|msg| {onButton.valueAction= 1-onButton.value}.defer}, \on, recvPort:oscPort),
 
+			//--from sKeyDpad
+			OSCFunc({|msg|
+				var mod= if(msg[2]==1, {131072}, {0});
+				{snapshots.keyDownAction(msg[1].asString[0], mod)}.defer;
+			}, \snapshots, recvPort:oscPort),
+			OSCFunc({|msg|
+				{onButton.valueAction= 0}.defer;
+			}, \onOff, recvPort:oscPort),
+
 			//--from sNanokontrol
 			OSCFunc({|msg|
 				ampRandRateElement.value= msg[1];
@@ -1464,12 +1474,15 @@ s.waitForBoot{
 			}, \rate, recvPort:oscPort),
 			OSCFunc({|msg| ampRangeElement.value= [msg[1], msg[2]]}, \ampRangeMinMax, recvPort:oscPort),
 			OSCFunc({|msg|  //val(float 0-1)
-				var span= (ampRangeElement.value[1]-ampRangeElement.value[0])*0.5;
-				var val= msg[1].clip(span, 1-span);
-				ampRangeElement.value= [val-span, val+span];
+				var span, val;
+				if(mixSwitch==0, {
+					span= (ampRangeElement.value[1]-ampRangeElement.value[0])*0.5;
+					val= msg[1].clip(span, 1-span);
+					ampRangeElement.value= [val-span, val+span];
+				});
 			}, \ampRange, recvPort:oscPort),
-			OSCFunc({|msg| ampLfoDepthElement.value= msg[1]}, \ampLfoDepth, recvPort:oscPort),
-			OSCFunc({|msg| ampLfoRateElement.value= msg[1]}, \ampLfoRate, recvPort:oscPort),
+			OSCFunc({|msg| if(mixSwitch==0, {ampLfoDepthElement.value= msg[1]})}, \ampLfoDepth, recvPort:oscPort),
+			OSCFunc({|msg| if(mixSwitch==0, {ampLfoRateElement.value= msg[1]})}, \ampLfoRate, recvPort:oscPort),
 			OSCFunc({|msg|
 				{freqSelectFunc.value(freqStack.index+msg[1]%freqSelectButtons.size)}.defer;
 			}, \freqSelect, recvPort:oscPort),
@@ -1478,17 +1491,28 @@ s.waitForBoot{
 			}, \freqLinesPlay, recvPort:oscPort),
 			OSCFunc({|msg| freqRangeElement.value= [msg[1], msg[2]]}, \freqRangeMinMax, recvPort:oscPort),
 			OSCFunc({|msg|  //val(float 0-1)
-				var span= (freqRangeElement.value[1]-freqRangeElement.value[0])*0.5;
-				var val= msg[1].clip(span, 1-span);
-				freqRangeElement.value= [val-span, val+span];
+				var span, val;
+				if(mixSwitch==0, {
+					span= (freqRangeElement.value[1]-freqRangeElement.value[0])*0.5;
+					val= msg[1].clip(span, 1-span);
+					freqRangeElement.value= [val-span, val+span];
+				});
 			}, \freqRange, recvPort:oscPort),
-			OSCFunc({|msg| freqLfoDepthElement.value= msg[1]}, \freqLfoDepth, recvPort:oscPort),
-			OSCFunc({|msg| freqLfoRateElement.value= msg[1]}, \freqLfoRate, recvPort:oscPort),
-			OSCFunc({|msg| {glissTime.valueActionNorm= msg[1]}.defer}, \glissTime, recvPort:oscPort),
+			OSCFunc({|msg| if(mixSwitch==0, {freqLfoDepthElement.value= msg[1]})}, \freqLfoDepth, recvPort:oscPort),
+			OSCFunc({|msg| if(mixSwitch==0, {freqLfoRateElement.value= msg[1]})}, \freqLfoRate, recvPort:oscPort),
+			OSCFunc({|msg| if(mixSwitch==0, {{glissTime.valueActionNorm= msg[1]}.defer})}, \glissTime, recvPort:oscPort),
 			OSCFunc({|msg| {curvature.valueActionNorm= [msg[1], 0]}.defer}, \curvature, recvPort:oscPort),
-			OSCFunc({|msg| {mainVolume.valueAction= msg[1]}.defer}, \mainVolume, recvPort:oscPort),
+			OSCFunc({|msg| if(mixSwitch==0, {{mainVolume.valueAction= msg[1]}.defer})}, \mainVolume, recvPort:oscPort),
 			OSCFunc({|msg| mainReverbElement.value= msg[1]}, \mainReverb, recvPort:oscPort),
 			OSCFunc({|msg| {mainRecord.valueAction= 1-mainRecord.value}.defer}, \mainRecord, recvPort:oscPort),
+			OSCFunc({|msg| mixSwitch= 1-mixSwitch}, \mixSwitch, recvPort:oscPort),
+			8.do{|i|
+				OSCFunc({|msg|
+					if(mixSwitch==1, {
+						{glissandi[i.min(numGliss-1)].volSlider.valueAction= msg[1]}.defer;
+					});
+				}, ("mix"++i).asSymbol, recvPort:oscPort);
+			};
 
 			//--from sSentograph
 			OSCFunc({|msg| ampLfoRateAdd= msg[1]; ampLfoRateElement.doAction}, \ampLfoRateAdd, recvPort:oscPort),
