@@ -116,6 +116,7 @@ preferencesButton.action= {
 	var ctrlPopup, altPopup, cmdPopup, lessPopup;
 	var cancelButton, storeButton;
 	var pos, name= "preferences";
+	var items= ['_']++SInstruments.instruments++\sLauncher;
 	pwin= Window.allWindows.detect{|x| x.name==name};
 	if(pwin.isNil, {
 		pos= Window.screenBounds.extent*0.6;
@@ -130,22 +131,22 @@ preferencesButton.action= {
 			HLayout(
 				StaticText().string_("key 'ctrl'").maxWidth_(65),
 				StaticText().string_("=").maxWidth_(25),
-				ctrlPopup= PopUpMenu().items_(['_']++SInstruments.instruments)
+				ctrlPopup= PopUpMenu().items_(items)
 			),
 			HLayout(
 				StaticText().string_("key 'alt'").maxWidth_(65),
 				StaticText().string_("=").maxWidth_(25),
-				altPopup= PopUpMenu().items_(['_']++SInstruments.instruments)
+				altPopup= PopUpMenu().items_(items)
 			),
 			HLayout(
 				StaticText().string_("key 'cmd'").maxWidth_(65),
 				StaticText().string_("=").maxWidth_(25),
-				cmdPopup= PopUpMenu().items_(['_']++SInstruments.instruments)
+				cmdPopup= PopUpMenu().items_(items)
 			),
 			HLayout(
 				StaticText().string_("key '<'").maxWidth_(65),
 				StaticText().string_("=").maxWidth_(25),
-				lessPopup= PopUpMenu().items_(['_']++SInstruments.instruments)
+				lessPopup= PopUpMenu().items_(items)
 			),
 			View(),
 			HLayout(
@@ -217,14 +218,11 @@ if(File.exists(SInstruments.preferencesDir+/+prefName), {
 });
 
 keyFunc= {|view, chr, mod, unicode, keycode, key|
-	if(keycode==0 and:{chr.toLower!=$a}, {
-		case
-		{mod.isCtrl} {SInstruments.toFront(keyLookup[\keyCtrl])}
-		{mod.isAlt} {SInstruments.toFront(keyLookup[\keyAlt])}
-		{mod.isCmd} {SInstruments.toFront(keyLookup[\keyCmd])};
-	}, {
-		if(chr==$<, {SInstruments.toFront(keyLookup[\keyLess])});
-	});
+	case
+	{mod.isCtrl} {SInstruments.toFront(keyLookup[\keyCtrl])}
+	{mod.isAlt} {SInstruments.toFront(keyLookup[\keyAlt])}
+	{mod.isCmd} {SInstruments.toFront(keyLookup[\keyCmd])}
+	{chr==$<} {SInstruments.toFront(keyLookup[\keyLess])};
 };
 View.globalKeyDownAction= View.globalKeyDownAction.addFunc(keyFunc);
 
