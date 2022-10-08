@@ -9,7 +9,7 @@ The code is available here: [https://github.com/redFrik/sInstruments](https://gi
 
 ## Requirements
 
-[SuperCollider](http://supercollider.github.io) version 3.10 or newer running under macOS, Linux or Windows.
+[SuperCollider](http://supercollider.github.io) running under macOS, Linux or Windows.
 
 ## Dependancies
 
