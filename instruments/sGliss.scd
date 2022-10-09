@@ -136,9 +136,9 @@ s.waitForBoot{
 	var freqLfoRateElement= SGUIelement();
 	var freqLfoRateSpec= ControlSpec(0.05, 50, 'exp', 0, defaultFreqLfoRate, "Hz");
 	var scalesTunings;
+	var curvature;
 	var masterTuning;
 	var glissTime;
-	var curvature;
 	var onButton;
 	var numSpec, addSpec, delSpec;
 	var atkSpec, relSpec;
@@ -319,16 +319,15 @@ s.waitForBoot{
 			),
 			HLayout(
 				(scalesTunings= SGUIscalesTunings().fixedHeight_(125)).view,
-				(masterTuning= SGUImasterTuning()).view
+				VLayout(
+					(curvature= SGUIcurvature()).view,
+					(masterTuning= SGUImasterTuning()).view
+				)
 			),
 			(glissTime= SGUIglissTime(defaultFreqGlissTime)).view
 		),
 
 		VLayout(
-			HLayout(
-				(curvature= SGUIcurvature()).view,
-				View()
-			),
 
 			//--synths section
 			StaticText().string_("Voices"),
@@ -364,11 +363,11 @@ s.waitForBoot{
 							["lock", palette.buttonText, palette.button],
 							["lock", palette.buttonText, palette.highlight]
 						]).fixedWidth_(30),
-						\folderText, StaticText().minHeight_(25),
+						\folderText, StaticText().minHeight_(25).fixedWidth_(100),
 					];
 					go.putAll(arr);
-					arr.select{|o, i| i.odd};
-				};
+					arr.select{|o, i| i.odd}
+				}
 			),
 
 			(
