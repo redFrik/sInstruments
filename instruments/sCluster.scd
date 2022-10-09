@@ -5,7 +5,7 @@
 var oscPort= 13064;
 var maxNumVoices= 100;  //maximum number of voices for the synth
 var winRect= Rect(242, 242, 900, 780);  //x, y, w, h
-var palette= SGUI.palette((highlight: Color.yellow(2/3, 0.5)));
+var palette= SGUI.palette((highlight: Color.yellow(2/3, 0.75)));
 var fnt= SGUI.font.copy.size_(10);
 var fps= 25;
 var minFreq= 9, maxFreq= 9999;  //Hz
@@ -184,7 +184,7 @@ s.waitForBoot{
 					["lock", palette.buttonText, palette.button],
 					["lock", palette.buttonText, palette.highlight]
 				]).fixedWidth_(30),
-				folderText= StaticText().minHeight_(25),
+				folderText= StaticText().minHeight_(25).fixedWidth_(100),
 				View()
 			),
 			HLayout(

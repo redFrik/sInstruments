@@ -372,7 +372,7 @@ s.waitForBoot{
 					["lock", palette.buttonText, palette.button],
 					["lock", palette.buttonText, palette.highlight]
 				]).fixedWidth_(30),
-				folderText= StaticText().minHeight_(25),
+				folderText= StaticText().minHeight_(25).fixedWidth_(100),
 				View()
 			),
 			HLayout(

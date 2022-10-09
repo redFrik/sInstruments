@@ -55,7 +55,7 @@ SGUI {  //abstract class
 					v.font= font;
 					v.selectedStringColor= currentPalette.buttonText;
 					v.stringColor= currentPalette.buttonText;
-					v.hiliteColor= currentPalette.highlight.alpha= 0.2;
+					v.hiliteColor= currentPalette.highlight;
 				},
 				MultiSliderView, {
 					v.canFocus= false;
