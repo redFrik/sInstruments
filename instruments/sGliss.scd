@@ -1579,7 +1579,7 @@ s.waitForBoot{
 		go.buffer= Buffer.readChannel(s, path, channels:[0]);
 		go.folderText.string= path.basename;
 		s.sync;
-		go.buffer.normalize;
+		go.buffer.normalize(2);
 		s.sync;
 	};
 

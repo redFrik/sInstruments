@@ -1310,7 +1310,7 @@ s.waitForBoot{
 		buffer= Buffer.readChannel(s, path, channels:[0]);
 		folderText.string= path.basename;
 		s.sync;
-		buffer.normalize;
+		buffer.normalize(2);
 		s.sync;
 	};
 	fileIndex= 0;

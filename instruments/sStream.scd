@@ -724,7 +724,7 @@ s.waitForBoot{
 				buffers[0].free;
 				buffers[0]= Buffer.read(s, sf.path);
 				s.sync;
-				buffers[0].normalize;
+				buffers[0].normalize(2);
 				s.sync;
 			}
 			{
@@ -1301,7 +1301,7 @@ s.waitForBoot{
 				buffers[1].free;
 				buffers[1]= Buffer.read(s, sf.path);
 				s.sync;
-				buffers[1].normalize;
+				buffers[1].normalize(2);
 				s.sync;
 			}
 			{
