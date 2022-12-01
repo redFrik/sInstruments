@@ -28,6 +28,9 @@ SInstruments {
 		});
 		^version;
 	}
+	*inputs {
+		^(inputsDir+/+"s*.scd").pathMatch.collect{|x| x.basename.splitext[0].asSymbol};
+	}
 	*instruments {
 		^(instrumentsDir+/+"s*.scd").pathMatch.collect{|x| x.basename.splitext[0].asSymbol};
 	}

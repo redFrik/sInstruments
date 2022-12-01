@@ -17,97 +17,32 @@ win.userCanClose= false;
 win.layout= VLayout(
 	HLayout(
 		StaticText().string_("sInstruments: "++SInstruments.version),
-		View(),
+		nil,
 		(preferencesButton= SGUIsettings()).view
-	),
-	StaticText().string_("Click to launch instruments..."),
-	buttons.add(Button().states_([
-		[" sGliss", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sGliss", SGUI.palette.highlight, SGUI.palette.button],
-		["•sGliss", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sGliss")}).last,
-	buttons.add(Button().states_([
-		[" sDrone", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sDrone", SGUI.palette.highlight, SGUI.palette.button],
-		["•sDrone", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sDrone")}).last,
-	buttons.add(Button().states_([
-		[" sFormant", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sFormant", SGUI.palette.highlight, SGUI.palette.button],
-		["•sFormant", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sFormant")}).last,
-	buttons.add(Button().states_([
-		[" sCluster", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sCluster", SGUI.palette.highlight, SGUI.palette.button],
-		["•sCluster", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sCluster")}).last,
-	buttons.add(Button().states_([
-		[" sStream", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sStream", SGUI.palette.highlight, SGUI.palette.button],
-		["•sStream", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sStream")}).last,
-	StaticText().string_("Click to launch inputs..."),
-	buttons.add(Button().states_([
-		[" sGreybox", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sGreybox", SGUI.palette.highlight, SGUI.palette.button],
-		["•sGreybox", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sGreybox")}).last,
-	buttons.add(Button().states_([
-		[" sGreybox 2", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sGreybox 2", SGUI.palette.highlight, SGUI.palette.button],
-		["•sGreybox 2", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sGreybox2")}).last,
-	buttons.add(Button().states_([
-		[" sKeyboard", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sKeyboard", SGUI.palette.highlight, SGUI.palette.button],
-		["•sKeyboard", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sKeyboard")}).last,
-	buttons.add(Button().states_([
-		[" sKey B pad", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sKey B pad", SGUI.palette.highlight, SGUI.palette.button],
-		["•sKey B pad", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sKeyBpad")}).last,
-	buttons.add(Button().states_([
-		[" sKey C pad", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sKey C pad", SGUI.palette.highlight, SGUI.palette.button],
-		["•sKey C pad", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sKeyCpad")}).last,
-	buttons.add(Button().states_([
-		[" sKey D pad", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sKey D pad", SGUI.palette.highlight, SGUI.palette.button],
-		["•sKey D pad", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sKeyDpad")}).last,
-	buttons.add(Button().states_([
-		[" sNanoKontrol", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sNanoKontrol", SGUI.palette.highlight, SGUI.palette.button],
-		["•sNanoKontrol", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sNanoKontrol")}).last,
-	buttons.add(Button().states_([
-		[" sNanoKontrol Stream", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sNanoKontrol Stream", SGUI.palette.highlight, SGUI.palette.button],
-		["•sNanoKontrol Stream", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sNanoKontrolStream")}).last,
-	buttons.add(Button().states_([
-		[" sQWERTYKeyboard", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sQWERTYKeyboard", SGUI.palette.highlight, SGUI.palette.button],
-		["•sQWERTYKeyboard", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sQWERTYKeyboard")}).last,
-	buttons.add(Button().states_([
-		[" sQWERTYKeyboard 2", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sQWERTYKeyboard 2", SGUI.palette.highlight, SGUI.palette.button],
-		["•sQWERTYKeyboard 2", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sQWERTYKeyboard2")}).last,
-	buttons.add(Button().states_([
-		[" sSentograph", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sSentograph", SGUI.palette.highlight, SGUI.palette.button],
-		["•sSentograph", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sSentograph")}).last,
-	buttons.add(Button().states_([
-		[" sText", SGUI.palette.buttonText, SGUI.palette.button],
-		["•sText", SGUI.palette.highlight, SGUI.palette.button],
-		["•sText", SGUI.palette.buttonText, SGUI.palette.highlight]
-	]).action_{SInstruments.toFront("sText")}).last
+	)
 );
+
+win.layout.add(StaticText().string_("Click to launch instruments..."));
+SInstruments.instruments.do{|name|
+	var button= Button().states_([
+		[" "++name, SGUI.palette.buttonText, SGUI.palette.button],
+		["•"++name, SGUI.palette.highlight, SGUI.palette.button],
+		["•"++name, SGUI.palette.buttonText, SGUI.palette.highlight]
+	]).action_{SInstruments.toFront(name)};
+	buttons.add(button);
+	win.layout.add(button);
+};
+
+win.layout.add(StaticText().string_("Click to launch inputs..."));
+SInstruments.inputs.do{|name|
+	var button= Button().states_([
+		[" "++name, SGUI.palette.buttonText, SGUI.palette.button],
+		["•"++name, SGUI.palette.highlight, SGUI.palette.button],
+		["•"++name, SGUI.palette.buttonText, SGUI.palette.highlight]
+	]).action_{SInstruments.toFront(name)};
+	buttons.add(button);
+	win.layout.add(button);
+};
 
 preferencesButton.action= {
 	var palette= SGUI.palette;
@@ -125,7 +60,7 @@ preferencesButton.action= {
 				StaticText().string_("Theme").maxWidth_(50),
 				themePopup= PopUpMenu().items_(themes)
 			),
-			View(),
+			nil,
 			StaticText().string_("Shortcuts for launching instruments and/or bring to front"),
 			HLayout(
 				StaticText().string_("key 'ctrl'").maxWidth_(65),
@@ -147,7 +82,7 @@ preferencesButton.action= {
 				StaticText().string_("=").maxWidth_(25),
 				lessPopup= PopUpMenu().items_(items)
 			),
-			View(),
+			nil,
 			HLayout(
 				[View(), stretch:1],
 				cancelButton= Button().states_([
