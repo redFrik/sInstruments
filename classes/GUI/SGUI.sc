@@ -720,7 +720,7 @@ SGUIsnapshots : SGUI {
 							["Store", currentPalette.buttonText, currentPalette.button]
 						])
 					),
-					View(),
+					nil,
 					infoText= StaticText(),
 					HLayout(
 						[View(), stretch:1],
@@ -1074,7 +1074,7 @@ SGUIfreqUserView : SGUI {
 
 SGUIdialogWindow : SGUI {
 	*new {|action, text= "Are you sure?"|
-		^super.new.initSGUIdialogWindow(action, text);
+		^super.new.initSGUIdialogWindow(action?{}, text);
 	}
 	initSGUIdialogWindow {|argAction, argText|
 		var okButton, cancelButton;
@@ -1086,7 +1086,7 @@ SGUIdialogWindow : SGUI {
 				okButton= Button().states_([
 					["Ok", currentPalette.buttonText, currentPalette.button]
 				]),
-				View(),
+				nil,
 				cancelButton= Button().states_([
 					["Cancel", currentPalette.buttonText, currentPalette.button]
 				])

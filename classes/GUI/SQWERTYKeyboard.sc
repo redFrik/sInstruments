@@ -43,8 +43,11 @@ SQWERTYKeyboard {
 							var but= Button().states_([
 								[sym, palette.buttonText, palette.button],
 								[sym, palette.buttonText, palette.highlight]
-							]).fixedWidth_(25);
-							dictRow.add(sym -> but);
+							]);
+							if(but.notNil, {
+								but.fixedWidth_(25);
+								dictRow.add(sym -> but);
+							});
 							but;
 						};
 					);
@@ -134,18 +137,20 @@ SQWERTYKeyboard {
 			});
 		});
 
-		this.lookupButton(' ').fixedWidth_(160);
-		this.lookupButton(\Del).fixedWidth_(40);
-		this.lookupButton(\Tab).fixedWidth_(40);
-		this.lookupButton(\Cap).fixedWidth_(40);
-		this.lookupButton(\Ret).fixedWidth_(40);
-		this.lookupButton(\shiL).fixedWidth_(40);
-		this.lookupButton(\shiR).fixedWidth_(40);
-		this.lookupButton(\ctrl).fixedWidth_(40);
-		this.lookupButton(\altL).fixedWidth_(40);
-		this.lookupButton(\altR).fixedWidth_(40);
-		this.lookupButton(\cmdL).fixedWidth_(40);
-		this.lookupButton(\cmdR).fixedWidth_(40);
+		try{
+			this.lookupButton(' ').fixedWidth_(160);
+			this.lookupButton(\Del).fixedWidth_(40);
+			this.lookupButton(\Tab).fixedWidth_(40);
+			this.lookupButton(\Cap).fixedWidth_(40);
+			this.lookupButton(\Ret).fixedWidth_(40);
+			this.lookupButton(\shiL).fixedWidth_(40);
+			this.lookupButton(\shiR).fixedWidth_(40);
+			this.lookupButton(\ctrl).fixedWidth_(40);
+			this.lookupButton(\altL).fixedWidth_(40);
+			this.lookupButton(\altR).fixedWidth_(40);
+			this.lookupButton(\cmdL).fixedWidth_(40);
+			this.lookupButton(\cmdR).fixedWidth_(40);
+		};
 
 		OSCFunc({|msg|
 			var keycodes= msg[3][2..].select{|x| x>0};

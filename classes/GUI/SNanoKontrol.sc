@@ -126,14 +126,14 @@ SNanoKontrol {
 							[">", palette.buttonText, palette.button],
 							[">", palette.buttonText, palette.highlight]
 						]).fixedWidth_(25))[\trkInc],
-						View()
+						nil
 					),
 					HLayout(
 						nanoCtrlButtons[\v2].put(\cycle, Button().states_([
 							["cycle", palette.buttonText, palette.button],
 							["cycle", palette.buttonText, palette.highlight]
 						]).fixedWidth_(35))[\cycle],
-						View(),
+						nil,
 						nanoCtrlButtons[\v2].put(\mrkSet, Button().states_([
 							["set", palette.buttonText, palette.button],
 							["set", palette.buttonText, palette.highlight]
@@ -176,7 +176,7 @@ SNanoKontrol {
 					{|i|
 						HLayout(
 							VLayout(
-								View(),
+								nil,
 								nanoButtonSElements[i].addView(Button().states_([
 									["S", palette.buttonText, palette.button],
 									["S", palette.buttonText, palette.highlight]
@@ -189,7 +189,7 @@ SNanoKontrol {
 									["R", palette.buttonText, palette.button],
 									["R", palette.buttonText, palette.highlight]
 								]).fixedWidth_(25)),
-								View()
+								nil
 							),
 							nanoSliderElements[i].addView(Slider().orientation_(\vertical))
 						)
@@ -267,7 +267,7 @@ SNanoKontrol {
 								["•"++x, palette.buttonText, palette.highlight]
 							])).last;
 						},
-						View(),
+						nil,
 						HLayout(
 							[View(), stretch:1],
 							cancelButton= Button().states_([
