@@ -257,7 +257,7 @@ calibrateSentograph= {|index|
 	calibrateWin.layout= VLayout(
 		HLayout(
 			StaticText().string_("Sentograph"+index),
-			View(),
+			nil,
 			resetButton= Button().states_([["Reset to defaults"]])
 		),
 		GridLayout.rows(

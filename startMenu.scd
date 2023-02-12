@@ -189,6 +189,7 @@ win.onClose= {
 	View.globalKeyDownAction= View.globalKeyDownAction.removeFunc(keyFunc);
 };
 SGUI.adapt(win);
+
 s.options.numWireBufs= s.options.numWireBufs.max(128);
 s.options.memSize= s.options.memSize.max(2**16);
 s.latency= 0.08;

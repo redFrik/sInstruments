@@ -51,7 +51,7 @@ win.layout= VLayout(
 		};
 	),
 	HLayout(
-		View(),
+		nil,
 		recButton= Button().states_([
 			["rec", palette.buttonText, Color.red],
 			["rec", palette.button, Color.red]
@@ -60,7 +60,7 @@ win.layout= VLayout(
 			["shift", palette.buttonText, Color.red],
 			["shift", palette.button, Color.red]
 		]).fixedWidth_(30),
-		View()
+		nil
 	),
 	infoTextString= StaticText().fixedHeight_(" ".bounds(fnt).height*6)
 	.align_(\topLeft).background_(Color.grey(0.9, 0.5))
