@@ -30,7 +30,7 @@ CLASSMETHODS::
 
 INSTANCEMETHODS::
 
-PRIVATE::init
+PRIVATE::initAbstractSPlayFileView
 
 METHOD::fps
 Cursor update rate in frames per second.

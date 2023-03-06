@@ -21,7 +21,7 @@ EXAMPLES::
 
 CODE::
 s.boot;
-SPlayFileView(nil, folder: "~/Documents/soundfiles").makeWindow;
+SPlayFileView(folder: "~/Documents/soundfiles").makeWindow;
 
 
 (
@@ -34,7 +34,7 @@ s.waitForBoot{
 		Button().states_([
 			["show controls"], ["show controls"]
 		]).action_{|view| fv.controls= view.value.booleanValue},
-		(fv= SPlayFileView(f, controls: false)).view
+		fv= SPlayFileView(spf: f, controls: false)
 	));
 	CmdPeriod.doOnce({win.close});
 };
@@ -42,7 +42,7 @@ s.waitForBoot{
 
 
 s.boot;
-Window().front.view.layout_((v= SPlayFileView(controls:true)).view);
+v= SPlayFileView(controls:true).front;
 v.read(Platform.resourceDir+/+"sounds/a11wlk01.wav");
 v.timeCursorColor= Color.blue;
 v.waveColor= Color.red;

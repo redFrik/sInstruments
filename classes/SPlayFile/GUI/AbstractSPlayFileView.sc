@@ -13,8 +13,8 @@
 //TODO better way to mix down 1 ch for display and not only use the first channel as now
 //TODO improve helpfile
 
-AbstractSPlayFileView {
-	var <view;
+AbstractSPlayFileView : SCViewHolder {
+
 	var <spf;
 	var <duration= -1;
 	var <currentFilePath;
@@ -27,10 +27,10 @@ AbstractSPlayFileView {
 	atkText, atkNumber, relText, relNumber, rateText, rateNumber, loopButton,
 	volSlider, playButton, busText, busNumber;
 
-	*new {|spf, folder= "", controls= true|
-		^super.new.initAbstractSPlayFileView(spf, folder, controls).init(spf);
+	*new {|parent, bounds, spf, folder= "", controls= true|
+		^super.new.initAbstractSPlayFileView(parent, bounds, spf, folder, controls).init(spf);
 	}
-	initAbstractSPlayFileView {|argSpf, folder, controls|
+	initAbstractSPlayFileView {|parent, bounds, argSpf, folder, controls|
 		var keyDownAction;
 
 		soundfiles= [];
@@ -40,7 +40,7 @@ AbstractSPlayFileView {
 			soundfiles= SoundFile.collect(folder+/+"*");
 		});
 
-		view= VLayout(
+		view= View(parent, bounds).layout_(VLayout(
 			HLayout(
 				[filePopup= PopUpMenu().items_(
 					["_"]++soundfiles.collect{|x| x.path.basename}
@@ -56,7 +56,7 @@ AbstractSPlayFileView {
 					vZoomSlider= RangeSlider().orientation_(\vertical).canFocus_(false)
 					.background_(Color.grey(0.5)),
 
-					waveView= SoundFileView().setData([0])
+					waveView= SoundFileView().minSize_(Size(133, 100)).setData([0])
 					.timeCursorOn_(true).timeCursorColor_(Color.white)
 					.gridOn_(false)//.gridColor_(Color.grey(0, 0.1))
 					.rmsColor_(Color.grey(0, 0.5)).waveColors_(Color.grey(0.5)!8)
@@ -98,7 +98,7 @@ AbstractSPlayFileView {
 				busText= StaticText().string_("bus:"),
 				busNumber= NumberBox().decimals_(0).clipLo_(0).fixedWidth_(55)
 			)
-		);
+		));
 
 		if(controls.not, {
 			this.controls_(false);
@@ -284,9 +284,7 @@ AbstractSPlayFileView {
 
 	makeWindow {|pos|
 		pos= pos??{Point(100, 100)};
-		^Window(this.class.name, Rect(pos.x, pos.y, 800, 400)).front.view.layout_(
-			view
-		)
+		view.front.bounds_(Rect(pos.x, pos.y, 800, 400)).name_(this.class.name)
 	}
 	focus {|flag= true|
 		waveView.focus(flag);
