@@ -11,9 +11,9 @@ The code is available here: [https://github.com/redFrik/sInstruments](https://gi
 
 [SuperCollider](http://supercollider.github.io) running under macOS, Linux or Windows.
 
-## Dependancies
+## Dependencies
 
-One of the instruments, sStream, needs the latest [VST plugin](https://git.iem.at/pd/vstplugin/-/releases) and (for now) the [Pianoteq 6 STAGE](https://www.modartt.com/pianoteq) vst plug. All the other instruments can be run without any external libraries or plugins.
+One of the instruments, sStream, needs the latest [VST plugin](https://git.iem.at/pd/vstplugin/-/releases) and (for now) the [Pianoteq 6 STAGE](https://www.modartt.com/pianoteq) VST plug. All the other instruments can be run without any external libraries or plugins.
 
 ## Installation
 
