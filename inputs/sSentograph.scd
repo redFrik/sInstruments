@@ -1,6 +1,6 @@
 //f.olofsson 2019
 
-//two 3d sensors with optoforceOsc2.py
+//two 3d sensors with optoforceOsc.py
 
 (
 //--settings
@@ -25,8 +25,10 @@ var routineGui;
 var calibrateWin;
 var onButton1, calButton1;
 var xyz1Elements= {SGUIelement()}!3;
+var xyz1CheckBox= List.new, xyz1CheckValue= true!3;
 var onButton2, calButton2;
 var xyz2Elements= {SGUIelement()}!3;
+var xyz2CheckBox= List.new, xyz2CheckValue= true!3;
 var infoTextElementString= SGUIelementString();
 var win= Window("sSentograph", winRect);
 win.layout= VLayout(
@@ -42,7 +44,7 @@ win.layout= VLayout(
 			GridLayout.rows(
 				["X", "Y", "Z"].collect{|str, i|
 					VLayout(
-						[StaticText().string_(str), align:\center],
+						xyz1CheckBox.add(CheckBox(text: str)).last,
 						xyz1Elements[i].addView(Slider().orientation_(\vertical))
 					)
 				}
@@ -60,8 +62,8 @@ win.layout= VLayout(
 			GridLayout.rows(
 				["X", "Y", "Z"].collect{|str, i|
 					VLayout(
-						[StaticText().string_(str), align:\center],
-						xyz2Elements[i].addView(Slider().orientation_(\vertical))
+						xyz2CheckBox.add(CheckBox(text: str)).last,
+						xyz2Elements[i].addView(Slider().orientation_(\vertical)),
 					)
 				}
 			)
@@ -88,10 +90,18 @@ onButton1.value= on1.binaryValue;
 onButton1.action= {|view|
 	on1= view.value.booleanValue;
 };
+xyz1CheckBox.do{|c, i|
+	c.value= true;
+	c.action= {|v| xyz1CheckValue[i]= v.value};
+};
 calButton1.action= {calibrateSentograph.value(1)};
 onButton2.value= on2.binaryValue;
 onButton2.action= {|view|
 	on2= view.value.booleanValue;
+};
+xyz2CheckBox.do{|c, i|
+	c.value= true;
+	c.action= {|v| xyz2CheckValue[i]= v.value};
 };
 calButton2.action= {calibrateSentograph.value(0)};
 
@@ -155,17 +165,35 @@ setupOscResponders= {
 				xyz1raw[0]= msg[2];
 				xyz1raw[1]= msg[3];
 				xyz1raw[2]= msg[4];
-				xyz1Elements[0].value= (msg[2]+calibration[1][2]).lincurve(calibration[1][0], calibration[1][1], 0, 1, calibration[1][3]);
-				xyz1Elements[1].value= (msg[3]+calibration[1][6]).lincurve(calibration[1][4], calibration[1][5], 0, 1, calibration[1][7]);
-				xyz1Elements[2].value= (msg[4]+calibration[1][10]).min(0).lincurve(calibration[1][8], calibration[1][9], 1, 0, calibration[1][11]);
+				if(xyz1CheckValue[0], {
+					xyz1Elements[0].value= (msg[2]+calibration[1][2])
+					.lincurve(calibration[1][0], calibration[1][1], 0, 1, calibration[1][3]);
+				});
+				if(xyz1CheckValue[1], {
+					xyz1Elements[1].value= (msg[3]+calibration[1][6])
+					.lincurve(calibration[1][4], calibration[1][5], 0, 1, calibration[1][7]);
+				});
+				if(xyz1CheckValue[2], {
+					xyz1Elements[2].value= (msg[4]+calibration[1][10]).min(0)
+					.lincurve(calibration[1][8], calibration[1][9], 1, 0, calibration[1][11]);
+				});
 			}, {
 				if(on2 and:{msg[1]==0}, {  //Sentograph 2
 					xyz2raw[0]= msg[2];
 					xyz2raw[1]= msg[3];
 					xyz2raw[2]= msg[4];
-					xyz2Elements[0].value= (msg[2]+calibration[0][2]).lincurve(calibration[0][0], calibration[0][1], 0, 1, calibration[0][3]);
-					xyz2Elements[1].value= (msg[3]+calibration[0][6]).lincurve(calibration[0][4], calibration[0][5], 0, 1, calibration[0][7]);
-					xyz2Elements[2].value= (msg[4]+calibration[0][10]).min(0).lincurve(calibration[0][8], calibration[0][9], 1, 0, calibration[0][11]);
+					if(xyz2CheckValue[0], {
+						xyz2Elements[0].value= (msg[2]+calibration[0][2])
+						.lincurve(calibration[0][0], calibration[0][1], 0, 1, calibration[0][3]);
+					});
+					if(xyz2CheckValue[1], {
+						xyz2Elements[1].value= (msg[3]+calibration[0][6])
+						.lincurve(calibration[0][4], calibration[0][5], 0, 1, calibration[0][7]);
+					});
+					if(xyz2CheckValue[2], {
+						xyz2Elements[2].value= (msg[4]+calibration[0][10]).min(0)
+						.lincurve(calibration[0][8], calibration[0][9], 1, 0, calibration[0][11]);
+					});
 				});
 			});
 		}, \optoforce, recvPort:SInputs.destinations.sSentograph.port);
@@ -223,7 +251,7 @@ writeUserCalibrationToDisk= {  //(re)write all user patterns to disk
 			file.write("\n\t\t'zmax': %,".format(arr[9]));
 			file.write("\n\t\t'zoff': %,".format(arr[10]));
 			file.write("\n\t\t'zcurv': %,".format(arr[11]));
-			file.write("\n\t}");
+			file.write("\n\t},");
 		};
 		file.write("\n]");
 	});
