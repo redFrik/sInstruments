@@ -140,7 +140,7 @@ s.waitForBoot{
 	var masterTuning;
 	var glissTime;
 	var onButton;
-	var numSpec, addSpec, delSpec;
+	var numSpec, altSpec, dlySpec;
 	var atkSpec, relSpec;
 	var transposition;
 	var snapshots;
@@ -340,8 +340,8 @@ s.waitForBoot{
 					StaticText().string_("type"),
 					StaticText().string_("vol"),
 					StaticText().string_("num"),
-					StaticText().string_("add"),
-					StaticText().string_("del"),
+					StaticText().string_("alt"),
+					StaticText().string_("dly"),
 					StaticText().string_("atk"),
 					StaticText().string_("rel"),
 					StaticText().string_("extra").minWidth_(30),
@@ -353,8 +353,8 @@ s.waitForBoot{
 						\typePopup, PopUpMenu().minWidth_(125),
 						\volSlider, Slider().orientation_(\horizontal),
 						\numNumber, NumberBox().step_(1),
-						\addNumber, NumberBox(),
-						\delNumber, NumberBox().scroll_step_(0.1),
+						\altNumber, NumberBox(),
+						\dlyNumber, NumberBox().scroll_step_(0.1),
 						\atkNumber, NumberBox().scroll_step_(0.1),
 						\relNumber, NumberBox().scroll_step_(0.1),
 						\nextButton, Button().states_([["next"]]).fixedWidth_(30),
@@ -1345,8 +1345,8 @@ s.waitForBoot{
 				var go= glissandi[i];
 				var item= list.detect{|a| a.key==\typePopup}.value;
 				go.fileIndex= list.detect{|a| a.key==\fileIndex}.value;
-				go.addNumber.valueAction= list.detect{|a| a.key==\addNumber}.value;
-				go.delNumber.valueAction= list.detect{|a| a.key==\delNumber}.value;
+				go.altNumber.valueAction= list.detect{|a| a.key==\altNumber}.value;
+				go.dlyNumber.valueAction= list.detect{|a| a.key==\dlyNumber}.value;
 				go.atkNumber.valueAction= list.detect{|a| a.key==\atkNumber}.value;
 				go.relNumber.valueAction= list.detect{|a| a.key==\relNumber}.value;
 				go.numNumber.value= list.detect{|a| a.key==\numNumber}.value;
@@ -1452,7 +1452,7 @@ s.waitForBoot{
 			//--from sKeyCpad
 			OSCFunc({|msg| {onButton.valueAction= 1-onButton.value}.defer}, \on, recvPort:oscPort),
 
-			//--from sKeyDpad
+			//--from sKeyDpad and sGlobal
 			OSCFunc({|msg|
 				var mod= if(msg[2]==1, {131072}, {0});
 				{snapshots.keyDownAction(msg[1].asString[0], mod)}.defer;
@@ -1558,8 +1558,8 @@ s.waitForBoot{
 
 	//--gliss
 	numSpec= ControlSpec(0, maxNumVoices, 'lin', 1, 0);
-	addSpec= ControlSpec(-9999, 9999, 'lin', 0, 0, "Hz");
-	delSpec= ControlSpec(0, 10, 'lin', 0, 0, "s");
+	altSpec= ControlSpec(-9999, 9999, 'lin', 0, 0, "Hz");
+	dlySpec= ControlSpec(0, 10, 'lin', 0, 0, "s");
 	atkSpec= ControlSpec(0, 30, 'lin', 0, defaultGlissAtk, "s");
 	relSpec= ControlSpec(0, 60, 'lin', 0, defaultGlissRel, "s");
 
@@ -1674,13 +1674,13 @@ s.waitForBoot{
 				freqUsr.refresh;
 			});
 		};
-		go.addNumber.action= {|view|
-			view.value= addSpec.constrain(view.value);
-			go.gliss.set(\add, view.value);
+		go.altNumber.action= {|view|
+			view.value= altSpec.constrain(view.value);
+			go.gliss.set(\alt, view.value);
 		};
-		go.delNumber.action= {|view|
-			view.value= delSpec.constrain(view.value);
-			go.gliss.set(\del, view.value);
+		go.dlyNumber.action= {|view|
+			view.value= dlySpec.constrain(view.value);
+			go.gliss.set(\dly, view.value);
 		};
 		go.atkNumber.action= {|view|
 			view.value= atkSpec.constrain(view.value);
