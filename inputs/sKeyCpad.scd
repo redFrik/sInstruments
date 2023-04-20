@@ -4,7 +4,10 @@
 
 (
 //--settings
-var serialPortName= "/dev/cu.wchusbserial14[0-9]*0";  //regexp
+var serialPortNames= [
+	"/dev/tty.usbserial-[0-9]*",
+	"/dev/cu.wchusbserial[0-9]*",
+];  //regexp
 var winRect= Rect(0, 70, 400, 175);  //x, y, w, h
 var palette= SGUI.palette;
 var fnt= Font.monospace(10);
@@ -74,7 +77,9 @@ Routine({
 	var port, portFound= false;
 
 	//--try multiple ports if many with similar name
-	SerialPort.devices.select{|path| serialPortName.matchRegexp(path)}.do{|path|
+	SerialPort.devices.select{|path|
+		serialPortNames.any{|name| name.matchRegexp(path)}
+	}.do{|path|
 		var str= "", byte, timer;
 		if(portFound.not, {
 			port= try{SerialPort(path, 38400, crtscts: true)};

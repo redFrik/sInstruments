@@ -5,7 +5,7 @@
 
 (
 //--settings
-var serialPortName= "usbmodem1922351";  //greybox
+var serialPortName= "usbmodem192235";  //greybox
 var winRect= Rect(0, 80, 320, 240);  //x, y, w, h
 var palette= SGUI.palette;
 var fnt= Font.monospace(10);

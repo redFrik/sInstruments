@@ -4,8 +4,11 @@
 
 (
 //--settings
-var serialPortName= "/dev/cu.wchusbserial14[0-9]*0";  //regexp
-var winRect= Rect(170, 70, 160, 150);  //x, y, w, h
+var serialPortNames= [
+	"/dev/tty.usbserial-[0-9]*",
+	"/dev/cu.wchusbserial[0-9]*",
+];  //regexp
+var winRect= Rect(800, 320, 160, 150);  //x, y, w, h
 var palette= SGUI.palette;
 var fnt= Font.monospace(10);
 var recTimeout= 3;  //number of seconds to keep snapshot record gate open
@@ -93,7 +96,9 @@ Routine({
 	var port, portFound= false;
 
 	//--try multiple ports if many with similar name
-	SerialPort.devices.select{|path| serialPortName.matchRegexp(path)}.do{|path|
+	SerialPort.devices.select{|path|
+		serialPortNames.any{|name| name.matchRegexp(path)}
+	}.do{|path|
 		var str= "", byte, timer;
 		if(portFound.not, {
 			port= try{SerialPort(path, 38400, crtscts: true)};
