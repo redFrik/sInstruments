@@ -40,7 +40,7 @@ var defaultFreqNumTargets= 3;  //number of circles for controlling frequencies
 var defaultAmpRange= #[0, 0.75];  //minmax percent
 var defaultAmp= 0.25;
 var defaultFreqRange= #[0.05, 0.95];  //minmax percent
-var defaultFreq= 99;  //Hz
+var defaultFreqs= #[99, 999, 99];  //Hz
 var defaultFreqLfoDepth= 0;  //percent
 var defaultFreqLfoRate= 0.1;  //Hz
 var defaultAmpLfoDepth= 0;  //percent
@@ -980,15 +980,17 @@ s.waitForBoot{
 
 	freqNumTargetsSpec= ControlSpec(1, maxNumTargets, 'lin', 1, defaultFreqNumTargets);
 	freqNumTargetsNumber.action= {|view|
+		var i= 0;
 		view.value= freqNumTargetsSpec.constrain(view.value);
 		if(freqTargets.size<view.value, {
 			while({freqTargets.size<view.value}, {
 				freqTargets.add(
 					(
 						position: Point(0, 0),  //coordinates
-						frequency: defaultFreq.explin(*[defaultFreqRange.linexp(0, 1, minFreq, maxFreq), 0, 1].flat)
+						frequency: defaultFreqs.wrapAt(i).explin(*[defaultFreqRange.linexp(0, 1, minFreq, maxFreq), 0, 1].flat)
 					)
 				);
+				i= i+1;
 			});
 		}, {
 			if(freqTargets.size>view.value, {
