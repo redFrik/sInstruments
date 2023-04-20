@@ -2,7 +2,7 @@
 
 (
 //--settings
-var oscPort= 13061;
+var oscPort= SInputs.destinations.sDrone.port;
 var maxNumVoices= 30;  //maximum number of voices for the synth
 var winRect= Rect(242, 242, 900, 780);  //x, y, w, h
 var palette= SGUI.palette((highlight: Color.red(2/3, 0.5)));
@@ -1250,6 +1250,7 @@ s.waitForBoot{
 
 	droneButton.action= {|view|
 		drone.set(\on, view.value);
+		SInputs.destinations.sKeyDpad.sendMsg(\iOnOff, \sDrone, view.value);
 	};
 
 	attackNumber.value= defaultAttack;
@@ -1541,9 +1542,7 @@ s.waitForBoot{
 				var mod= if(msg[2]==1, {131072}, {0});
 				{snapshots.keyDownAction(msg[1].asString[0], mod)}.defer;
 			}, \snapshots, recvPort:oscPort),
-			OSCFunc({|msg|
-				{droneButton.valueAction= 0}.defer;
-			}, \onOff, recvPort:oscPort),
+			OSCFunc({|msg| {droneButton.valueAction= msg[1]}.defer}, \onOff, recvPort:oscPort),
 
 			//--from sNanokontrol
 			OSCFunc({|msg| ampLfoDepthElement.value= msg[1]}, \ampLfoDepth, recvPort:oscPort),

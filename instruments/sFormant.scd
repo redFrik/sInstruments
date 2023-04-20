@@ -3,7 +3,7 @@
 
 (
 //--settings
-var oscPort= 13063;
+var oscPort= SInputs.destinations.sFormant.port;
 var winRect= Rect(242, 242, 600, 600);  //x, y, w, h
 var palette= SGUI.palette((highlight: Color.grey(2/3, 0.5)));
 var fps= 25;  //maximum gui updaterate - does not affect sensor input rate
@@ -277,6 +277,7 @@ s.waitForBoot{
 
 	onElement.action= {|val|
 		formant.set(\on, val);
+		SInputs.destinations.sKeyDpad.sendMsg(\iOnOff, \sFormant, val.asInteger);
 	};
 	attackElement.value= attackSpec.unmap(defaultAttack);
 	attackElement.action= {|val|
@@ -352,6 +353,9 @@ s.waitForBoot{
 			//--from sKeyCpad
 			OSCFunc({|msg| onElement.valueAction= 1-onElement.value}, \on, recvPort:oscPort),
 
+			//--from sKeyDpad
+			OSCFunc({|msg| onElement.valueAction= msg[1]}, \onOff, recvPort:oscPort),
+
 			//--from sNanokontrol
 			OSCFunc({|msg| ampHiElement.value= msg[1]}, \ampHi, recvPort:oscPort),
 			OSCFunc({|msg| ampLoElement.value= msg[1]}, \ampLo, recvPort:oscPort),
@@ -375,7 +379,7 @@ s.waitForBoot{
 
 			//--other/unused
 			OSCFunc({|msg| attackElement.value= msg[1]}, \attack, recvPort:oscPort),
-			OSCFunc({|msg| releaseElement.value= msg[1]}, \release, recvPort:oscPort)
+			OSCFunc({|msg| releaseElement.value= msg[1]}, \release, recvPort:oscPort),
 		];
 	};
 

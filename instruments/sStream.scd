@@ -641,6 +641,7 @@ s.waitForBoot{
 		}, {
 			Pdef(\sStream).stop;
 		});
+		SInputs.destinations.sKeyDpad.sendMsg(\iOnOff, \sStream, val.asInteger);
 	};
 	attackElement.value= attackSpec.unmap(defaultAttack);
 	attackElement.action= {|val|
@@ -1972,6 +1973,7 @@ s.waitForBoot{
 				var mod= if(msg[2]==1, {131072}, {0});
 				{snapshots.keyDownAction(msg[1].asString[0], mod)}.defer;
 			}, \snapshots, recvPort:oscPort),
+			OSCFunc({|msg| onElement.value= msg[1]}, \onOff, recvPort:oscPort),
 
 			//--from sKeyBpad and sQWERTYKeyboard
 			OSCFunc({|msg|
@@ -2073,7 +2075,7 @@ s.waitForBoot{
 			OSCFunc({|msg| releaseElement.value= msg[1]}, \release, recvPort:oscPort),
 			OSCFunc({|msg|
 				{mainVolume.valueAction= msg[1]}.defer;
-			}, \mainVolume, recvPort:oscPort)
+			}, \mainVolume, recvPort:oscPort),
 		];
 	};
 

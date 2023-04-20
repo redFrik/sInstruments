@@ -4,64 +4,55 @@
 
 (
 //--settings
+var oscPort= SInputs.destinations.sKeyDpad.port;
 var serialPortNames= [
 	"/dev/tty.usbserial-[0-9]*",
 	"/dev/cu.wchusbserial[0-9]*",
 ];  //regexp
-var winRect= Rect(800, 320, 160, 150);  //x, y, w, h
+var winRect= Rect(800, 320, 160, 300);  //x, y, w, h
 var palette= SGUI.palette;
 var fnt= Font.monospace(10);
-var recTimeout= 3;  //number of seconds to keep snapshot record gate open
 
 //--functions and objects
 var sendOsc;
 var routine;
-var buttonLookup;
-var lookup= #[6, 7, 4, 10, 11, 13, 3, 2, 12, 9, 8, 0, 1, 5];
-var snapshotKeys= #[
-	[$A, $S, $D, $F, $G, $H, $J, $K],
-	[$Z, $X, $C, $V, $B, $N, $M, $,]
-];
-var bankKeys= #[  //more can be added
-	$1, $2, $3, $4, $5, $6, $7, $8, $9
-];
-var switches= [0, 0, 0, 0];
+var setupOscResponders, oscResponders;
+var iOnOffDict= (), activeDict;
 
 //--gui
-var snapshotButtons= List.new;
-var bankButtons= List.new;
+var blackButtons= List.new;
+var redButtons= List.new;
 var recButton;
-var shiftButton;
+var onoffButton;
 var infoTextString;
 var win= Window("sKeyDpad", winRect);
 win.layout= VLayout(
 	GridLayout.rows(
-		*snapshotKeys[0].clump(4).collect{|arr|
-			arr.collect{|chr|
-				snapshotButtons.add(Button().states_([
-					[chr, palette.window, Color.black],
-					[chr, palette.window, palette.highlight]
-				]).fixedWidth_(25)).last;
-			};
-		}
+		*{{
+			blackButtons.add(Button().states_([
+				["", palette.window, Color.black],
+				["", palette.window, palette.highlight]
+			]).fixedWidth_(25)).last;
+		}.dup(4)}.dup(2)
 	),
 	HLayout(
-		*bankKeys.clump(4)[0].collect{|chr|
-			bankButtons.add(Button().states_([
-				[chr, palette.window, Color.red],
-				[chr, palette.window, palette.highlight]
+		*{
+			redButtons.add(Button().states_([
+				["", palette.window, Color.red],
+				["", palette.window, palette.highlight]
 			]).fixedWidth_(25)).last;
-		};
+		}.dup(4)
 	),
 	HLayout(
 		nil,
-		recButton= Button().states_([
+		(recButton= SGUIrecord(s, SInstruments.recordingsDir, "sInstrument_")).view
+		.states_([
 			["rec", palette.buttonText, Color.red],
 			["rec", palette.button, Color.red]
 		]).fixedWidth_(30),
-		shiftButton= Button().states_([
-			["shift", palette.buttonText, Color.red],
-			["shift", palette.button, Color.red]
+		onoffButton= Button().states_([
+			["on", palette.buttonText, Color.red],
+			["off", palette.button, Color.red]
 		]).fixedWidth_(30),
 		nil
 	),
@@ -73,20 +64,14 @@ SGUI.adapt(win);
 win.front;
 infoTextString.font= fnt;
 
-buttonLookup= {|index|
-	var i= lookup[index];
-	case
-	{i<snapshotButtons.size} {snapshotButtons[i]}
-	{i<(snapshotButtons.size+bankButtons.size)} {bankButtons[i-snapshotButtons.size]}
-	{i==12} {recButton}
-	{i==13} {shiftButton}
-};
-
 sendOsc= {|arr|
 	var str= "";
 	arr.do{|a|
-		SInputs.destinations[a[0]].sendMsg(a[1], *a[2..]);
-		str= str++a;
+		var addr= SInputs.destinations[a[0]];
+		if(addr.notNil, {
+			addr.sendMsg(a[1], *a[2..]);
+			str= str++a;
+		});
 	};
 	infoTextString.string= str.replace("[ ", "[").replace(" ]", "] ").replace(", ", " ");
 };
@@ -155,23 +140,22 @@ Routine({
 					{state==4 and:{byte==255}} {
 						//[lo, hi].postln;  //debug
 						{
-							var but, val;
-							8.do{|i|
-								but= buttonLookup.value(i);
-								val= (lo&(1<<i)>0).not.binaryValue;
-								if(but.value!=val, {but.valueAction= val});
-							};
-							4.do{|i|
-								but= buttonLookup.value(i+8);
-								val= (hi&(1<<i)>0).not.binaryValue;
-								if(but.value!=val, {but.valueAction= val});
-							};
-							but= buttonLookup.value(8+4);
-							val= (hi&(1<<4)>0).not.binaryValue;
-							if(but.value!=val, {but.valueAction= val});
-							but= buttonLookup.value(8+5);
-							val= (hi&(1<<5)>0).not.binaryValue;
-							if(but.value!=val, {but.valueAction= val});
+							if(hi.bitTest(3).not, {blackButtons[0].valueAction= 1-blackButtons[0].value});
+							if(hi.bitTest(4).not, {blackButtons[1].valueAction= 1-blackButtons[1].value});
+							if(lo.bitTest(7).not, {blackButtons[2].valueAction= 1-blackButtons[2].value});
+							if(lo.bitTest(6).not, {blackButtons[3].valueAction= 1-blackButtons[3].value});
+							if(lo.bitTest(2).not, {blackButtons[4].valueAction= 1-blackButtons[4].value});
+							if(hi.bitTest(5).not, {blackButtons[5].valueAction= 1-blackButtons[5].value});
+							if(lo.bitTest(0).not, {blackButtons[6].valueAction= 1-blackButtons[6].value});
+							if(lo.bitTest(1).not, {blackButtons[7].valueAction= 1-blackButtons[7].value});
+
+							if(hi.bitTest(2).not, {redButtons[0].valueAction= 1-redButtons[0].value});
+							if(hi.bitTest(1).not, {redButtons[1].valueAction= 1-redButtons[1].value});
+							if(lo.bitTest(3).not, {redButtons[2].valueAction= 1-redButtons[2].value});
+							if(lo.bitTest(4).not, {redButtons[3].valueAction= 1-redButtons[3].value});
+
+							if(hi.bitTest(0).not, {recButton.valueAction= 1-recButton.value});
+							if(lo.bitTest(5).not, {onoffButton.valueAction= 1-onoffButton.value});
 						}.defer;
 						state= 0;
 					} {
@@ -190,71 +174,52 @@ Routine({
 		if(port.notNil, {
 			port.close;
 		});
+		oscResponders.do{|x| x.free};
 	};
 }).play(AppClock);
 
 //--button functions
-snapshotButtons.do{|but, i|
+blackButtons.do{|but, i|
 	but.action= {|view|
-		var row;
 		if(view.value==1, {
 			sendOsc.value([
-				[\sCluster, \snapshots, bankKeys.last.asString],
-				[\sDrone, \snapshots, bankKeys.last.asString],
-				[\sGliss, \snapshots, bankKeys.last.asString]
-			]);
-			row= switches[i%4]+i.div(4)%2;
-			sendOsc.value([
-				[\sCluster, \snapshots, snapshotKeys[row][i%4].asString, 0],
-				[\sDrone, \snapshots, snapshotKeys[row][i%4].asString, 0],
-				[\sGliss, \snapshots, snapshotKeys[row][i%4].asString, 0],
-				[\sStream, \snapshots, snapshotKeys[shiftButton.value][i].asString, recButton.value]
+				[\sOBS, \scene, i+1],
 			]);
 			{view.value= 0}.defer(0.15);
 		});
 	};
 };
 
-bankButtons.do{|but, i|
+redButtons.do{|but, i|
 	but.action= {|view|
 		if(view.value==1, {
-			sendOsc.value([
-				[\sCluster, \snapshots, bankKeys.last.asString],
-				[\sDrone, \snapshots, bankKeys.last.asString],
-				[\sGliss, \snapshots, bankKeys.last.asString]
-			]);
-			sendOsc.value([
-				[\sCluster, \snapshots, snapshotKeys[switches[i]][i].asString, 1],
-				[\sDrone, \snapshots, snapshotKeys[switches[i]][i].asString, 1],
-				[\sGliss, \snapshots, snapshotKeys[switches[i]][i].asString, 1],
-				[\sStream, \snapshots, bankKeys[i].asString]
-			]);
-			switches.put(i, 1-switches[i]);
+			infoTextString.string= "not connected";
 			{view.value= 0}.defer(0.15);
 		});
 	};
 };
 
-recButton.action= {|view|
-	sendOsc.value([
-		[\sCluster, \mainRecord],
-		[\sDrone, \mainRecord],
-		[\sGliss, \mainRecord]
-	]);
-	{view.value= 0}.defer(recTimeout);
+onoffButton.action= {|view|
+	if(view.value==1, {  //off
+		activeDict= ();
+		iOnOffDict.keysValuesDo{|k, v|
+			if(v==1, {activeDict.put(k, 1)});
+		};
+		sendOsc.value(SInstruments.instruments.collect{|name| [name, \onOff, 1-view.value]});
+	}, {
+		if(activeDict.keys.size>0, {
+			sendOsc.value([activeDict.keys.asArray, \onOff, 1].flop);
+		});
+	});
 };
 
-shiftButton.action= {|view|
-	snapshotButtons.do{|but, i|
-		but.states= [
-			[snapshotKeys[shiftButton.value][i], palette.window, Color.black],
-			[snapshotKeys[shiftButton.value][i], palette.window, palette.highlight]
-		];
-	};
-	sendOsc.value([
-		[\sCluster, \onOff, 0],
-		[\sDrone, \onOff, 0],
-		[\sGliss, \onOff, 0]
-	]);
+//--network
+setupOscResponders= {
+	oscResponders= [
+		OSCFunc({|msg|
+			iOnOffDict.put(msg[1], msg[2]);
+		}, \iOnOff, recvPort:oscPort),
+	]
 };
+setupOscResponders.value;
 )

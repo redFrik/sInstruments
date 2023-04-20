@@ -2,7 +2,7 @@
 
 (
 //--settings
-var oscPort= 13064;
+var oscPort= SInputs.destinations.sCluster.port;
 var maxNumVoices= 100;  //maximum number of voices for the synth
 var winRect= Rect(242, 242, 900, 780);  //x, y, w, h
 var palette= SGUI.palette((highlight: Color.yellow(2/3, 0.75)));
@@ -760,6 +760,7 @@ s.waitForBoot{
 
 	onButton.action= {|view|
 		cluster.set(\on, view.value);
+		SInputs.destinations.sKeyDpad.sendMsg(\iOnOff, \sCluster, view.value);
 	};
 
 	attackNumber.value= defaultAttack;
@@ -867,9 +868,7 @@ s.waitForBoot{
 				var mod= if(msg[2]==1, {131072}, {0});
 				{snapshots.keyDownAction(msg[1].asString[0], mod)}.defer;
 			}, \snapshots, recvPort:oscPort),
-			OSCFunc({|msg|
-				{onButton.valueAction= 0}.defer;
-			}, \onOff, recvPort:oscPort),
+			OSCFunc({|msg| {onButton.valueAction= msg[1]}.defer}, \onOff, recvPort:oscPort),
 
 			//--from sNanokontrol
 			OSCFunc({|msg| ampLfoDepthElement.value= msg[1]}, \ampLfoDepth, recvPort:oscPort),

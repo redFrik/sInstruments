@@ -2,7 +2,7 @@
 
 (
 //--settings
-var oscPort= 13060;
+var oscPort= SInputs.destinations.sGliss.port;
 var maxNumVoices= 99;  //maximum number of voices each synth can play
 var numGliss= 9;  //number of synths right hand side
 var maxNumTargets= 50;  //maximum number of amp and freq targets
@@ -1303,6 +1303,7 @@ s.waitForBoot{
 
 	onButton.action= {|view|
 		glissandi.do{|go| go.gliss.set(\on, view.value)};
+		SInputs.destinations.sKeyDpad.sendMsg(\iOnOff, \sGliss, view.value);
 	};
 
 	glissandoTypes= {
@@ -1459,9 +1460,7 @@ s.waitForBoot{
 				var mod= if(msg[2]==1, {131072}, {0});
 				{snapshots.keyDownAction(msg[1].asString[0], mod)}.defer;
 			}, \snapshots, recvPort:oscPort),
-			OSCFunc({|msg|
-				{onButton.valueAction= 0}.defer;
-			}, \onOff, recvPort:oscPort),
+			OSCFunc({|msg| {onButton.valueAction= msg[1]}.defer}, \onOff, recvPort:oscPort),
 
 			//--from sNanokontrol
 			OSCFunc({|msg|
