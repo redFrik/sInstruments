@@ -3,7 +3,7 @@
 //either nanokontrol v1 or v2
 
 (
-var nk= SNanoKontrol("sNanoKontrol", Point(0, 70));
+var nk= SNanoKontrol("sNanoKontrol", Point(0, 0));
 
 //--knob functions
 nk.nanoKnobElements[0].action= {|val|

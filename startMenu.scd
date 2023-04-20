@@ -1,7 +1,7 @@
 (
 //--settings
 var prefName= "startMenuPref.json";
-var winRect= Rect(1, 550, 240, 320);  //x, y, w, h
+var winRect= Rect(1, Window.availableBounds.height, 240, 320);  //x, y, w, h
 
 //--functions and objects
 var keyFunc;
