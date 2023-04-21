@@ -114,9 +114,9 @@ SPlayFile : AbstractSPlayFile {
 			SynthDef((this.class.name++"_"++n).asSymbol, {|out= 0, buf, gate= 1,
 				amp= 1, rate= 1, loo= 0, atk= 0.01, rel= 0.05, cur= -4,
 				start= 0, end= 1, lag= 0.25, bus|
-				var dur= BufFrames.ir(buf)*BufRateScale.ir(buf);
+				var dur= BufFrames.ir(buf);
 				var diff= (end-start).lag2(lag).max(LFNoise2.kr(0.05).range(0.01, 0.02));
-				var pha= Phasor.ar(0, rate/dur/diff, 0, 1);
+				var pha= Phasor.ar(0, rate*BufRateScale.ir(buf)/dur/diff, 0, 1);
 				var pos= pha*diff+start.lag2(lag);
 				var snd= BufRd.ar(n, buf, pos*dur, loo);
 				var mix= SynthDef.wrap(this.prMix, nil, [snd]);
