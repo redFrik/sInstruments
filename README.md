@@ -43,6 +43,10 @@ These instruments are made to be played with custom hardware (3D sensors, slider
 
 <img src="images/sDrone.png" alt="sDrone" width="1149px"/>
 
+## sFiles
+
+<img src="images/sFiles.png" alt="sFiles" width="599px"/>
+
 ## sFormant
 
 <img src="images/sFormant.png" alt="sFormant" width="814px"/>
