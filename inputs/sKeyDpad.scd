@@ -9,7 +9,7 @@ var serialPortNames= [
 	"/dev/tty.usbserial-[0-9]*",
 	"/dev/cu.wchusbserial[0-9]*",
 ];  //regexp
-var winRect= Rect(800, 320, 160, 300);  //x, y, w, h
+var winRect= Rect(800, 240, 120, 300);  //x, y, w, h
 var palette= SGUI.palette;
 var fnt= Font.monospace(10);
 

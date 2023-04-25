@@ -7,7 +7,7 @@
 (
 //--settings
 var serialPortName= "usbmodem206264";  //greybox
-var winRect= Rect(0, 80, 320, 240);  //x, y, w, h
+var winRect= Rect(0, 450, 320, 240);  //x, y, w, h
 var palette= SGUI.palette;
 var fnt= Font.monospace(10);
 var fps= 15;  //maximum gui updaterate - does not affect sensor input rate
