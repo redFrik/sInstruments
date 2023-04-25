@@ -5,7 +5,7 @@ RELATED:: Classes/SPlayFileDisk, Classes/SPlayFileView
 
 DESCRIPTION::
 
-a gui for disk player.
+A GUI for LINK::Classes/SplayFileDisk:: (streaming soundfiles from disk).
 
 NOTE::
 For now, for efficiency reasons, only the first channel is plotted.
@@ -34,7 +34,8 @@ s.waitForBoot{
 		Button().states_([
 			["show controls"], ["show controls"]
 		]).action_{|view| fv.controls= view.value.booleanValue},
-		fv= SPlayFileDiskView(spf: f, controls: false)
+		fv= SPlayFileDiskView(spf: f, controls: false),
+		nil  //spacer
 	));
 	CmdPeriod.doOnce({win.close});
 };
@@ -42,7 +43,7 @@ s.waitForBoot{
 
 
 s.boot;
-v= SPlayFileDiskView(controls:true);
+v= SPlayFileDiskView(controls:true).front;
 v.read(Platform.resourceDir+/+"sounds/a11wlk01.wav");
 v.timeCursorColor= Color.blue;
 v.waveColor= Color.red;

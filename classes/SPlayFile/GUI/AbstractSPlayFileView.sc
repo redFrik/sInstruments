@@ -1,11 +1,6 @@
 //f.olofsson 2020
 
-//single click - set playback position
-//double click - start playing from position
-//ctrl drag left-right - scroll left-right
-//ctrl+shift drag up-down - zoom in-out
-//shift drag - (extend selection)
-//shift double click - (select all)
+//related SPlayFileView, SPlayFileDiskView, AbstractSPlayFile
 
 //TODO cursors should survive cmdperiod
 //TODO time markers in seconds
@@ -22,7 +17,7 @@ AbstractSPlayFileView : SCViewHolder {
 	var soundfiles;
 	var cursorUpdater;
 	var volumeSpec;
-	var filePopup, readButton,
+	var fileName, popup, readFolderButton, readFileButton, lastFolderPath, lastFilePath,
 	vZoomSlider, waveView, hZoomSlider,
 	atkText, atkNumber, relText, relNumber, rateText, rateNumber, loopButton,
 	volSlider, playButton, busText, busNumber;
@@ -33,34 +28,36 @@ AbstractSPlayFileView : SCViewHolder {
 	initAbstractSPlayFileView {|parent, bounds, argSpf, folder, controls|
 		var keyDownAction;
 
-		soundfiles= [];
-
-		folder= folder.standardizePath;
-		if(PathName(folder).isFolder, {
-			soundfiles= SoundFile.collect(folder+/+"*");
-		});
+		//--gui
 
 		view= View(parent, bounds).layout_(VLayout(
 			HLayout(
-				[filePopup= PopUpMenu().items_(
+				[popup= PopUpMenu().items_(
 					["_"]++soundfiles.collect{|x| x.path.basename}
 				).canFocus_(false), \stretch: 1],
 
-				readButton= Button().states_([
-					["read"]
+				readFolderButton= Button().states_([
+					["folder"]
+				]).canFocus_(false),
+
+				readFileButton= Button().states_([
+					["file"]
 				]).canFocus_(false)
 			),
 
 			VLayout(
 				HLayout(
 					vZoomSlider= RangeSlider().orientation_(\vertical).canFocus_(false)
-					.background_(Color.grey(0.5)),
+					.background_(Color.grey(0.5)).maxWidth_(20),
 
-					waveView= SoundFileView().minSize_(Size(133, 100)).setData([0])
-					.timeCursorOn_(true).timeCursorColor_(Color.white)
-					.gridOn_(false)//.gridColor_(Color.grey(0, 0.1))
-					.rmsColor_(Color.grey(0, 0.5)).waveColors_(Color.grey(0.5)!8)
-					.background_(Color.clear)
+					StackLayout(
+						waveView= SoundFileView().setData([0])
+						.timeCursorOn_(true).timeCursorColor_(Color.blue)
+						.gridOn_(false)//.gridColor_(Color.grey(0, 0.1))
+						.rmsColor_(Color.grey(0, 0.5)).waveColors_(Color.grey(0.5)!8)
+						.background_(Color.clear).minHeight_(50),
+						fileName= StaticText().align_(\bottom),
+					).mode_(\stackAll)
 				),
 
 				hZoomSlider= RangeSlider().orientation_(\horizontal).canFocus_(false)
@@ -104,21 +101,56 @@ AbstractSPlayFileView : SCViewHolder {
 			this.controls_(false);
 		});
 
-		filePopup.action= {|view|
+		//--drag&drop
+
+		waveView.canReceiveDragHandler= {
+			View.currentDrag.isString and:{
+				SoundFile(View.currentDrag).info.notNil or:{
+					PathName(View.currentDrag).isFolder
+				}
+			} or:{
+				View.currentDrag.isArray and:{
+					View.currentDrag.any{|path| SoundFile(path).info.notNil}
+				}
+			}
+		};
+		waveView.receiveDragHandler= {
+			if(View.currentDrag.isString, {
+				if(PathName(View.currentDrag).isFolder, {
+					this.prReadFolder(View.currentDrag);
+				}, {
+					this.prReadFile([View.currentDrag]);
+				});
+			}, {
+				this.prReadFile(View.currentDrag.select{|path| SoundFile(path).info.notNil});
+			});
+		};
+		readFileButton.canReceiveDragHandler= waveView.canReceiveDragHandler;
+		readFileButton.receiveDragHandler= waveView.receiveDragHandler;
+		readFolderButton.canReceiveDragHandler= waveView.canReceiveDragHandler;
+		readFolderButton.receiveDragHandler= waveView.receiveDragHandler;
+
+
+		//--action functions
+
+		popup.action= {|view|
 			var val= view.value;
-			view.items= view.items.put(0, "_");
-			view.value= val;
-			if(val>0, {
-				this.read(soundfiles[val-1].path);
+			if(view.items[0]=="_", {val= val-1});
+			if(val>=0, {
+				this.read(soundfiles[val].path);
 			});
 		};
 
-		readButton.action= {|view|
-			Dialog.openPanel({|path|
-				filePopup.items= filePopup.items.put(0, path.basename);
-				filePopup.value= 0;
-				this.read(path);
-			});
+		readFolderButton.action= {|view|
+			FileDialog({|paths|
+				this.prReadFolder(paths[0]);
+			}, fileMode: 2, path: lastFolderPath);
+		};
+
+		readFileButton.action= {|view|
+			FileDialog({|paths|
+				this.prReadFile(paths);
+			}, fileMode: 3, path: lastFilePath);
 		};
 
 		vZoomSlider.action= {|view|
@@ -222,6 +254,8 @@ AbstractSPlayFileView : SCViewHolder {
 			spf.free;
 			cursorUpdater.stop;
 		};
+
+		this.prReadFolder(folder.standardizePath);
 	}
 
 	startPlaying {
@@ -230,7 +264,7 @@ AbstractSPlayFileView : SCViewHolder {
 
 	read {|path|
 		if(path.isNil, {
-			readButton.doAction;
+			readFileButton.doAction;
 		}, {
 			spf.stop;
 			currentFilePath= path.standardizePath;
@@ -242,16 +276,21 @@ AbstractSPlayFileView : SCViewHolder {
 							buf.free;
 						}.defer;
 					});
-					{hZoomSlider.setSpan(0, 1)}.defer;
+					{
+						hZoomSlider.setSpan(0, 1);
+						fileName.string_(currentFilePath.basename);
+					}.defer;
 					duration= f.duration;
 				});
 			});
+			lastFolderPath= currentFilePath.dirname;
+			lastFilePath= currentFilePath;
 		});
 	}
 
 	controls_ {|show= true|
 		[
-			filePopup, readButton,
+			popup, readFolderButton, readFileButton,
 			vZoomSlider, hZoomSlider,
 			atkText, atkNumber, relText, relNumber, rateText, rateNumber, loopButton,
 			volSlider, playButton, busText, busNumber
@@ -286,7 +325,33 @@ AbstractSPlayFileView : SCViewHolder {
 		pos= pos??{Point(100, 100)};
 		view.front.bounds_(Rect(pos.x, pos.y, 800, 400)).name_(this.class.name)
 	}
+
 	focus {|flag= true|
 		waveView.focus(flag);
+	}
+
+	//--private
+
+	prReadFile {|paths|
+		var files= List.new;
+		paths.do{|path|
+			if(SoundFile(path).info.notNil, {
+				files.add(path);
+			});
+		};
+		if(files.size>0, {
+			soundfiles= files.array.collect{|p| SoundFile(p)};
+			popup.items= soundfiles.collect{|x| x.path.basename};
+			this.read(soundfiles[0].path);
+		});
+	}
+
+	prReadFolder {|path|
+		soundfiles= SoundFile.collect(path+/+"*");
+		if(soundfiles.size>0, {
+			popup.items= ["_"]++soundfiles.collect{|x| x.path.basename};
+		});
+		lastFolderPath= path;
+		lastFilePath= path;
 	}
 }

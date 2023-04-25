@@ -1,4 +1,4 @@
-//related: SPlayFile
+//related SPlayFile
 
 SPlayFileView : AbstractSPlayFileView {
 

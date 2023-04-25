@@ -5,7 +5,7 @@ RELATED:: Classes/SPlayFile, Classes/SPlayFileDiskView
 
 DESCRIPTION::
 
-a gui for ram player.
+A GUI for LINK::Classes/SplayFile:: (playing soundfiles from RAM).
 
 NOTE::
 For now, for efficiency reasons, only the first channel is plotted.
@@ -34,7 +34,8 @@ s.waitForBoot{
 		Button().states_([
 			["show controls"], ["show controls"]
 		]).action_{|view| fv.controls= view.value.booleanValue},
-		fv= SPlayFileView(spf: f, controls: false)
+		fv= SPlayFileView(spf: f, controls: false),
+		nil  //spacer
 	));
 	CmdPeriod.doOnce({win.close});
 };

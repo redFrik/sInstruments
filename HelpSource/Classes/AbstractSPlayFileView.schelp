@@ -18,7 +18,10 @@ definitionlist::
 ##ctrl+shift drag up-down || zoom in-out
 ##shift drag || extend selection (SPlayFileView only)
 ##shift double click || select all (SPlayFileView only)
+##drag and drop || read a file or a folder
 ::
+
+SUBSECTION:: Classes overview
 
 CLASSTREE:: AbstractSPlayFileView
 
@@ -30,7 +33,7 @@ CLASSMETHODS::
 
 INSTANCEMETHODS::
 
-PRIVATE::initAbstractSPlayFileView
+PRIVATE::initAbstractSPlayFileView, prReadFile, prReadFolder
 
 METHOD::fps
 Cursor update rate in frames per second.

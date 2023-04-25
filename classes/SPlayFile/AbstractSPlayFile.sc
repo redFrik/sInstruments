@@ -7,7 +7,7 @@
 //TODO improve quad playback
 //TODO crossfade when looping
 
-//related SPlayFile, SPlayFileDisk
+//related SPlayFile, SPlayFileDisk, AbstractSPlayFileView
 
 AbstractSPlayFile {
 	var dict, channels;
