@@ -113,6 +113,7 @@ s.waitForBoot{
 			files[i].read;
 			files[i].refresh;
 			players[i].play(paths[i]);
+			sf.close;
 		});
 	};
 
