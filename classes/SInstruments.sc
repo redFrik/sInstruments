@@ -22,7 +22,7 @@ SInstruments {
 	}
 	*version {
 		var version= "-1";
-		var quarkFile= File.use(rootDir+/+"sInstruments.quark", "r", {|file|
+		File.use(rootDir+/+"sInstruments.quark", "r", {|file|
 			var str= file.readAllString;
 			version= str.findRegexp("version:.*?,")[0][1].split(34.asAscii)[1];
 		});

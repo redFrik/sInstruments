@@ -1,7 +1,7 @@
 //f.olofsson 2019
 
 //assumes Swedish keyboard - adapt for other keyboards in keys Array below
-//requires python script HIDtoOSC.py and an external usb keyboard http://fredrikolofsson.com/f0blog/?q=node/669
+//requires python script HIDtoOSC.py and an external usb keyboard https://fredrikolofsson.com/f0blog/hid-to-osc
 //start the script with sudo python HIDtoOSC.py --vid 6700 --pid 2 --port 12002
 
 (
