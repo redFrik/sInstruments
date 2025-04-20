@@ -63,7 +63,7 @@ These instruments are made to be played with custom hardware (3D sensors, slider
 
 <img src="images/sGreybox.png" alt="sGreybox" width="454px"/> [<img src="images/sGreybox-photo.jpg" alt="sGreybox-photo" width="200px"/>](images/sGreybox-photo.jpg) [<img src="images/icon_schematics.svg" alt="sGreybox-schematics" width="50px"/>](schematics/sGreybox-schematics.pdf) [<img src="images/icon_firmware.svg" alt="sGreybox-firmware" width="50px"/>](firmware/sGreybox-firmware.ino)
 
-<img src="images/sGreybox2.png" alt="sGreybox2" width="454px"/> [<img src="images/sGreybox2-photo.jpg" alt="sGreybox2-photo" width="200px"/>](images/sGreybox2-photo.jpg) [<img src="images/icon_schematics.svg" alt="sGreybox2-schematics" width="50px"/>](schematics/sGreybox2-schematics.pdf) [<img src="images/icon_firmware.svg" alt="sGreybox2-firmware" width="50px"/>](firmware/sGreybox2-firmware.ino)
+<img src="images/sGreybox2.png" alt="sGreybox2" width="454px"/> [<img src="images/sGreybox2-photo.jpg" alt="sGreybox2-photo" width="200px"/>](images/sGreybox2-photo.jpg) [<img src="images/icon_schematics.svg" alt="sGreybox2-schematics" width="50px"/>](schematics/sGreybox2-schematics.pdf) [<img src="images/icon_firmware.svg" alt="sGreybox2-firmware" width="50px"/>](firmware/sGreybox2-firmware.ino) [<img src="images/icon_schematics.svg" alt="sGreybox2.1-schematics" width="50px"/>](schematics/sGreybox2.1-schematics.pdf) [<img src="images/icon_firmware.svg" alt="sGreybox2.1-firmware" width="50px"/>](firmware/sGreybox2.1-firmware/sGreybox2.1-firmware.ino) [<img src="images/icon_firmware.svg" alt="sGreybox2.1-firmware" width="50px"/>](firmware/sGreybox2.1-firmware/name.c)
 
 <img src="images/sKeyboard.png" alt="sKeyboard" width="912px"/>
 
