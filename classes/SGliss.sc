@@ -142,7 +142,7 @@ SGlissSineFB : AbstractSGlissVoice {
 	*type {^\SineFB}
 	func {
 		^{|fre, amp|
-			SinOscFB.ar(fre, LFNoise2.kr(0.1).range(0.25, 0.75), AmpComp.kr(fre)*amp);
+			SinOscFB.ar(fre, LFNoise2.kr(0.1).clip2.range(0.25, 0.75), AmpComp.kr(fre)*amp);
 		};
 	}
 }
@@ -155,8 +155,8 @@ SGlissPulse : AbstractSGlissVoice {
 					Pulse.ar(fre, LFNoise2.kr(0.1).range(0.5, 0.95), AmpComp.kr(fre)),
 					9000
 				),
-				LFNoise2.kr(0.1).exprange(1200, 12000),
-				LFNoise2.kr(0.1, 0.4, 1),
+				LFNoise2.kr(0.1).clip2.exprange(1200, 12000),
+				LFNoise2.kr(0.1, 0.4, 1).clip(0.6, 1.4),
 				amp
 			);
 		};
@@ -168,7 +168,7 @@ SGlissPulseWarm : AbstractSGlissVoice {
 		^{|fre, amp|
 			RLPF.ar(
 				Pulse.ar(fre, LFNoise2.kr(0.1).range(0.1, 0.2), AmpComp.kr(fre)),
-				LFNoise2.kr(0.1).exprange(300, 1000),
+				LFNoise2.kr(0.1).clip2.exprange(300, 1000),
 				0.1,
 				amp
 			);
@@ -207,7 +207,7 @@ SGlissFormant : AbstractSGlissVoice {
 			Formant.ar(
 				fre,
 				fre*IRand(1, 4),
-				LFNoise2.kr(0.1).exprange(200, 1000),
+				LFNoise2.kr(0.1).clip2.exprange(200, 1000),
 				AmpComp.kr(fre)*amp*0.5
 			);
 		};
@@ -223,7 +223,7 @@ SGlissKarplus : AbstractSGlissVoice {
 				0.05,
 				1/fre.max(20),
 				8,
-				LFNoise2.kr(0.1)*0.01,
+				LFNoise2.kr(0.1).clip2*0.01,
 				AmpComp.kr(fre)*amp*1.5
 			);
 		};
@@ -237,11 +237,11 @@ SGlissNoise : AbstractSGlissVoice {
 				RLPF.ar(
 					WhiteNoise.ar(0.75),
 					fre,
-					LFNoise2.kr(0.1).exprange(0.05, 0.25),
+					LFNoise2.kr(0.1).clip2.exprange(0.05, 0.25),
 					AmpComp.kr(fre)
 				),
 				fre,
-				LFNoise2.kr(0.1).range(0.25, 1),
+				LFNoise2.kr(0.1).clip2.range(0.25, 1),
 				amp
 			);
 		};
@@ -255,11 +255,11 @@ SGlissPink : AbstractSGlissVoice {
 				RLPF.ar(
 					PinkNoise.ar(2),
 					fre,
-					LFNoise2.kr(0.1).exprange(0.05, 0.25),
+					LFNoise2.kr(0.1).clip2.exprange(0.05, 0.25),
 					AmpComp.kr(fre)
 				),
 				fre*0.5,
-				LFNoise2.kr(0.1).range(0.25, 1),
+				LFNoise2.kr(0.1).clip2.range(0.25, 1),
 				amp
 			);
 		}

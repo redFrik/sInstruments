@@ -2332,8 +2332,8 @@ s.waitForBoot{
 					Pulse.ar(freq, LFNoise2.kr(0.1).range(0.5, 0.95), AmpComp.kr(freq)),
 					9000
 				),
-				LFNoise2.kr(0.1).exprange(1200, 12000),
-				LFNoise2.kr(0.1, 0.4, 1),
+				LFNoise2.kr(0.1).clip2.exprange(1200, 12000),
+				LFNoise2.kr(0.1, 0.4, 1).clip(0.6, 1.4),
 				amp
 			);
 			Out.ar(out, Pan2.ar(snd*env, pan));
@@ -2342,7 +2342,7 @@ s.waitForBoot{
 			var env= EnvGen.kr(Env.asr(atk, 1, rel, cur), gate, doneAction:2);
 			var snd= RLPF.ar(
 				Pulse.ar(freq, LFNoise2.kr(0.1).range(0.1, 0.2), AmpComp.kr(freq)),
-				LFNoise2.kr(0.1).exprange(300, 1000),
+				LFNoise2.kr(0.1).clip2.exprange(300, 1000),
 				0.1,
 				amp
 			);
@@ -2375,7 +2375,7 @@ s.waitForBoot{
 			var snd= Formant.ar(
 				freq,
 				freq*IRand(1, 4),
-				LFNoise2.kr(0.1).exprange(200, 1000),
+				LFNoise2.kr(0.1).clip2.exprange(200, 1000),
 				AmpComp.kr(freq)*amp*0.5
 			);
 			Out.ar(out, Pan2.ar(snd*env, pan));
@@ -2388,7 +2388,7 @@ s.waitForBoot{
 				0.05,
 				1/freq.max(20),
 				8,
-				LFNoise2.kr(0.1)*0.01,
+				LFNoise2.kr(0.1).clip2*0.01,
 				AmpComp.kr(freq)*amp*1.5
 			);
 			Out.ar(out, Pan2.ar(snd*env, pan));
@@ -2399,11 +2399,11 @@ s.waitForBoot{
 				RLPF.ar(
 					WhiteNoise.ar(0.75),
 					freq,
-					LFNoise2.kr(0.1).exprange(0.05, 0.25),
+					LFNoise2.kr(0.1).clip2.exprange(0.05, 0.25),
 					AmpComp.kr(freq)
 				),
 				freq,
-				LFNoise2.kr(0.1).range(0.25, 1),
+				LFNoise2.kr(0.1).clip2.range(0.25, 1),
 				amp
 			);
 			Out.ar(out, Pan2.ar(snd*env, pan));
@@ -2414,11 +2414,11 @@ s.waitForBoot{
 				RLPF.ar(
 					PinkNoise.ar(2),
 					freq,
-					LFNoise2.kr(0.1).exprange(0.05, 0.25),
+					LFNoise2.kr(0.1).clip2.exprange(0.05, 0.25),
 					AmpComp.kr(freq)
 				),
 				freq*0.5,
-				LFNoise2.kr(0.1).range(0.25, 1),
+				LFNoise2.kr(0.1).clip2.range(0.25, 1),
 				amp
 			);
 			Out.ar(out, Pan2.ar(snd*env, pan));

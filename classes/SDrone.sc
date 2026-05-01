@@ -142,8 +142,8 @@ SDronePulse : SDrone {
 					Pulse.ar(freqs, LFNoise2.kr(0.1!this.numChannels).range(0.5, 0.95)),
 					dists.linexp(0, 1, 1200, 12000)
 				),
-				LFNoise2.kr(0.1!this.numChannels).exprange(1200, 12000),
-				LFNoise2.kr(0.1!this.numChannels, 0.4, 1),
+				LFNoise2.kr(0.1!this.numChannels).clip2.exprange(1200, 12000),
+				LFNoise2.kr(0.1!this.numChannels, 0.4, 1).clip(0.6, 1.4),
 				amps
 			);
 		};
@@ -162,7 +162,7 @@ SDronePulseWarm : SDrone {
 			var d2= dists.linlin(0, 1, 0.5, 0.3);
 			RLPF.ar(
 				Pulse.ar(freqs, LFNoise2.kr(0.1!this.numChannels).range(d1, d2)),
-				LFNoise2.kr(0.1!this.numChannels).exprange(300, 1000),
+				LFNoise2.kr(0.1!this.numChannels).clip2.exprange(300, 1000),
 				0.1,
 				amps
 			);
@@ -213,7 +213,7 @@ SDroneFormant : SDrone {
 			Formant.ar(
 				freqs,
 				freqs*(dists*3+1),
-				LFNoise2.kr(0.1!this.numChannels).exprange(200, 1000),
+				LFNoise2.kr(0.1!this.numChannels).clip2.exprange(200, 1000),
 				amps*0.5
 			);
 		};
@@ -234,7 +234,7 @@ SDroneKarplus : SDrone {
 				0.05,
 				1/freqs.max(20),
 				2+(dists*6),
-				LFNoise2.kr(0.1!this.numChannels)*(dists*0.2+0.01),
+				LFNoise2.kr(0.1!this.numChannels).clip2*(dists*0.2+0.01),
 				amps*1.5
 			);
 		};
@@ -257,7 +257,7 @@ SDroneNoise : SDrone {
 					dists.linlin(0, 1, 1.5, 1)
 				),
 				freqs,
-				LFNoise2.kr(0.1!this.numChannels, dists).range(0.25, 1),
+				LFNoise2.kr(0.1!this.numChannels, dists).clip2.range(0.25, 1),
 				amps
 			);
 		};
@@ -288,7 +288,7 @@ SDronePink : SDrone {
 					dists.linlin(0, 1, 1.5, 1)
 				),
 				freqs*0.5,
-				LFNoise2.kr(0.1!this.numChannels, dists).range(0.25, 2),
+				LFNoise2.kr(0.1!this.numChannels, dists).clip2.range(0.25, 2),
 				amps
 			);
 		}
